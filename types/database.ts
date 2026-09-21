@@ -20,6 +20,70 @@ export interface ProfileUpdateInput {
   avatar_url?: string | null;
 }
 
+export type InternshipStatus = 'draft' | 'published' | 'closed' | 'archived';
+export type InternshipDifficulty = 'beginner' | 'intermediate' | 'advanced';
+
+export interface Internship {
+  id: string;
+  title: string;
+  slug: string;
+  short_description: string;
+  description: string;
+  category: string;
+  duration_weeks: number;
+  difficulty: InternshipDifficulty;
+  skills: string[];
+  requirements: string[];
+  responsibilities: string[];
+  benefits: string[];
+  max_students: number | null;
+  status: InternshipStatus;
+  application_deadline: string | null;
+  start_date: string | null;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'withdrawn';
+
+export interface Application {
+  id: string;
+  internship_id: string;
+  student_id: string;
+  motivation: string;
+  experience: string | null;
+  portfolio_url: string | null;
+  github_url: string | null;
+  linkedin_url: string | null;
+  status: ApplicationStatus;
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  internship?: Internship;
+  student?: Profile;
+}
+
+export type EnrollmentStatus = 'active' | 'completed' | 'cancelled';
+
+export interface Enrollment {
+  id: string;
+  internship_id: string;
+  student_id: string;
+  application_id: string | null;
+  status: EnrollmentStatus;
+  enrolled_at: string;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  internship?: Internship;
+  student?: Profile;
+}
+
 export interface AdminStats {
   totalStudents: number;
   activeInternships: number;
@@ -30,3 +94,4 @@ export interface AdminStats {
   pendingCertificatePayments: number;
   certificatesIssued: number;
 }
+

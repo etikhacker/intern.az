@@ -1,122 +1,352 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
-import { Briefcase, Search, Filter, BellRing, ArrowRight } from 'lucide-react';
+import { getPublishedInternships } from '@/lib/internships/service';
+import { Internship } from '@/types/database';
+import {
+  Briefcase,
+  Search,
+  Filter,
+  Calendar,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  Users,
+  GraduationCap,
+} from 'lucide-react';
 
 export default function InternshipsPage() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isAz = language === 'az';
+
+  const [internships, setInternships] = useState<Internship[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentTimestamp, setCurrentTimestamp] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
 
-  const categories = isAz
-    ? [
-        { id: 'all', label: 'Bütün istiqamətlər' },
-        { id: 'dev', label: 'Proqramlaşdırma və Veb' },
-        { id: 'data', label: 'Məlumat Analitikası' },
-        { id: 'product', label: 'Məhsul İdarəetməsi' },
-        { id: 'marketing', label: 'Rəqəmsal Marketinq' },
-      ]
-    : [
-        { id: 'all', label: 'All Tracks' },
-        { id: 'dev', label: 'Software & Web' },
-        { id: 'data', label: 'Data Analytics' },
-        { id: 'product', label: 'Product Management' },
-        { id: 'marketing', label: 'Digital Marketing' },
-      ];
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const data = await getPublishedInternships();
+        if (isMounted) {
+          setInternships(data);
+          setCurrentTimestamp(Date.now());
+        }
+      } catch (err) {
+        console.error('Failed to load internships:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Extract unique categories from data
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    internships.forEach((item) => {
+      if (item.category) set.add(item.category);
+    });
+    return Array.from(set);
+  }, [internships]);
+
+  const filteredInternships = useMemo(() => {
+    return internships.filter((item) => {
+      // Category filter
+      if (selectedCategory !== 'all' && item.category !== selectedCategory) {
+        return false;
+      }
+
+      // Difficulty filter
+      if (selectedDifficulty !== 'all' && item.difficulty !== selectedDifficulty) {
+        return false;
+      }
+
+      // Search term
+      if (searchTerm.trim()) {
+        const q = searchTerm.toLowerCase();
+        const matchTitle = item.title.toLowerCase().includes(q);
+        const matchDesc = item.short_description?.toLowerCase().includes(q) || item.description?.toLowerCase().includes(q);
+        const matchCategory = item.category?.toLowerCase().includes(q);
+        const matchSkills = item.skills?.some((s) => s.toLowerCase().includes(q));
+
+        if (!matchTitle && !matchDesc && !matchCategory && !matchSkills) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [internships, selectedCategory, selectedDifficulty, searchTerm]);
+
+  const getDifficultyLabel = (diff: string) => {
+    if (diff === 'beginner') return t('difficultyBeginner');
+    if (diff === 'intermediate') return t('difficultyIntermediate');
+    if (diff === 'advanced') return t('difficultyAdvanced');
+    return diff;
+  };
+
+  const formatDeadline = (dateStr: string | null) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-10 sm:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              {isAz ? 'Təcrübə Proqramları' : 'Internship Programs'}
+          <div className="max-w-3xl mb-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 mb-3">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{isAz ? 'Açıq Vakansiyalar' : 'Open Cohorts'}</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              {t('internshipsTitle')}
             </h1>
-            <p className="text-sm text-slate-600 mt-2">
-              {isAz
-                ? 'Azərbaycanın aparıcı texnologiya şirkətləri və təşkilatları ilə birgə təşkil olunan təcrübə vakansiyaları.'
-                : 'Internship opportunities organized in collaboration with top organizations in Azerbaijan.'}
+            <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed">
+              {t('internshipsSubtitle')}
             </p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <Input
-                placeholder={isAz ? 'Vəzifə və ya bacarıq axtarın...' : 'Search role, track or skill...'}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 h-10"
-              />
+          {/* Search and Filters Bar */}
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs mb-8 space-y-3">
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Input
+                  id="internship-search"
+                  placeholder={t('searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-11 bg-slate-50/50 border-slate-200 focus:bg-white"
+                />
+              </div>
+
+              {/* Difficulty Dropdown / Filter */}
+              <div className="flex items-center gap-2">
+                <select
+                  id="difficulty-filter"
+                  aria-label={t('allDifficulties')}
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="h-11 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="all">{t('allDifficulties')}</option>
+                  <option value="beginner">{t('difficultyBeginner')}</option>
+                  <option value="intermediate">{t('difficultyIntermediate')}</option>
+                  <option value="advanced">{t('difficultyAdvanced')}</option>
+                </select>
+              </div>
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-              <Filter className="w-4 h-4 text-slate-400 shrink-0 hidden sm:block" />
+
+            {/* Categories Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-100 pb-1 scrollbar-none">
+              <span className="text-xs font-medium text-slate-400 shrink-0 flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" />
+                {isAz ? 'Sahələr:' : 'Tracks:'}
+              </span>
+              <button
+                id="cat-filter-all"
+                onClick={() => setSelectedCategory('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+                  selectedCategory === 'all'
+                    ? 'bg-emerald-600 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {t('allCategories')}
+              </button>
               {categories.map((cat) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  key={cat}
+                  id={`cat-filter-${cat}`}
+                  onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-                    selectedCategory === cat.id
+                    selectedCategory === cat
                       ? 'bg-emerald-600 text-white shadow-2xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
-                  {cat.label}
+                  {cat}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Production-Style Empty State */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-2xl mx-auto shadow-2xs">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5 border border-emerald-100">
-              <Briefcase className="w-8 h-8" />
+          {/* Internships Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 animate-pulse">
+                  <div className="h-5 bg-slate-100 rounded-md w-1/3"></div>
+                  <div className="h-7 bg-slate-200 rounded-md w-3/4"></div>
+                  <div className="h-16 bg-slate-100 rounded-md w-full"></div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-slate-100 rounded-md w-16"></div>
+                    <div className="h-6 bg-slate-100 rounded-md w-20"></div>
+                  </div>
+                </div>
+              ))}
             </div>
+          ) : filteredInternships.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredInternships.map((internship) => {
+                const deadlineFormatted = formatDeadline(internship.application_deadline);
+                const isDeadlinePassed =
+                  internship.application_deadline && currentTimestamp
+                    ? new Date(internship.application_deadline).getTime() < currentTimestamp
+                    : false;
 
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
-              {isAz ? 'Hazırda aktiv təcrübə proqramı yoxdur.' : 'No active internship programs are available at the moment.'}
-            </h3>
+                return (
+                  <div
+                    key={internship.id}
+                    id={`internship-card-${internship.slug}`}
+                    className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs hover:shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between group"
+                  >
+                    <div>
+                      {/* Top Badges */}
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-2xs uppercase tracking-wider font-semibold">
+                          {internship.category}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={`text-2xs font-medium ${
+                            internship.difficulty === 'beginner'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : internship.difficulty === 'intermediate'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : 'bg-purple-50 text-purple-700 border-purple-200'
+                          }`}
+                        >
+                          {getDifficultyLabel(internship.difficulty)}
+                        </Badge>
+                        <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-2xs flex items-center gap-1 font-medium">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          {internship.duration_weeks} {t('durationWeeks')}
+                        </Badge>
+                      </div>
 
-            <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto mb-8">
-              {isAz
-                ? 'Yeni təcrübə qrupları və tərəfdaş şirkətlərin vakansiyaları yaxın günlərdə elan olunacaq. İlk müraciət edənlərdən olmaq üçün tələbə profilinizi yaradın.'
-                : 'Upcoming internship cohorts will be announced shortly. Register your student profile today to receive immediate notifications when applications open.'}
-            </p>
+                      {/* Title */}
+                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors line-clamp-1 mb-2">
+                        {internship.title}
+                      </h3>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto gap-2 shadow-xs">
-                  {isAz ? 'Tələbə kimi qeydiyyatdan keç' : 'Register as a Student'}
-                  <ArrowRight className="w-4 h-4" />
+                      {/* Short Description */}
+                      <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                        {internship.short_description}
+                      </p>
+
+                      {/* Skills */}
+                      {internship.skills && internship.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-5">
+                          {internship.skills.slice(0, 4).map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-2xs font-medium"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {internship.skills.length > 4 && (
+                            <span className="px-2 py-0.5 rounded-md bg-slate-50 text-slate-400 text-2xs font-medium border border-slate-200">
+                              +{internship.skills.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer Info & CTA */}
+                    <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        {deadlineFormatted && (
+                          <div className={`flex items-center gap-1.5 text-xs ${isDeadlinePassed ? 'text-amber-600 font-medium' : 'text-slate-500'}`}>
+                            <Calendar className="w-3.5 h-3.5 shrink-0" />
+                            <span>
+                              {isDeadlinePassed ? t('deadlinePassed') : `${t('applicationDeadline')}: ${deadlineFormatted}`}
+                            </span>
+                          </div>
+                        )}
+                        {internship.max_students && (
+                          <div className="flex items-center gap-1.5 text-2xs text-slate-400">
+                            <Users className="w-3 h-3 shrink-0" />
+                            <span>
+                              {t('maxStudents')}: {internship.max_students}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <Link href={`/internships/${internship.slug}`}>
+                        <Button size="sm" className="w-full sm:w-auto gap-1.5 shadow-xs">
+                          <span>{t('viewDetails')}</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* Empty State */
+            <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-xl mx-auto shadow-2xs">
+              <div className="w-16 h-16 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center mx-auto mb-4 border border-slate-200">
+                <Briefcase className="w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                {searchTerm || selectedCategory !== 'all' || selectedDifficulty !== 'all'
+                  ? (isAz ? 'Axtarışa uyğun təcrübə tapılmadı.' : 'No internships match your filter criteria.')
+                  : t('emptyInternships')}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed mb-6">
+                {searchTerm || selectedCategory !== 'all' || selectedDifficulty !== 'all'
+                  ? (isAz ? 'Axtarış sözünü dəyişməyə və ya filterləri sıfırlamağa cəhd edin.' : 'Try adjusting your search keywords or resetting the active filters.')
+                  : (isAz ? 'Tezliklə yeni təcrübə proqramları əlavə ediləcəkdir.' : 'New internship programs will be opened shortly.')}
+              </p>
+              {(searchTerm || selectedCategory !== 'all' || selectedDifficulty !== 'all') && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                    setSelectedDifficulty('all');
+                  }}
+                >
+                  {t('clearFilters')}
                 </Button>
-              </Link>
-              <Link href="/how-it-works" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  {isAz ? 'Necə işləyir?' : 'How It Works'}
-                </Button>
-              </Link>
+              )}
             </div>
-
-            <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-500">
-              <BellRing className="w-4 h-4 text-emerald-600" />
-              <span>
-                {isAz
-                  ? 'Qeydiyyatdan keçmiş tələbələrə yeni təcrübələr haqqında e-poçt bildirişi göndərilir.'
-                  : 'Registered students automatically receive email alerts when new positions open.'}
-              </span>
-            </div>
-          </div>
+          )}
         </div>
       </main>
 

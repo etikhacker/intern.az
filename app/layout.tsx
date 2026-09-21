@@ -4,16 +4,16 @@ import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {
   title: 'Internship Management Platform',
-  description: 'Azerbaijan-focused internship platform foundation for students and administrators.',
+  description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured student applications, and enrollment management.',
   openGraph: {
     title: 'Internship Management Platform',
-    description: 'Azerbaijan-focused internship platform foundation for students and administrators.',
+    description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured student applications, and enrollment management.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Internship Management Platform',
-    description: 'Azerbaijan-focused internship platform foundation for students and administrators.',
+    description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured student applications, and enrollment management.',
   },
 };
 

@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { AdminStats } from '@/types/database';
+import { getPublishedInternships } from '@/lib/internships/service';
+import { getLocalApplications } from '@/lib/applications/service';
+import { getTotalActiveEnrollmentsCount, getLocalEnrollments } from '@/lib/enrollments/service';
 
 export async function getAdminStats(): Promise<AdminStats> {
   const isConfigured = isSupabaseConfigured();
@@ -9,30 +12,35 @@ export async function getAdminStats(): Promise<AdminStats> {
     const supabase = createClient();
     if (supabase) {
       try {
-        const { count, error } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('role', 'student');
+        const [
+          { count: studentCount },
+          { count: internshipCount },
+          { count: appCount },
+          { count: internCount },
+        ] = await Promise.all([
+          supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
+          supabase.from('internships').select('*', { count: 'exact', head: true }).eq('status', 'published'),
+          supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        ]);
 
-        if (!error && count !== null) {
-          return {
-            totalStudents: count,
-            activeInternships: 0,
-            pendingApplications: 0,
-            activeInterns: 0,
-            pendingSubmissions: 0,
-            completedInternships: 0,
-            pendingCertificatePayments: 0,
-            certificatesIssued: 0,
-          };
-        }
+        return {
+          totalStudents: studentCount ?? 0,
+          activeInternships: internshipCount ?? 0,
+          pendingApplications: appCount ?? 0,
+          activeInterns: internCount ?? 0,
+          pendingSubmissions: 0,
+          completedInternships: 0,
+          pendingCertificatePayments: 0,
+          certificatesIssued: 0,
+        };
       } catch (err) {
-        console.warn('Failed to fetch count from Supabase:', err);
+        console.warn('Failed to fetch admin stats from Supabase:', err);
       }
     }
   }
 
-  // Fallback count in demo mode or if Supabase query fails
+  // Fallback count in demo mode
   let studentCount = 3;
   if (typeof window !== 'undefined') {
     try {
@@ -48,11 +56,17 @@ export async function getAdminStats(): Promise<AdminStats> {
     }
   }
 
+  const published = await getPublishedInternships();
+  const applications = getLocalApplications();
+  const pendingApps = applications.filter((a) => a.status === 'pending').length;
+  const enrollments = getLocalEnrollments();
+  const activeInterns = enrollments.filter((e) => e.status === 'active').length;
+
   return {
     totalStudents: studentCount,
-    activeInternships: 0,
-    pendingApplications: 0,
-    activeInterns: 0,
+    activeInternships: published.length,
+    pendingApplications: pendingApps,
+    activeInterns: activeInterns,
     pendingSubmissions: 0,
     completedInternships: 0,
     pendingCertificatePayments: 0,

@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getAdminStats } from '@/lib/admin/stats';
-import { AdminStats, Profile } from '@/types/database';
+import { getAllApplications } from '@/lib/applications/service';
+import { AdminStats, Profile, Application } from '@/types/database';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,11 @@ import {
   Award,
   RefreshCw,
   GraduationCap,
+  Plus,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  Calendar,
 } from 'lucide-react';
 
 export default function AdminOverviewPage() {
@@ -35,14 +42,19 @@ export default function AdminOverviewPage() {
     certificatesIssued: 0,
   });
   const [students, setStudents] = useState<Profile[]>([]);
+  const [recentApplications, setRecentApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const isConfigured = isSupabaseConfigured();
 
-  const loadData = useCallback(async () => {
+  const refreshData = async () => {
     setLoading(true);
     try {
-      const fetchedStats = await getAdminStats();
+      const [fetchedStats, apps] = await Promise.all([
+        getAdminStats(),
+        getAllApplications(),
+      ]);
       setStats(fetchedStats);
+      setRecentApplications(apps.slice(0, 5));
 
       if (isConfigured) {
         const supabase = createClient();
@@ -57,14 +69,12 @@ export default function AdminOverviewPage() {
             setStudents(data as Profile[]);
           }
         }
-      } else {
-        if (typeof window !== 'undefined') {
-          const stored = localStorage.getItem('internship_az_demo_profiles');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-              setStudents(parsed.filter((p: Profile) => p.role === 'student'));
-            }
+      } else if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('internship_az_demo_profiles');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setStudents(parsed.filter((p: Profile) => p.role === 'student'));
           }
         }
       }
@@ -73,16 +83,19 @@ export default function AdminOverviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [isConfigured]);
+  };
 
   useEffect(() => {
     let isMounted = true;
-
-    async function initialFetch() {
+    async function load() {
       try {
-        const fetchedStats = await getAdminStats();
+        const [fetchedStats, apps] = await Promise.all([
+          getAdminStats(),
+          getAllApplications(),
+        ]);
         if (!isMounted) return;
         setStats(fetchedStats);
+        setRecentApplications(apps.slice(0, 5));
 
         if (isConfigured) {
           const supabase = createClient();
@@ -115,7 +128,7 @@ export default function AdminOverviewPage() {
       }
     }
 
-    initialFetch();
+    load();
 
     return () => {
       isMounted = false;
@@ -128,56 +141,49 @@ export default function AdminOverviewPage() {
       value: stats.totalStudents,
       description: 'Verilənlər bazasında aktiv tələbə profilləri',
       icon: Users,
-      color: 'emerald',
     },
     {
-      title: 'Aktiv Təcrübə Proqramları',
+      title: 'Dərc Olunmuş Təcrübələr',
       value: stats.activeInternships,
       description: 'Açıq elan olunmuş qruplar',
       icon: Briefcase,
-      color: 'slate',
     },
     {
-      title: 'Gözləyən Müraciətlər',
+      title: 'Baxılmamış Müraciətlər',
       value: stats.pendingApplications,
-      description: 'Baxılmamış namizəd anketləri',
+      description: 'Qərar gözləyən namizəd anketləri',
       icon: FileCheck2,
-      color: 'slate',
+      highlight: stats.pendingApplications > 0,
     },
     {
       title: 'Cari Təcrübəçilər',
       value: stats.activeInterns,
-      description: 'Aktiv proqramda olan tələbələr',
+      description: 'Aktiv qeydiyyatda olan tələbələr',
       icon: UserCheck,
-      color: 'slate',
     },
     {
       title: 'Yoxlanmalı Tapşırıqlar',
       value: stats.pendingSubmissions,
       description: 'Yoxlama gözləyən həllər',
       icon: UploadCloud,
-      color: 'slate',
     },
     {
       title: 'Tamamlanmış Təcrübələr',
       value: stats.completedInternships,
       description: 'Mərhələləri bitirmiş məzunlar',
       icon: FileBadge,
-      color: 'slate',
     },
     {
       title: 'Sertifikat Müraciətləri',
       value: stats.pendingCertificatePayments,
       description: 'Ödəniş və təsdiq gözləyən',
       icon: CreditCard,
-      color: 'slate',
     },
     {
       title: 'Verilmiş Sertifikatlar',
       value: stats.certificatesIssued,
       description: 'Rəsmi kodla təsdiq olunmuş',
       icon: Award,
-      color: 'slate',
     },
   ];
 
@@ -195,10 +201,16 @@ export default function AdminOverviewPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link href="/admin/internships/new">
+            <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-semibold gap-1.5 shadow-xs text-xs">
+              <Plus className="w-4 h-4" />
+              Yeni Təcrübə Yarat
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"
-            onClick={loadData}
+            onClick={refreshData}
             disabled={loading}
             className="gap-1.5 text-xs bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
           >
@@ -206,6 +218,56 @@ export default function AdminOverviewPage() {
             Yenilə
           </Button>
         </div>
+      </div>
+
+      {/* Quick Action Shortcuts */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Link href="/admin/applications" className="block">
+          <div className="bg-slate-900 border border-slate-800 hover:border-slate-700 p-4 rounded-xl flex items-center justify-between transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+                <FileCheck2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Müraciətlərə Bax</h4>
+                <p className="text-xs text-slate-400">
+                  {stats.pendingApplications} gözləmədə olan anket
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+          </div>
+        </Link>
+
+        <Link href="/admin/internships" className="block">
+          <div className="bg-slate-900 border border-slate-800 hover:border-slate-700 p-4 rounded-xl flex items-center justify-between transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+                <Briefcase className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Təcrübə Proqramları</h4>
+                <p className="text-xs text-slate-400">Vakansiyaları və qrupları idarə et</p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+          </div>
+        </Link>
+
+        <Link href="/admin/internships/new" className="block">
+          <div className="bg-slate-900 border border-slate-800 hover:border-slate-700 p-4 rounded-xl flex items-center justify-between transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                <Plus className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Yeni Vakansiya Yarat</h4>
+                <p className="text-xs text-slate-400">Yeni təcrübəçi qrupu aç</p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+          </div>
+        </Link>
       </div>
 
       {/* 8 Statistics Cards Grid */}
@@ -222,13 +284,15 @@ export default function AdminOverviewPage() {
             return (
               <Card
                 key={card.title}
-                className="bg-slate-900/90 text-white border border-slate-800 shadow-2xs"
+                className={`bg-slate-900/90 text-white border shadow-2xs ${
+                  card.highlight ? 'border-amber-500/50 bg-amber-500/5' : 'border-slate-800'
+                }`}
               >
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
                   <span className="text-xs font-medium text-slate-300">
                     {card.title}
                   </span>
-                  <div className="p-2 rounded-lg bg-slate-800 text-amber-400">
+                  <div className={`p-2 rounded-lg ${card.highlight ? 'bg-amber-400 text-slate-950 font-bold' : 'bg-slate-800 text-amber-400'}`}>
                     <Icon className="w-4 h-4" />
                   </div>
                 </CardHeader>
@@ -245,6 +309,83 @@ export default function AdminOverviewPage() {
           })}
         </div>
       </div>
+
+      {/* Recent Applications Section */}
+      <Card className="bg-slate-900 border-slate-800 text-white">
+        <CardHeader className="border-b border-slate-800 pb-4 flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base text-white flex items-center gap-2">
+              <FileCheck2 className="w-4 h-4 text-amber-400" />
+              Son Müraciətlər
+            </CardTitle>
+            <CardDescription className="text-xs text-slate-400 mt-0.5">
+              Qəbul və ya imtina üçün daxil olan ən son müraciətlər
+            </CardDescription>
+          </div>
+          <Link href="/admin/applications">
+            <Button variant="ghost" size="sm" className="text-xs text-amber-400 hover:text-amber-300 gap-1">
+              Bütün müraciətlər
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {recentApplications.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 text-xs">
+              Hələlik heç bir müraciət daxil olmayıb.
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-800">
+              {recentApplications.map((app) => (
+                <div
+                  key={app.id}
+                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-800/30 transition-colors"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-white text-sm">
+                        {app.student?.full_name}
+                      </span>
+                      <span className="text-2xs text-slate-400 font-mono">
+                        ({app.student?.email})
+                      </span>
+                    </div>
+                    <p className="text-xs text-amber-400">
+                      {app.internship?.title}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className={`text-2xs font-semibold ${
+                        app.status === 'accepted'
+                          ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10'
+                          : app.status === 'rejected'
+                          ? 'border-rose-500 text-rose-400 bg-rose-500/10'
+                          : 'border-amber-500 text-amber-400 bg-amber-500/10'
+                      }`}
+                    >
+                      {app.status === 'pending'
+                        ? 'Gözləmədə'
+                        : app.status === 'accepted'
+                        ? 'Qəbul edildi'
+                        : app.status === 'rejected'
+                        ? 'Rədd edildi'
+                        : 'Geri çəkildi'}
+                    </Badge>
+                    <Link href={`/admin/applications/${app.id}`}>
+                      <Button size="sm" variant="outline" className="h-7 text-xs border-slate-700 text-slate-300 hover:text-white">
+                        İcmal et
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Registered Students Table */}
       <Card className="bg-slate-900 border-slate-800 text-white">
