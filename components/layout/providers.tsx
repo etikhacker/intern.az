@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { AuthProvider } from '@/lib/auth/auth-context';
-import { ConfigBanner } from '@/components/ui/config-banner';
+import { LanguageProvider } from '@/lib/i18n/language-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <ConfigBanner />
-      {children}
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </LanguageProvider>
   );
 }

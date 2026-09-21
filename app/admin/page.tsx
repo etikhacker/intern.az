@@ -20,16 +20,10 @@ import {
   CreditCard,
   Award,
   RefreshCw,
-  ShieldAlert,
-  Database,
-  Calendar,
   GraduationCap,
-  Sparkles,
-  Info,
 } from 'lucide-react';
 
 export default function AdminOverviewPage() {
-  const { profile } = useAuth();
   const [stats, setStats] = useState<AdminStats>({
     totalStudents: 0,
     activeInternships: 0,
@@ -47,11 +41,9 @@ export default function AdminOverviewPage() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      // 1. Fetch Stats
       const fetchedStats = await getAdminStats();
       setStats(fetchedStats);
 
-      // 2. Fetch Students List
       if (isConfigured) {
         const supabase = createClient();
         if (supabase) {
@@ -66,7 +58,6 @@ export default function AdminOverviewPage() {
           }
         }
       } else {
-        // Demo fallback students
         if (typeof window !== 'undefined') {
           const stored = localStorage.getItem('internship_az_demo_profiles');
           if (stored) {
@@ -133,68 +124,60 @@ export default function AdminOverviewPage() {
 
   const statCards = [
     {
-      title: 'Total Students',
+      title: 'Qeydiyyatdan Keçmiş Tələbələr',
       value: stats.totalStudents,
-      description: 'Retrieved live from PostgreSQL profiles table',
+      description: 'Verilənlər bazasında aktiv tələbə profilləri',
       icon: Users,
       color: 'emerald',
-      isLive: true,
     },
     {
-      title: 'Active Internships',
+      title: 'Aktiv Təcrübə Proqramları',
       value: stats.activeInternships,
-      description: 'Coming in Phase 2 (Cohort tracks)',
+      description: 'Açıq elan olunmuş qruplar',
       icon: Briefcase,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Pending Applications',
+      title: 'Gözləyən Müraciətlər',
       value: stats.pendingApplications,
-      description: 'Coming in Phase 2 (Student reviews)',
+      description: 'Baxılmamış namizəd anketləri',
       icon: FileCheck2,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Active Interns',
+      title: 'Cari Təcrübəçilər',
       value: stats.activeInterns,
-      description: 'Coming in Phase 3 (Enrolled students)',
+      description: 'Aktiv proqramda olan tələbələr',
       icon: UserCheck,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Pending Submissions',
+      title: 'Yoxlanmalı Tapşırıqlar',
       value: stats.pendingSubmissions,
-      description: 'Coming in Phase 3 (Task reviews)',
+      description: 'Yoxlama gözləyən həllər',
       icon: UploadCloud,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Completed Internships',
+      title: 'Tamamlanmış Təcrübələr',
       value: stats.completedInternships,
-      description: 'Coming in Phase 4 (Final project completions)',
+      description: 'Mərhələləri bitirmiş məzunlar',
       icon: FileBadge,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Pending Certificate Payments',
+      title: 'Sertifikat Müraciətləri',
       value: stats.pendingCertificatePayments,
-      description: 'Coming in Phase 4 (Manual bank transfer receipts)',
+      description: 'Ödəniş və təsdiq gözləyən',
       icon: CreditCard,
       color: 'slate',
-      isLive: false,
     },
     {
-      title: 'Certificates Issued',
+      title: 'Verilmiş Sertifikatlar',
       value: stats.certificatesIssued,
-      description: 'Coming in Phase 4 (Approved credentials)',
+      description: 'Rəsmi kodla təsdiq olunmuş',
       icon: Award,
       color: 'slate',
-      isLive: false,
     },
   ];
 
@@ -203,16 +186,11 @@ export default function AdminOverviewPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Administrator Overview
-            </h1>
-            <Badge variant="admin" className="text-xs bg-amber-400/20 text-amber-300 border-amber-400/40">
-              Phase 1
-            </Badge>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Platform governance and synchronized student metrics for Azerbaijan internship cohorts.
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            İnzibatçı Paneli
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Platforma idarəetməsi, tələbə qeydiyyatları və təcrübə proqramları göstəriciləri.
           </p>
         </div>
 
@@ -225,7 +203,7 @@ export default function AdminOverviewPage() {
             className="gap-1.5 text-xs bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Refresh Data
+            Yenilə
           </Button>
         </div>
       </div>
@@ -234,11 +212,8 @@ export default function AdminOverviewPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Platform Metrics
+            Sistem Göstəriciləri
           </h2>
-          <span className="text-[11px] text-slate-500">
-            Phase 1: Total Students active • Other metrics reserved for future phases
-          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -247,40 +222,19 @@ export default function AdminOverviewPage() {
             return (
               <Card
                 key={card.title}
-                className={`bg-slate-900/90 text-white border transition-all ${
-                  card.isLive
-                    ? 'border-emerald-500/60 shadow-lg shadow-emerald-950/30'
-                    : 'border-slate-800/80 opacity-80'
-                }`}
+                className="bg-slate-900/90 text-white border border-slate-800 shadow-2xs"
               >
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
                   <span className="text-xs font-medium text-slate-300">
                     {card.title}
                   </span>
-                  <div
-                    className={`p-2 rounded-lg ${
-                      card.isLive
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-slate-800 text-slate-500'
-                    }`}
-                  >
+                  <div className="p-2 rounded-lg bg-slate-800 text-amber-400">
                     <Icon className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent className="p-4 pt-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                      {card.value}
-                    </span>
-                    {card.isLive ? (
-                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">
-                        Database Synchronized
-                      </span>
-                    ) : (
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wide">
-                        Phase 2+
-                      </span>
-                    )}
+                  <div className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                    {card.value}
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1 leading-snug">
                     {card.description}
@@ -292,21 +246,21 @@ export default function AdminOverviewPage() {
         </div>
       </div>
 
-      {/* Registered Students Table (Phase 1 Inspection) */}
+      {/* Registered Students Table */}
       <Card className="bg-slate-900 border-slate-800 text-white">
         <CardHeader className="border-b border-slate-800 pb-4">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base text-white flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-400" />
-                Registered Students Directory
+                <Users className="w-4 h-4 text-amber-400" />
+                Qeydiyyatdan Keçmiş Tələbələr
               </CardTitle>
               <CardDescription className="text-xs text-slate-400 mt-0.5">
-                Students registered across universities in Azerbaijan currently in database
+                Universitetlər üzrə qeydiyyatdan keçmiş tələbələrin siyahısı
               </CardDescription>
             </div>
-            <Badge variant="default" className="bg-emerald-950/60 text-emerald-300 border border-emerald-800">
-              {students.length} Total Registered
+            <Badge variant="default" className="bg-amber-400/20 text-amber-300 border-amber-400/30">
+              {students.length} Tələbə
             </Badge>
           </div>
         </CardHeader>
@@ -314,17 +268,17 @@ export default function AdminOverviewPage() {
         <CardContent className="p-0 overflow-x-auto">
           {students.length === 0 ? (
             <div className="p-8 text-center text-slate-500 text-xs">
-              No registered students found yet. Register a student via /register to see them populate here!
+              Hələlik qeydiyyatdan keçmiş tələbə tapılmadı.
             </div>
           ) : (
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950 text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-800">
                 <tr>
-                  <th className="px-6 py-3 font-semibold">Student Name</th>
-                  <th className="px-6 py-3 font-semibold">University</th>
-                  <th className="px-6 py-3 font-semibold">Email</th>
-                  <th className="px-6 py-3 font-semibold">Role</th>
-                  <th className="px-6 py-3 font-semibold">Registered</th>
+                  <th className="px-6 py-3 font-semibold">Tələbə</th>
+                  <th className="px-6 py-3 font-semibold">Universitet</th>
+                  <th className="px-6 py-3 font-semibold">E-poçt</th>
+                  <th className="px-6 py-3 font-semibold">Rol</th>
+                  <th className="px-6 py-3 font-semibold">Tarix</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -343,8 +297,8 @@ export default function AdminOverviewPage() {
                     </td>
                     <td className="px-6 py-3.5">
                       <div className="flex items-center gap-1.5 text-slate-300">
-                        <GraduationCap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>{student.university || 'Not Specified'}</span>
+                        <GraduationCap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span>{student.university || 'Qeyd olunmayıb'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-3.5 font-mono text-slate-400 text-[11px]">
@@ -356,42 +310,13 @@ export default function AdminOverviewPage() {
                       </Badge>
                     </td>
                     <td className="px-6 py-3.5 text-slate-400 text-[11px]">
-                      {student.created_at ? new Date(student.created_at).toLocaleDateString('en-US') : 'N/A'}
+                      {student.created_at ? new Date(student.created_at).toLocaleDateString('az-AZ') : '—'}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Security & Admin Management Guide Card */}
-      <Card className="bg-slate-900/60 border-slate-800 text-slate-300">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-amber-400" />
-            <CardTitle className="text-sm text-white">
-              First Admin Account Creation & Security Protocol
-            </CardTitle>
-          </div>
-          <CardDescription className="text-xs text-slate-400">
-            Per architectural guidelines, administrative access is strictly managed server-side and never granted through public web signup forms.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-xs">
-          <p className="text-slate-400 leading-relaxed">
-            To create or promote an administrator in your live Supabase database:
-          </p>
-          <div className="bg-slate-950 p-3 rounded-lg font-mono text-amber-300 text-[11px] overflow-x-auto border border-slate-800">
-            <pre>{`-- Run in Supabase Dashboard SQL Editor to grant admin role:
-UPDATE public.profiles
-SET role = 'admin'
-WHERE email = 'your-admin-email@domain.com';`}</pre>
-          </div>
-          <p className="text-[11px] text-slate-500">
-            The Supabase Row Level Security policies automatically recognize this change and grant access to the admin console upon next session refresh.
-          </p>
         </CardContent>
       </Card>
     </div>

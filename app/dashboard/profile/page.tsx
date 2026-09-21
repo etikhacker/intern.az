@@ -15,13 +15,11 @@ import {
   User,
   Phone,
   GraduationCap,
-  Image as ImageIcon,
   Lock,
   CheckCircle2,
   Loader2,
   ShieldCheck,
   Calendar,
-  Key,
 } from 'lucide-react';
 
 interface ProfileFormProps {
@@ -90,27 +88,24 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
       });
 
       if (!res.success) {
-        setServerError(res.error || 'Failed to update profile.');
+        setServerError(res.error || 'Profil məlumatları yenilənərkən xəta baş verdi.');
       } else {
-        setSuccessMessage('Your profile details have been saved successfully.');
+        setSuccessMessage('Profil məlumatlarınız uğurla yadda saxlanıldı.');
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'An error occurred during update';
-      setServerError(msg);
+    } catch {
+      setServerError('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formattedDate = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString('en-US', {
+    ? new Date(profile.created_at).toLocaleDateString('az-AZ', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
       })
-    : 'N/A';
+    : '—';
 
   return (
     <div className="space-y-6">
@@ -129,7 +124,7 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column: Avatar Preview & Account Info */}
-        <Card className="border-slate-200 shadow-sm h-fit">
+        <Card className="border-slate-200 shadow-2xs h-fit">
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-3">
               <Avatar
@@ -140,30 +135,28 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
               />
             </div>
             <CardTitle className="text-base text-slate-900 truncate">
-              {formData.fullName || profile?.full_name || 'Student Name'}
+              {formData.fullName || profile?.full_name || 'Tələbə'}
             </CardTitle>
             <CardDescription className="text-xs truncate">
               {profile?.email || user?.email}
             </CardDescription>
             <div className="pt-2 flex justify-center">
               <Badge variant="default" className="text-xs capitalize">
-                {profile?.role || 'student'}
+                Tələbə
               </Badge>
             </div>
           </CardHeader>
 
           <CardContent className="pt-4 border-t border-slate-100 space-y-3 text-xs">
             <div className="flex items-center justify-between text-slate-600">
-              <span className="text-slate-400">Security:</span>
-              <span className="font-semibold text-emerald-700">Row Level Security</span>
+              <span className="text-slate-400">Hesab statusu:</span>
+              <span className="font-semibold text-emerald-700">Təsdiqlənmiş</span>
             </div>
             <div className="flex items-center justify-between text-slate-600">
-              <span className="text-slate-400">Database:</span>
-              <span className="font-semibold text-slate-800">PostgreSQL</span>
-            </div>
-            <div className="flex items-center justify-between text-slate-600">
-              <span className="text-slate-400">Tier:</span>
-              <span className="font-semibold text-slate-800">100% Free Plan</span>
+              <span className="text-slate-400">Təşkilat:</span>
+              <span className="font-semibold text-slate-800">
+                {profile?.university || '—'}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -171,14 +164,14 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
         {/* Right 2 Columns: Editable & Protected Fields */}
         <div className="md:col-span-2 space-y-6">
           {/* Editable Fields Form */}
-          <Card className="border-slate-200 shadow-sm">
+          <Card className="border-slate-200 shadow-2xs">
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
                 <User className="w-4 h-4 text-emerald-600" />
-                Editable Information
+                Şəxsi Məlumatlar
               </CardTitle>
               <CardDescription className="text-xs">
-                You can update your name, phone number, university, and avatar image.
+                Ad, universitet və əlaqə məlumatlarınızı yeniləyin.
               </CardDescription>
             </CardHeader>
 
@@ -186,19 +179,20 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
               <CardContent className="pt-6 space-y-4">
                 {/* Full Name */}
                 <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <div className="relative">
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      type="text"
-                      placeholder="e.g. Leyla Mammadova"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
+                  <Label htmlFor="fullName" className="text-xs font-semibold text-slate-700">
+                    Ad və Soyad
+                  </Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    placeholder="məs. Leyla Məmmədova"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                    className="mt-1"
+                    required
+                  />
                   {errors.fullName && (
                     <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>
                   )}
@@ -206,18 +200,19 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
 
                 {/* University */}
                 <div>
-                  <Label htmlFor="university">University Institution</Label>
-                  <div className="relative">
-                    <Input
-                      id="university"
-                      name="university"
-                      type="text"
-                      placeholder="e.g. ADA University, Baku State University (BSU), ASOIU"
-                      value={formData.university || ''}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                    />
-                  </div>
+                  <Label htmlFor="university" className="text-xs font-semibold text-slate-700">
+                    Universitet / Ali Təhsil Müəssisəsi
+                  </Label>
+                  <Input
+                    id="university"
+                    name="university"
+                    type="text"
+                    placeholder="məs. ADA Universiteti, BDU, ADNSU, BMU"
+                    value={formData.university || ''}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                    className="mt-1"
+                  />
                   {errors.university && (
                     <p className="text-xs text-red-600 mt-1">{errors.university}</p>
                   )}
@@ -225,18 +220,19 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
 
                 {/* Phone */}
                 <div>
-                  <Label htmlFor="phone">Phone Number (Optional)</Label>
-                  <div className="relative">
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+994 50 123 45 67"
-                      value={formData.phone || ''}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                    />
-                  </div>
+                  <Label htmlFor="phone" className="text-xs font-semibold text-slate-700">
+                    Əlaqə Nömrəsi (İstəyə bağlı)
+                  </Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+994 50 123 45 67"
+                    value={formData.phone || ''}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                    className="mt-1"
+                  />
                   {errors.phone && (
                     <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
                   )}
@@ -244,21 +240,19 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
 
                 {/* Avatar URL */}
                 <div>
-                  <Label htmlFor="avatarUrl">Avatar Image URL (Optional)</Label>
-                  <div className="relative">
-                    <Input
-                      id="avatarUrl"
-                      name="avatarUrl"
-                      type="url"
-                      placeholder="https://picsum.photos/seed/student/200/200"
-                      value={formData.avatarUrl || ''}
-                      onChange={handleChange}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Provide a public image URL or use a placeholder like https://picsum.photos/seed/student/200/200
-                  </p>
+                  <Label htmlFor="avatarUrl" className="text-xs font-semibold text-slate-700">
+                    Profil Şəkli Linki (İstəyə bağlı)
+                  </Label>
+                  <Input
+                    id="avatarUrl"
+                    name="avatarUrl"
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={formData.avatarUrl || ''}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                    className="mt-1"
+                  />
                   {errors.avatarUrl && (
                     <p className="text-xs text-red-600 mt-1">{errors.avatarUrl}</p>
                   )}
@@ -266,24 +260,24 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
               </CardContent>
 
               <CardFooter className="bg-slate-50/60 border-t border-slate-100 flex items-center justify-between py-4">
-                <span className="text-xs text-slate-500">
-                  Validated with Zod schema
+                <span className="text-xs text-slate-400">
+                  Dəyişikliklər profilinizdə saxlanılır
                 </span>
                 <Button
                   type="submit"
                   id="save-profile-btn"
                   disabled={isSubmitting}
-                  className="gap-2"
+                  className="gap-2 shadow-xs"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving changes...
+                      Yadda saxlanılır...
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Save Profile Changes
+                      Dəyişiklikləri saxla
                     </>
                   )}
                 </Button>
@@ -291,74 +285,41 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
             </form>
           </Card>
 
-          {/* Protected / Read-Only Fields Card */}
-          <Card className="border-slate-200/80 bg-slate-50/50 shadow-xs">
+          {/* Account Details Card */}
+          <Card className="border-slate-200/80 bg-slate-50/50 shadow-2xs">
             <CardHeader className="pb-3 border-b border-slate-200/60">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-slate-600" />
                 <CardTitle className="text-sm text-slate-800">
-                  Security-Protected Fields (Read-Only)
+                  Hesab Parametrləri
                 </CardTitle>
               </div>
-              <CardDescription className="text-xs text-slate-500">
-                To prevent privilege escalation and unauthorized modifications, these values are guarded on both database and server tiers.
-              </CardDescription>
             </CardHeader>
 
             <CardContent className="pt-4 space-y-3 text-xs">
-              {/* Email */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200/70 gap-1">
                 <div>
-                  <span className="font-semibold text-slate-700 block">Account Email:</span>
+                  <span className="font-semibold text-slate-700 block">Qeydiyyat E-poçtu:</span>
                   <span className="text-slate-500 font-mono text-[11px]">
-                    {profile?.email || user?.email || 'N/A'}
+                    {profile?.email || user?.email || '—'}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[11px] text-slate-400">
                   <Lock className="w-3 h-3 text-slate-400" />
-                  <span>Immutable in Phase 1</span>
+                  <span>Qorunur</span>
                 </div>
               </div>
 
-              {/* Role */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200/70 gap-1">
                 <div>
-                  <span className="font-semibold text-slate-700 block">Account Role:</span>
-                  <span className="text-slate-500 capitalize font-medium">
-                    {profile?.role || 'student'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-[11px] text-amber-600">
-                  <Lock className="w-3 h-3 text-amber-600" />
-                  <span>Protected (Cannot be changed by student)</span>
-                </div>
-              </div>
-
-              {/* User ID */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200/70 gap-1">
-                <div>
-                  <span className="font-semibold text-slate-700 block">Supabase Auth User ID:</span>
-                  <span className="text-slate-500 font-mono text-[11px] break-all">
-                    {profile?.user_id || user?.id || 'N/A'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                  <Key className="w-3 h-3 text-slate-400" />
-                  <span>Primary Key Reference</span>
-                </div>
-              </div>
-
-              {/* Account Created At */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-lg bg-white border border-slate-200/70 gap-1">
-                <div>
-                  <span className="font-semibold text-slate-700 block">Account Creation Timestamp:</span>
+                  <span className="font-semibold text-slate-700 block">Qeydiyyat Tarixi:</span>
                   <span className="text-slate-500 font-mono text-[11px]">
                     {formattedDate}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[11px] text-slate-400">
                   <Calendar className="w-3 h-3 text-slate-400" />
-                  <span>Immutable Timestamp</span>
+                  <span>Təsdiqlənib</span>
                 </div>
               </div>
             </CardContent>
@@ -376,10 +337,10 @@ export default function ProfilePage() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-          Student Profile Settings
+          Tələbə Profili
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Manage your personal university and contact information. Immutable and role security parameters are strictly protected.
+          Universitet və şəxsi əlaqə məlumatlarınızı idarə edin.
         </p>
       </div>
 

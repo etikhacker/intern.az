@@ -10,13 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { GraduationCap, ArrowRight, Loader2, ShieldCheck, UserCheck } from 'lucide-react';
+import { GraduationCap, ArrowRight, Loader2 } from 'lucide-react';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get('redirect') || '/dashboard';
-  const { signIn, isConfigured } = useAuth();
+  const { signIn } = useAuth();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -65,7 +65,7 @@ function LoginForm() {
       });
 
       if (!res.success) {
-        setServerError(res.error || 'Invalid login credentials');
+        setServerError(res.error || 'İstifadəçi adı və ya şifrə yanlışdır');
         setIsSubmitting(false);
         return;
       }
@@ -75,27 +75,18 @@ function LoginForm() {
       } else {
         router.push(redirectPath.startsWith('/dashboard') ? redirectPath : '/dashboard');
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'An unexpected error occurred during login';
-      setServerError(msg);
+    } catch {
+      setServerError('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
       setIsSubmitting(false);
     }
   };
 
-  const fillDemoStudent = () => {
-    setFormData({
-      email: 'leyla.m@ada.edu.az',
-      password: 'password123',
-    });
-    setServerError(null);
-  };
-
   return (
-    <Card className="border-slate-200 shadow-md">
+    <Card className="border-slate-200 shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg">Sign In</CardTitle>
-        <CardDescription className="text-xs">
-          Enter your email and password to access your student dashboard.
+        <CardTitle className="text-lg text-slate-900 font-bold">Hesaba Daxil Ol</CardTitle>
+        <CardDescription className="text-xs text-slate-500">
+          Tələbə kabinetinizə daxil olmaq üçün e-poçt və şifrənizi daxil edin.
         </CardDescription>
       </CardHeader>
 
@@ -108,15 +99,18 @@ function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-700">
+              E-poçt ünvanı
+            </Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="student@ada.edu.az"
+              placeholder="telebe@universitet.edu.az"
               value={formData.email}
               onChange={handleChange}
               disabled={isSubmitting}
+              className="mt-1"
               required
             />
             {errors.email && (
@@ -126,7 +120,9 @@ function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-xs font-semibold text-slate-700">
+                Şifrə
+              </Label>
             </div>
             <Input
               id="password"
@@ -146,49 +142,29 @@ function LoginForm() {
           <Button
             type="submit"
             id="login-submit-btn"
-            className="w-full mt-2 gap-2"
+            className="w-full mt-2 gap-2 shadow-xs"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Signing in...
+                Daxil olunur...
               </>
             ) : (
               <>
-                Sign In to Dashboard
+                Daxil ol
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </Button>
         </form>
-
-        {!isConfigured && (
-          <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-            <button
-              type="button"
-              onClick={fillDemoStudent}
-              className="text-[11px] text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-md font-medium inline-flex items-center gap-1.5 transition-colors"
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              Quick Fill Demo Student (Leyla Mammadova)
-            </button>
-          </div>
-        )}
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 pt-0 text-center text-xs text-slate-500 border-t border-slate-100 mt-4 p-4">
         <div>
-          Don&apos;t have an account yet?{' '}
+          Hesabınız yoxdur?{' '}
           <Link href="/register" className="text-emerald-600 font-semibold hover:underline">
-            Register as a Student
-          </Link>
-        </div>
-        <div className="pt-1 flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-          <span>Platform Administrator?</span>{' '}
-          <Link href="/admin/login" className="text-amber-800 font-semibold hover:underline">
-            Admin Sign In
+            Tələbə kimi qeydiyyatdan keçin
           </Link>
         </div>
       </CardFooter>
@@ -203,7 +179,7 @@ export default function LoginPage() {
         {/* Brand Header */}
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2.5 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
               <GraduationCap className="w-5 h-5" />
             </div>
             <span className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -211,18 +187,18 @@ export default function LoginPage() {
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Student Portal Sign In
+            Tələbə Girişi
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Access your internship applications, assigned tasks, and verified profile
+            Təcrübə müraciətlərinizə və tapşırıqlarınıza baxın
           </p>
         </div>
 
         <Suspense
           fallback={
-            <Card className="border-slate-200 shadow-md p-12 text-center text-xs text-slate-500">
+            <Card className="border-slate-200 shadow-sm p-12 text-center text-xs text-slate-500">
               <Loader2 className="w-6 h-6 animate-spin mx-auto text-emerald-600 mb-2" />
-              Loading login portal...
+              Giriş səhifəsi yüklənir...
             </Card>
           }
         >

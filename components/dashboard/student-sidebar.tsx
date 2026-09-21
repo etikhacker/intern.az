@@ -18,7 +18,6 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  Sparkles,
   Menu,
   X,
   GraduationCap,
@@ -30,52 +29,40 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ElementType;
-  isFunctional?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, isFunctional: true },
-  { name: 'Browse Internships', href: '/dashboard/browse', icon: Search },
-  { name: 'My Applications', href: '/dashboard/applications', icon: FileText },
-  { name: 'My Internship', href: '/dashboard/internship', icon: Briefcase },
-  { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
-  { name: 'Submissions', href: '/dashboard/submissions', icon: UploadCloud },
-  { name: 'Certificate', href: '/dashboard/certificate', icon: Award },
-  { name: 'Notifications', href: '/dashboard/notifications', icon: Bell },
-  { name: 'Profile', href: '/dashboard/profile', icon: User, isFunctional: true },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Təcrübələr', href: '/dashboard/internships', icon: Search },
+  { name: 'Müraciətlərim', href: '/dashboard/applications', icon: FileText },
+  { name: 'Mənim təcrübəm', href: '/dashboard/internship', icon: Briefcase },
+  { name: 'Tapşırıqlar', href: '/dashboard/tasks', icon: CheckSquare },
+  { name: 'Təqdimatlar', href: '/dashboard/submissions', icon: UploadCloud },
+  { name: 'Sertifikat', href: '/dashboard/certificate', icon: Award },
+  { name: 'Bildirişlər', href: '/dashboard/notifications', icon: Bell },
+  { name: 'Profil', href: '/dashboard/profile', icon: User },
+  { name: 'Parametrlər', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function StudentSidebar() {
   const pathname = usePathname();
-  const { profile, user, signOut } = useAuth();
+  const { profile, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [comingSoonModal, setComingSoonModal] = useState<string | null>(null);
-
-  const handleNavClick = (e: React.MouseEvent, item: NavItem) => {
-    if (!item.isFunctional) {
-      e.preventDefault();
-      setComingSoonModal(item.name);
-      setMobileOpen(false);
-    } else {
-      setMobileOpen(false);
-    }
-  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white border-r border-slate-200">
       {/* Brand Header */}
       <div className="p-5 border-b border-slate-100 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-xs">
             <GraduationCap className="w-4 h-4" />
           </div>
           <div>
             <span className="font-bold text-slate-900 text-base leading-tight block">
               Intern<span className="text-emerald-600">.az</span>
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">
-              Student Portal
+            <span className="text-[10px] text-slate-500 font-medium">
+              Tələbə Portalı
             </span>
           </div>
         </Link>
@@ -88,7 +75,7 @@ export function StudentSidebar() {
       </div>
 
       {/* User Info Capsule */}
-      <div className="p-4 mx-3 my-3 rounded-xl bg-slate-50 border border-slate-100/80">
+      <div className="p-3.5 mx-3 my-3 rounded-xl bg-slate-50 border border-slate-100">
         <div className="flex items-center gap-3">
           <Avatar
             src={profile?.avatar_url}
@@ -97,14 +84,14 @@ export function StudentSidebar() {
           />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-slate-900 truncate">
-              {profile?.full_name || 'Student'}
+              {profile?.full_name || 'Tələbə'}
             </p>
             <p className="text-[11px] text-slate-500 truncate">
-              {profile?.university || 'University Student'}
+              {profile?.university || 'Universitet'}
             </p>
             <div className="mt-1 flex items-center gap-1.5">
               <Badge variant="default" className="text-[9px] py-0 px-1.5">
-                {profile?.role || 'student'}
+                Tələbə
               </Badge>
             </div>
           </div>
@@ -114,20 +101,20 @@ export function StudentSidebar() {
       {/* Navigation List */}
       <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          Internship Journey
+          Tələbə Menyu
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
-              onClick={(e) => handleNavClick(e, item)}
+              onClick={() => setMobileOpen(false)}
               className={cn(
                 'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group',
                 isActive
-                  ? 'bg-emerald-50 text-emerald-900 font-semibold shadow-xs'
+                  ? 'bg-emerald-50 text-emerald-900 font-semibold shadow-2xs'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               )}
             >
@@ -142,13 +129,7 @@ export function StudentSidebar() {
                 />
                 <span>{item.name}</span>
               </div>
-              {!item.isFunctional ? (
-                <span className="text-[9px] text-slate-400 bg-slate-100 group-hover:bg-slate-200 px-1.5 py-0.5 rounded font-normal">
-                  Phase 2+
-                </span>
-              ) : (
-                isActive && <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />
-              )}
+              {isActive && <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />}
             </Link>
           );
         })}
@@ -161,7 +142,7 @@ export function StudentSidebar() {
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          <span>Sign Out</span>
+          <span>Hesabdan çıx</span>
         </button>
       </div>
     </div>
@@ -187,7 +168,7 @@ export function StudentSidebar() {
       </div>
 
       {/* Desktop static sidebar */}
-      <aside className="hidden md:block w-64 shrink-0 h-[calc(100vh-36px)] sticky top-[36px]">
+      <aside className="hidden md:block w-64 shrink-0 h-screen sticky top-0">
         {sidebarContent}
       </aside>
 
@@ -195,34 +176,11 @@ export function StudentSidebar() {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
           <div
-            className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs"
+            className="fixed inset-0 bg-slate-950/50 backdrop-blur-2xs"
             onClick={() => setMobileOpen(false)}
           />
           <div className="relative w-64 max-w-full h-full bg-white shadow-xl z-10">
             {sidebarContent}
-          </div>
-        </div>
-      )}
-
-      {/* Coming Soon Modal */}
-      {comingSoonModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 text-center">
-            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">
-              {comingSoonModal}
-            </h3>
-            <p className="text-sm text-slate-500 mb-5 leading-relaxed">
-              Coming in a future phase. Phase 1 provides the core foundation (Student Registration, Authentication, Profile Management, and Admin Verification).
-            </p>
-            <button
-              onClick={() => setComingSoonModal(null)}
-              className="w-full py-2 px-4 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
-            >
-              Understood
-            </button>
           </div>
         </div>
       )}
