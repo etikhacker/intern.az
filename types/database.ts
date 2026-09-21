@@ -95,3 +95,52 @@ export interface AdminStats {
   certificatesIssued: number;
 }
 
+export type TaskDifficulty = 'beginner' | 'intermediate' | 'advanced';
+export type TaskSubmissionType = 'text' | 'link' | 'file' | 'github' | 'multiple';
+export type TaskStatus = 'draft' | 'published' | 'archived';
+
+export interface InternshipTask {
+  id: string;
+  internship_id: string;
+  title: string;
+  description: string;
+  instructions: string;
+  week_number: number;
+  task_number: number;
+  difficulty: TaskDifficulty;
+  submission_type: TaskSubmissionType;
+  deadline: string | null;
+  is_required: boolean;
+  status: TaskStatus;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  internship?: Internship;
+}
+
+export type SubmissionStatus = 'pending' | 'revision_requested' | 'approved' | 'rejected';
+
+export interface TaskSubmission {
+  id: string;
+  task_id: string;
+  student_id: string;
+  enrollment_id: string;
+  text_answer: string | null;
+  submission_url: string | null;
+  github_url: string | null;
+  file_path: string | null;
+  file_name?: string | null;
+  comment: string | null;
+  status: SubmissionStatus;
+  admin_feedback: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  submitted_at: string;
+  updated_at: string;
+  // Relational joins
+  task?: InternshipTask;
+  student?: Profile;
+  enrollment?: Enrollment;
+  reviewer?: Profile;
+}
+

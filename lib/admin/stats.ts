@@ -4,6 +4,7 @@ import { AdminStats } from '@/types/database';
 import { getPublishedInternships } from '@/lib/internships/service';
 import { getLocalApplications } from '@/lib/applications/service';
 import { getTotalActiveEnrollmentsCount, getLocalEnrollments } from '@/lib/enrollments/service';
+import { getLocalSubmissions } from '@/lib/submissions/service';
 
 export async function getAdminStats(): Promise<AdminStats> {
   const isConfigured = isSupabaseConfigured();
@@ -17,11 +18,13 @@ export async function getAdminStats(): Promise<AdminStats> {
           { count: internshipCount },
           { count: appCount },
           { count: internCount },
+          { count: pendingSubCount },
         ] = await Promise.all([
           supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
           supabase.from('internships').select('*', { count: 'exact', head: true }).eq('status', 'published'),
           supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
           supabase.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+          supabase.from('task_submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         ]);
 
         return {
@@ -29,7 +32,7 @@ export async function getAdminStats(): Promise<AdminStats> {
           activeInternships: internshipCount ?? 0,
           pendingApplications: appCount ?? 0,
           activeInterns: internCount ?? 0,
-          pendingSubmissions: 0,
+          pendingSubmissions: pendingSubCount ?? 0,
           completedInternships: 0,
           pendingCertificatePayments: 0,
           certificatesIssued: 0,
@@ -61,13 +64,15 @@ export async function getAdminStats(): Promise<AdminStats> {
   const pendingApps = applications.filter((a) => a.status === 'pending').length;
   const enrollments = getLocalEnrollments();
   const activeInterns = enrollments.filter((e) => e.status === 'active').length;
+  const submissions = getLocalSubmissions();
+  const pendingSubs = submissions.filter((s) => s.status === 'pending').length;
 
   return {
     totalStudents: studentCount,
     activeInternships: published.length,
     pendingApplications: pendingApps,
     activeInterns: activeInterns,
-    pendingSubmissions: 0,
+    pendingSubmissions: pendingSubs,
     completedInternships: 0,
     pendingCertificatePayments: 0,
     certificatesIssued: 0,

@@ -141,12 +141,14 @@ export default function AdminOverviewPage() {
       value: stats.totalStudents,
       description: 'Verilənlər bazasında aktiv tələbə profilləri',
       icon: Users,
+      href: '/admin/students',
     },
     {
       title: 'Dərc Olunmuş Təcrübələr',
       value: stats.activeInternships,
       description: 'Açıq elan olunmuş qruplar',
       icon: Briefcase,
+      href: '/admin/internships',
     },
     {
       title: 'Baxılmamış Müraciətlər',
@@ -154,36 +156,43 @@ export default function AdminOverviewPage() {
       description: 'Qərar gözləyən namizəd anketləri',
       icon: FileCheck2,
       highlight: stats.pendingApplications > 0,
+      href: '/admin/applications',
     },
     {
       title: 'Cari Təcrübəçilər',
       value: stats.activeInterns,
       description: 'Aktiv qeydiyyatda olan tələbələr',
       icon: UserCheck,
+      href: '/admin/students',
     },
     {
       title: 'Yoxlanmalı Tapşırıqlar',
       value: stats.pendingSubmissions,
       description: 'Yoxlama gözləyən həllər',
       icon: UploadCloud,
+      highlight: stats.pendingSubmissions > 0,
+      href: '/admin/submissions',
     },
     {
       title: 'Tamamlanmış Təcrübələr',
       value: stats.completedInternships,
       description: 'Mərhələləri bitirmiş məzunlar',
       icon: FileBadge,
+      href: '/admin/completed',
     },
     {
       title: 'Sertifikat Müraciətləri',
       value: stats.pendingCertificatePayments,
       description: 'Ödəniş və təsdiq gözləyən',
       icon: CreditCard,
+      href: '/admin/certificate-orders',
     },
     {
       title: 'Verilmiş Sertifikatlar',
       value: stats.certificatesIssued,
       description: 'Rəsmi kodla təsdiq olunmuş',
       icon: Award,
+      href: '/admin/certificates',
     },
   ];
 
@@ -281,10 +290,11 @@ export default function AdminOverviewPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((card) => {
             const Icon = card.icon;
-            return (
+            const content = (
               <Card
-                key={card.title}
-                className={`bg-slate-900/90 text-white border shadow-2xs ${
+                className={`bg-slate-900/90 text-white border shadow-2xs transition-all h-full ${
+                  card.href ? 'hover:border-slate-700 hover:bg-slate-800/80 cursor-pointer' : ''
+                } ${
                   card.highlight ? 'border-amber-500/50 bg-amber-500/5' : 'border-slate-800'
                 }`}
               >
@@ -306,6 +316,15 @@ export default function AdminOverviewPage() {
                 </CardContent>
               </Card>
             );
+
+            if (card.href) {
+              return (
+                <Link key={card.title} href={card.href} className="block group">
+                  {content}
+                </Link>
+              );
+            }
+            return <div key={card.title}>{content}</div>;
           })}
         </div>
       </div>

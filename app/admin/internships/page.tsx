@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Users,
   Search,
+  ListTodo,
 } from 'lucide-react';
 
 export default function AdminInternshipsPage() {
@@ -235,6 +236,13 @@ export default function AdminInternshipsPage() {
                 >
                   {item.status === 'published' ? (isAz ? 'Qaralamaya at' : 'Unpublish') : (isAz ? 'Dərc et' : 'Publish')}
                 </button>
+
+                <Link href={`/admin/internships/${item.id}/tasks`}>
+                  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs border-amber-500/40 text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 hover:text-amber-200">
+                    <ListTodo className="w-3.5 h-3.5" />
+                    {isAz ? 'Tapşırıqlar' : 'Tasks'}
+                  </Button>
+                </Link>
 
                 <Link href={`/admin/internships/${item.id}/edit`}>
                   <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white">
