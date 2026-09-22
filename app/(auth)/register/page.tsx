@@ -157,7 +157,7 @@ export default function RegisterPage() {
                   id="university"
                   name="university"
                   type="text"
-                  placeholder="məs. ADA Universiteti, BDU, ADNSU, BMU"
+                  placeholder="məs. universitetinizin tam adı"
                   value={formData.university}
                   onChange={handleChange}
                   disabled={isSubmitting || success}
