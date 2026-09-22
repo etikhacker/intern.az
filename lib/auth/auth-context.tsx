@@ -7,6 +7,8 @@ import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { Profile, ProfileUpdateInput, UserRole } from '@/types/database';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
+export const SOLE_ADMIN_EMAIL = 'babayev.omr.23@gmail.com';
+
 interface AuthContextType {
   user: { id: string; email: string } | null;
   profile: Profile | null;
@@ -23,62 +25,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Local storage key for demo mode when live Supabase credentials aren't entered yet
-const DEMO_STORAGE_KEY = 'internship_az_demo_session';
-const DEMO_PROFILES_KEY = 'internship_az_demo_profiles';
-
-// Initial demo seed data
-const DEFAULT_DEMO_PROFILES: Profile[] = [
-  {
-    id: 'demo-student-1',
-    user_id: 'user-student-1',
-    full_name: 'Leyla Mammadova',
-    email: 'leyla.m@ada.edu.az',
-    role: 'student',
-    university: 'ADA University',
-    phone: '+994 50 123 45 67',
-    avatar_url: null,
-    created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'demo-student-2',
-    user_id: 'user-student-2',
-    full_name: 'Murad Aliyev',
-    email: 'murad.a@bsu.edu.az',
-    role: 'student',
-    university: 'Baku State University',
-    phone: '+994 55 987 65 43',
-    avatar_url: null,
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'demo-student-3',
-    user_id: 'user-student-3',
-    full_name: 'Aysel Huseynova',
-    email: 'aysel.h@asoiu.edu.az',
-    role: 'student',
-    university: 'Azerbaijan State Oil and Industry University',
-    phone: '+994 70 345 67 89',
-    avatar_url: null,
-    created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'demo-admin-1',
-    user_id: 'user-admin-1',
-    full_name: 'Admin Supervisor',
-    email: 'admin@intern.az',
-    role: 'admin',
-    university: 'Ministry of Digital Development and Transport',
-    phone: '+994 12 598 00 00',
-    avatar_url: null,
-    created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -87,46 +33,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const isConfigured = isSupabaseConfigured();
 
-  // Helper to get demo profiles from localStorage
-  const getDemoProfiles = useCallback((): Profile[] => {
-    if (typeof window === 'undefined') return DEFAULT_DEMO_PROFILES;
-    try {
-      const stored = localStorage.getItem(DEMO_PROFILES_KEY);
-      if (stored) return JSON.parse(stored);
-      localStorage.setItem(DEMO_PROFILES_KEY, JSON.stringify(DEFAULT_DEMO_PROFILES));
-      return DEFAULT_DEMO_PROFILES;
-    } catch {
-      return DEFAULT_DEMO_PROFILES;
-    }
-  }, []);
-
-  // Helper to save demo profiles
-  const saveDemoProfiles = useCallback((profiles: Profile[]) => {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.setItem(DEMO_PROFILES_KEY, JSON.stringify(profiles));
-    } catch {
-      // ignore
-    }
-  }, []);
-
   // Fetch real profile from Supabase
-  const fetchSupabaseProfile = useCallback(async (userId: string) => {
+  const fetchSupabaseProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     const supabase = createClient();
     if (!supabase) return null;
 
     try {
-      const { data, error } = await supabase
+      const { data, error: fetchErr } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.warn('Profile fetch warning:', error.message);
+      if (fetchErr) {
+        console.warn('Profile fetch warning:', fetchErr.message);
         return null;
       }
-      return data as Profile;
+      return (data as Profile) || null;
     } catch (err) {
       console.warn('Profile fetch exception:', err);
       return null;
@@ -135,90 +58,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = useCallback(async () => {
     if (!user) return;
-
-    if (isConfigured) {
-      const fresh = await fetchSupabaseProfile(user.id);
-      if (fresh) {
-        setProfile(fresh);
-      }
-    } else {
-      const profiles = getDemoProfiles();
-      const current = profiles.find((p) => p.user_id === user.id);
-      if (current) {
-        setProfile(current);
-      }
+    const fresh = await fetchSupabaseProfile(user.id);
+    if (fresh) {
+      setProfile(fresh);
     }
-  }, [user, isConfigured, fetchSupabaseProfile, getDemoProfiles]);
+  }, [user, fetchSupabaseProfile]);
 
-  // Initial Auth Check
+  // Initial Auth Check & Session Listener
   useEffect(() => {
     let isMounted = true;
 
     async function initAuth() {
       setIsLoading(true);
 
-      if (isConfigured) {
-        const supabase = createClient();
-        if (!supabase) {
-          setIsLoading(false);
-          return;
+      if (!isConfigured) {
+        setError('Supabase konfiqurasiyası tapılmadı. Zəhmət olmasa NEXT_PUBLIC_SUPABASE_URL və NEXT_PUBLIC_SUPABASE_ANON_KEY parametrlərini yoxlayın.');
+        if (isMounted) setIsLoading(false);
+        return;
+      }
+
+      const supabase = createClient();
+      if (!supabase) {
+        setError('Supabase müştərisi aktivləşdirilə bilmədi.');
+        if (isMounted) setIsLoading(false);
+        return;
+      }
+
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.warn('Supabase getSession error:', sessionError.message);
         }
 
-        try {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
+        if (session?.user && isMounted) {
+          const userEmail = (session.user.email || '').trim().toLowerCase();
+          setUser({ id: session.user.id, email: userEmail });
+          const prof = await fetchSupabaseProfile(session.user.id);
+          if (prof && isMounted) {
+            setProfile(prof);
+          }
+        }
 
-          if (session?.user && isMounted) {
-            setUser({ id: session.user.id, email: session.user.email || '' });
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
+          if (!isMounted) return;
+          if (session?.user) {
+            const userEmail = (session.user.email || '').trim().toLowerCase();
+            setUser({ id: session.user.id, email: userEmail });
             const prof = await fetchSupabaseProfile(session.user.id);
-            if (prof && isMounted) {
-              setProfile(prof);
-            }
+            if (isMounted) setProfile(prof);
+          } else {
+            setUser(null);
+            setProfile(null);
           }
+        });
 
-          const {
-            data: { subscription },
-          } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
-            if (!isMounted) return;
-            if (session?.user) {
-              setUser({ id: session.user.id, email: session.user.email || '' });
-              const prof = await fetchSupabaseProfile(session.user.id);
-              if (isMounted) setProfile(prof);
-            } else {
-              setUser(null);
-              setProfile(null);
-            }
-          });
-
-          return () => {
-            subscription.unsubscribe();
-          };
-        } catch (err) {
-          console.error('Supabase init error:', err);
-        } finally {
-          if (isMounted) setIsLoading(false);
-        }
-      } else {
-        // Demo mode initialization
-        if (typeof window !== 'undefined') {
-          const storedSession = localStorage.getItem(DEMO_STORAGE_KEY);
-          if (storedSession) {
-            try {
-              const parsed = JSON.parse(storedSession);
-              setUser({ id: parsed.user_id, email: parsed.email });
-              const profiles = getDemoProfiles();
-              const existing = profiles.find((p) => p.user_id === parsed.user_id);
-              if (existing) {
-                setProfile(existing);
-              } else {
-                setProfile(parsed);
-              }
-            } catch {
-              localStorage.removeItem(DEMO_STORAGE_KEY);
-            }
-          }
-        }
+        return () => {
+          subscription.unsubscribe();
+        };
+      } catch (err) {
+        console.error('Supabase auth init exception:', err);
+      } finally {
         if (isMounted) setIsLoading(false);
       }
     }
@@ -228,9 +133,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       isMounted = false;
     };
-  }, [isConfigured, fetchSupabaseProfile, getDemoProfiles]);
+  }, [isConfigured, fetchSupabaseProfile]);
 
-  // Sign Up: Always creates student role
+  // Real Registration with Supabase Auth
   const signUp = async ({
     fullName,
     email,
@@ -244,89 +149,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }): Promise<{ success: boolean; error?: string }> => {
     setError(null);
 
-    if (isConfigured) {
-      const supabase = createClient();
-      if (!supabase) return { success: false, error: 'Supabase client unavailable' };
+    if (!isConfigured) {
+      return { success: false, error: 'Supabase konfiqurasiya edilməyib. Zəhmət olmasa parametrləri tamamlayın.' };
+    }
 
-      try {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-              university,
-            },
+    const supabase = createClient();
+    if (!supabase) return { success: false, error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
+
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+            university: university.trim(),
           },
-        });
+        },
+      });
 
-        if (signUpError) {
-          return { success: false, error: signUpError.message };
+      if (signUpError) {
+        if (signUpError.message.includes('User already registered') || signUpError.message.includes('already registered')) {
+          return { success: false, error: 'Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilmişdir.' };
+        }
+        if (signUpError.message.includes('Password should be')) {
+          return { success: false, error: 'Şifrə minimum 6 simvoldan ibarət olmalıdır.' };
+        }
+        return { success: false, error: signUpError.message };
+      }
+
+      if (data.user) {
+        // Fetch newly created profile (or create fallback if trigger delayed)
+        let prof = await fetchSupabaseProfile(data.user.id);
+        if (!prof) {
+          const isSoleAdmin = cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase();
+          const { data: newProfile } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: data.user.id,
+              full_name: fullName.trim(),
+              email: cleanEmail,
+              university: university.trim(),
+              role: isSoleAdmin ? 'admin' : 'student',
+            })
+            .select()
+            .maybeSingle();
+
+          if (newProfile) prof = newProfile as Profile;
         }
 
-        if (data.user) {
-          // If profile trigger didn't catch or is delayed, attempt insert or select
-          let prof = await fetchSupabaseProfile(data.user.id);
-          if (!prof) {
-            // Fallback insert if trigger hasn't fired
-            const { data: newProfile } = await supabase
-              .from('profiles')
-              .insert({
-                user_id: data.user.id,
-                full_name: fullName,
-                email,
-                university,
-                role: 'student', // ALWAYS student
-              })
-              .select()
-              .single();
-            if (newProfile) prof = newProfile as Profile;
-          }
-
-          setUser({ id: data.user.id, email: data.user.email || email });
-          setProfile(prof);
-          return { success: true };
-        }
-
+        setUser({ id: data.user.id, email: cleanEmail });
+        setProfile(prof);
         return { success: true };
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'An unexpected error occurred during registration';
-        return { success: false, error: message };
       }
-    } else {
-      // Demo mode registration
-      const profiles = getDemoProfiles();
-      const existing = profiles.find((p) => p.email.toLowerCase() === email.toLowerCase());
-      if (existing) {
-        return { success: false, error: 'An account with this email already exists.' };
-      }
-
-      const newUserId = `user-${Date.now()}`;
-      const newProfile: Profile = {
-        id: `profile-${Date.now()}`,
-        user_id: newUserId,
-        full_name: fullName,
-        email,
-        role: 'student', // Strictly 'student'
-        university,
-        phone: null,
-        avatar_url: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      const updatedProfiles = [...profiles, newProfile];
-      saveDemoProfiles(updatedProfiles);
-
-      setUser({ id: newUserId, email });
-      setProfile(newProfile);
-      localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(newProfile));
 
       return { success: true };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Qeydiyyat zamanı gözlənilməz xəta baş verdi.';
+      return { success: false, error: message };
     }
   };
 
-  // Sign In
+  // Real Sign In with Supabase Auth
   const signIn = async ({
     email,
     password,
@@ -336,65 +221,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }): Promise<{ success: boolean; error?: string; role?: UserRole }> => {
     setError(null);
 
-    if (isConfigured) {
-      const supabase = createClient();
-      if (!supabase) return { success: false, error: 'Supabase client unavailable' };
+    if (!isConfigured) {
+      return { success: false, error: 'Supabase konfiqurasiya edilməyib. Zəhmət olmasa parametrləri daxil edin.' };
+    }
 
-      try {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+    const supabase = createClient();
+    if (!supabase) return { success: false, error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
 
-        if (signInError) {
-          if (signInError.message.includes('Invalid login credentials')) {
-            return { success: false, error: 'Incorrect email or password. Please try again.' };
-          }
-          return { success: false, error: signInError.message };
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (signInError) {
+        if (
+          signInError.message.includes('Invalid login credentials') ||
+          signInError.message.includes('invalid_credentials')
+        ) {
+          return { success: false, error: 'E-poçt və ya şifrə yanlışdır.' };
         }
-
-        if (data.user) {
-          const prof = await fetchSupabaseProfile(data.user.id);
-          setUser({ id: data.user.id, email: data.user.email || email });
-          setProfile(prof);
-          return { success: true, role: prof?.role || 'student' };
+        if (signInError.message.includes('Email not confirmed')) {
+          return { success: false, error: 'E-poçt ünvanınız təsdiqlənməyib. Zəhmət olmasa poçt qutunuzu yoxlayın.' };
         }
-
-        return { success: false, error: 'Failed to retrieve user session.' };
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Login failed due to unexpected error.';
-        return { success: false, error: message };
-      }
-    } else {
-      // Demo Mode login
-      const profiles = getDemoProfiles();
-      const target = profiles.find((p) => p.email.toLowerCase() === email.toLowerCase());
-
-      if (!target) {
-        return {
-          success: false,
-          error: 'No account found with this email. (In demo mode, use leyla.m@ada.edu.az or admin@intern.az, or create a new student account).',
-        };
+        return { success: false, error: signInError.message };
       }
 
-      setUser({ id: target.user_id, email: target.email });
-      setProfile(target);
-      localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(target));
+      if (data.user) {
+        let prof = await fetchSupabaseProfile(data.user.id);
+        
+        // If profile doesn't exist yet, create it from auth metadata
+        if (!prof) {
+          const isSoleAdmin = cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase();
+          const { data: newProfile } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: data.user.id,
+              full_name: data.user.user_metadata?.full_name || (isSoleAdmin ? 'Platform Administrator' : 'Student User'),
+              email: cleanEmail,
+              university: data.user.user_metadata?.university || null,
+              role: isSoleAdmin ? 'admin' : 'student',
+            })
+            .select()
+            .maybeSingle();
 
-      return { success: true, role: target.role };
+          if (newProfile) prof = newProfile as Profile;
+        }
+
+        const effectiveRole: UserRole =
+          cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase() && prof?.role === 'admin'
+            ? 'admin'
+            : prof?.role === 'admin' && cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase()
+            ? 'admin'
+            : 'student';
+
+        setUser({ id: data.user.id, email: cleanEmail });
+        setProfile(prof);
+        return { success: true, role: effectiveRole };
+      }
+
+      return { success: false, error: 'İstifadəçi sessiyası alına bilmədi.' };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Giriş zamanı gözlənilməz xəta baş verdi.';
+      return { success: false, error: message };
     }
   };
 
   // Sign Out
   const signOut = async () => {
-    if (isConfigured) {
-      const supabase = createClient();
-      if (supabase) {
+    const supabase = createClient();
+    if (supabase) {
+      try {
         await supabase.auth.signOut();
-      }
-    } else {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(DEMO_STORAGE_KEY);
+      } catch (err) {
+        console.warn('Sign out error:', err);
       }
     }
 
@@ -408,76 +309,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     input: ProfileUpdateInput
   ): Promise<{ success: boolean; error?: string; profile?: Profile }> => {
     if (!user || !profile) {
-      return { success: false, error: 'You must be logged in to update your profile.' };
+      return { success: false, error: 'Profilinizi yeniləmək üçün daxil olmalısınız.' };
     }
 
-    if (isConfigured) {
-      const supabase = createClient();
-      if (!supabase) return { success: false, error: 'Database connection unavailable.' };
+    if (!isConfigured) {
+      return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
+    }
 
-      try {
-        const { data, error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            full_name: input.full_name?.trim() || profile.full_name,
-            phone: input.phone !== undefined ? input.phone : profile.phone,
-            university: input.university !== undefined ? input.university : profile.university,
-            avatar_url: input.avatar_url !== undefined ? input.avatar_url : profile.avatar_url,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', user.id)
-          .select()
-          .single();
+    const supabase = createClient();
+    if (!supabase) return { success: false, error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
 
-        if (updateError) {
-          return { success: false, error: updateError.message };
-        }
+    try {
+      const { data, error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: input.full_name?.trim() || profile.full_name,
+          phone: input.phone !== undefined ? input.phone : profile.phone,
+          university: input.university !== undefined ? input.university : profile.university,
+          avatar_url: input.avatar_url !== undefined ? input.avatar_url : profile.avatar_url,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id)
+        .select()
+        .single();
 
-        const updated = data as Profile;
-        setProfile(updated);
-        return { success: true, profile: updated };
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Failed to update profile.';
-        return { success: false, error: message };
-      }
-    } else {
-      // Demo mode update
-      const profiles = getDemoProfiles();
-      const index = profiles.findIndex((p) => p.user_id === user.id);
-
-      if (index === -1) {
-        return { success: false, error: 'Profile not found.' };
+      if (updateError) {
+        return { success: false, error: updateError.message };
       }
 
-      const updated: Profile = {
-        ...profiles[index],
-        full_name: input.full_name?.trim() || profiles[index].full_name,
-        phone: input.phone !== undefined ? input.phone : profiles[index].phone,
-        university: input.university !== undefined ? input.university : profiles[index].university,
-        avatar_url: input.avatar_url !== undefined ? input.avatar_url : profiles[index].avatar_url,
-        updated_at: new Date().toISOString(),
-        // user_id, role, email, created_at strictly untouched
-        role: profiles[index].role,
-        email: profiles[index].email,
-        user_id: profiles[index].user_id,
-        created_at: profiles[index].created_at,
-      };
-
-      profiles[index] = updated;
-      saveDemoProfiles(profiles);
+      const updated = data as Profile;
       setProfile(updated);
-      localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(updated));
-
       return { success: true, profile: updated };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Profil yenilənərkən xəta baş verdi.';
+      return { success: false, error: message };
     }
   };
+
+  // Calculate effective role: ONLY babayev.omr.23@gmail.com with role === 'admin' is admin
+  const effectiveRole: UserRole | null =
+    user && profile?.role === 'admin' && user.email.toLowerCase() === SOLE_ADMIN_EMAIL.toLowerCase()
+      ? 'admin'
+      : user
+      ? (profile?.role as UserRole) || 'student'
+      : null;
 
   return (
     <AuthContext.Provider
       value={{
         user,
         profile,
-        role: profile?.role || null,
+        role: effectiveRole,
         isLoading,
         isConfigured,
         error,

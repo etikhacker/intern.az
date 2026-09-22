@@ -7,14 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getAllInternships } from '@/lib/internships/service';
-import { getLocalTasks } from '@/lib/tasks/service';
+import { createClient } from '@/lib/supabase/client';
 import { Internship, InternshipTask } from '@/types/database';
 import {
   ListTodo,
   Briefcase,
   ChevronRight,
-  Plus,
-  Clock,
   CheckCircle2,
   FileText,
   Search,
@@ -33,12 +31,19 @@ export default function AdminTasksPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [internshipList] = await Promise.all([
-          getAllInternships(),
-        ]);
-        const allTasks = getLocalTasks();
+        const internshipList = await getAllInternships();
         setInternships(internshipList);
-        setTasks(allTasks);
+
+        const supabase = createClient();
+        if (supabase) {
+          const { data } = await supabase
+            .from('internship_tasks')
+            .select('*')
+            .order('week_number', { ascending: true });
+          setTasks((data as InternshipTask[]) || []);
+        } else {
+          setTasks([]);
+        }
       } catch (err) {
         console.error('Failed to load tasks overview:', err);
       } finally {
