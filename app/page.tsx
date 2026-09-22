@@ -33,7 +33,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#0d1717] via-[#07090d] to-[#07090d] py-20 lg:py-28 border-b border-slate-200/70">
+        <section className="hero-section relative overflow-hidden py-20 lg:py-28 border-b border-slate-200/70">
           <div className="hero-grid absolute inset-0 opacity-70" aria-hidden="true" />
           <div className="hero-orb hero-orb-left" aria-hidden="true" />
           <div className="hero-orb hero-orb-right" aria-hidden="true" />

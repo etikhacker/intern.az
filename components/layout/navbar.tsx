@@ -24,7 +24,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-black/55 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.25)]">
+    <header className="sticky top-0 z-30 w-full bg-slate-950/60 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.25)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
@@ -33,10 +33,10 @@ export function Navbar() {
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900 block leading-tight">
+              <span className="text-xl font-bold tracking-tight text-slate-100 block leading-tight">
                 Intern<span className="text-emerald-400">.az</span>
               </span>
-              <span className="text-[10px] tracking-wide text-slate-500 uppercase font-medium">
+              <span className="text-[10px] tracking-wide text-slate-400 uppercase font-medium">
                 Təcrübə Portalı
               </span>
             </div>

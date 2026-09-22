@@ -1,7 +1,143 @@
 @import "tailwindcss";
 
-:root {
+/* =============================================================================
+ * Theme tokens & Tailwind remap
+ *
+ * The codebase is inconsistent: student pages use light-theme Tailwind classes
+ * (bg-white, text-slate-900, bg-emerald-50, ...) while admin/dashboard shell
+ * components use dark-theme Tailwind classes (bg-slate-900, text-slate-300,
+ * border-slate-800, ...). Without a single source of truth, the two halves
+ * render with conflicting palettes.
+ *
+ * Strategy:
+ *   - In DARK theme (default) and LIGHT theme, override only the shades that
+ *     are used as light surfaces / dark text in the student-facing pages.
+ *   - Leave the dark Tailwind classes that admin relies on (bg-slate-700/800/
+ *     900, text-slate-300/400, text-slate-950 contrast on amber, ...) alone,
+ *     so admin's existing palette keeps working.
+ *   - Brand accent (emerald) and categorical accents (blue, amber, rose, red,
+ *     purple) are remapped so that light tints (50/100) read as subtle
+ *     overlays on dark surfaces, while mid/strong tones (400–700) stay
+ *     visible against both themes.
+ * =============================================================================
+ */
+
+:root,
+html.dark {
   color-scheme: dark;
+
+  /* Surfaces: light shades become subtle dark overlays, dark shades stay dark */
+  --c-white: #0d1118;
+  --c-white-50: rgba(13, 17, 24, 0.50);
+  --c-white-80: rgba(13, 17, 24, 0.82);
+  --c-white-95: rgba(13, 17, 24, 0.92);
+  --c-black: #030507;
+  --c-black-55: rgba(7, 9, 13, 0.55);
+  --c-black-60: rgba(7, 9, 13, 0.60);
+  --c-black-70: rgba(7, 9, 13, 0.70);
+
+  --c-slate-50:  rgba(241, 245, 249, 0.06);
+  --c-slate-50-40: rgba(7, 9, 13, 0.72);
+  --c-slate-50-70: rgba(7, 9, 13, 0.85);
+  --c-slate-100: #151d27;
+  --c-slate-100-70: rgba(21, 29, 39, 0.70);
+  --c-slate-200: rgba(148, 163, 184, 0.18);
+  --c-slate-300: rgba(148, 163, 184, 0.28);
+  --c-slate-400: rgba(148, 163, 184, 0.40);
+  --c-slate-500: #94a3b8;
+  --c-slate-600: #c4d0cc;
+  --c-slate-700: #dce7e3;
+  --c-slate-800: #f1f5f9;
+  --c-slate-900: #f3f7f5;
+  --c-slate-950: #ffffff;
+
+  /* Slate dark shades stay literal (used by admin/footer) */
+  --c-slate-700-bg: #334155;
+  --c-slate-800-bg: #1e293b;
+  --c-slate-900-bg: #0f172a;
+  --c-slate-950-bg: #020617;
+
+  /* Slate light shades used as text stay literal (always light text on dark) */
+  --c-slate-50-text: #f8fafc;
+  --c-slate-100-text: #f1f5f9;
+  --c-slate-200-text: #e2e8f0;
+  --c-slate-300-text: #cbd5e1;
+  --c-slate-400-text: #94a3b8;
+
+  /* Emerald (primary brand) */
+  --c-emerald-50:  rgba(16, 185, 129, 0.14);
+  --c-emerald-100: rgba(16, 185, 129, 0.20);
+  --c-emerald-200: rgba(16, 185, 129, 0.30);
+  --c-emerald-300: #6ee7b7;
+  --c-emerald-400: #34d399;
+  --c-emerald-500: #10b981;
+  --c-emerald-600: #10b981;
+  --c-emerald-700: #34d399;
+  --c-emerald-800: #6ee7b7;
+  --c-emerald-900: #a7f3d0;
+
+  /* Blue */
+  --c-blue-50:  rgba(59, 130, 246, 0.16);
+  --c-blue-100: rgba(59, 130, 246, 0.22);
+  --c-blue-200: rgba(59, 130, 246, 0.32);
+  --c-blue-300: #93c5fd;
+  --c-blue-400: #60a5fa;
+  --c-blue-500: #3b82f6;
+  --c-blue-600: #3b82f6;
+  --c-blue-700: #60a5fa;
+  --c-blue-800: #93c5fd;
+  --c-blue-900: #bfdbfe;
+
+  /* Purple */
+  --c-purple-50:  rgba(168, 85, 247, 0.16);
+  --c-purple-100: rgba(168, 85, 247, 0.22);
+  --c-purple-200: rgba(168, 85, 247, 0.32);
+  --c-purple-300: #d8b4fe;
+  --c-purple-400: #c084fc;
+  --c-purple-500: #a855f7;
+  --c-purple-600: #a855f7;
+  --c-purple-700: #c084fc;
+  --c-purple-800: #d8b4fe;
+  --c-purple-900: #e9d5ff;
+
+  /* Amber (admin/pending — keep brand visible) */
+  --c-amber-50:  rgba(245, 158, 11, 0.16);
+  --c-amber-100: rgba(245, 158, 11, 0.22);
+  --c-amber-200: rgba(245, 158, 11, 0.32);
+  --c-amber-300: #fcd34d;
+  --c-amber-400: #fbbf24;
+  --c-amber-500: #f59e0b;
+  --c-amber-600: #f59e0b;
+  --c-amber-700: #fbbf24;
+  --c-amber-800: #fcd34d;
+  --c-amber-900: #fde68a;
+
+  /* Rose */
+  --c-rose-50:  rgba(244, 63, 94, 0.16);
+  --c-rose-100: rgba(244, 63, 94, 0.22);
+  --c-rose-200: rgba(244, 63, 94, 0.32);
+  --c-rose-300: #fda4af;
+  --c-rose-400: #fb7185;
+  --c-rose-500: #f43f5e;
+  --c-rose-600: #f43f5e;
+  --c-rose-700: #fb7185;
+  --c-rose-800: #fda4af;
+  --c-rose-900: #fecdd3;
+
+  /* Red (destructive) */
+  --c-red-50:  rgba(239, 68, 68, 0.16);
+  --c-red-100: rgba(239, 68, 68, 0.22);
+  --c-red-200: rgba(239, 68, 68, 0.32);
+  --c-red-300: #fca5a5;
+  --c-red-400: #f87171;
+  --c-red-500: #ef4444;
+  --c-red-600: #ef4444;
+  --c-red-700: #f87171;
+  --c-red-800: #fca5a5;
+  --c-red-900: #fecaca;
+  --c-red-950: #450a0a;
+
+  /* Brand surfaces */
   --page: #07090d;
   --surface: #0d1118;
   --surface-raised: #121923;
@@ -15,14 +151,404 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+html.light {
+  color-scheme: light;
+
+  /* Light theme = Tailwind defaults. Variables map directly. */
+  --c-white: #ffffff;
+  --c-white-50: rgba(255, 255, 255, 0.50);
+  --c-white-80: rgba(255, 255, 255, 0.80);
+  --c-white-95: rgba(255, 255, 255, 0.95);
+  --c-black: #000000;
+  --c-black-55: rgba(0, 0, 0, 0.55);
+  --c-black-60: rgba(0, 0, 0, 0.60);
+  --c-black-70: rgba(0, 0, 0, 0.70);
+
+  --c-slate-50:  #f8fafc;
+  --c-slate-50-40: rgba(248, 250, 252, 0.40);
+  --c-slate-50-70: rgba(248, 250, 252, 0.70);
+  --c-slate-100: #f1f5f9;
+  --c-slate-100-70: rgba(241, 245, 249, 0.70);
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+  --c-slate-800: #1e293b;
+  --c-slate-900: #0f172a;
+  --c-slate-950: #020617;
+
+  --c-slate-700-bg: #334155;
+  --c-slate-800-bg: #1e293b;
+  --c-slate-900-bg: #0f172a;
+  --c-slate-950-bg: #020617;
+
+  --c-slate-50-text: #f8fafc;
+  --c-slate-100-text: #f1f5f9;
+  --c-slate-200-text: #e2e8f0;
+  --c-slate-300-text: #cbd5e1;
+  --c-slate-400-text: #94a3b8;
+
+  --c-emerald-50:  #ecfdf5;
+  --c-emerald-100: #d1fae5;
+  --c-emerald-200: #a7f3d0;
+  --c-emerald-300: #6ee7b7;
+  --c-emerald-400: #34d399;
+  --c-emerald-500: #10b981;
+  --c-emerald-600: #059669;
+  --c-emerald-700: #047857;
+  --c-emerald-800: #065f46;
+  --c-emerald-900: #064e3b;
+
+  --c-blue-50:  #eff6ff;
+  --c-blue-100: #dbeafe;
+  --c-blue-200: #bfdbfe;
+  --c-blue-300: #93c5fd;
+  --c-blue-400: #60a5fa;
+  --c-blue-500: #3b82f6;
+  --c-blue-600: #2563eb;
+  --c-blue-700: #1d4ed8;
+  --c-blue-800: #1e40af;
+  --c-blue-900: #1e3a8a;
+
+  --c-purple-50:  #faf5ff;
+  --c-purple-100: #f3e8ff;
+  --c-purple-200: #e9d5ff;
+  --c-purple-300: #d8b4fe;
+  --c-purple-400: #c084fc;
+  --c-purple-500: #a855f7;
+  --c-purple-600: #9333ea;
+  --c-purple-700: #7e22ce;
+  --c-purple-800: #6b21a8;
+  --c-purple-900: #581c87;
+
+  --c-amber-50:  #fffbeb;
+  --c-amber-100: #fef3c7;
+  --c-amber-200: #fde68a;
+  --c-amber-300: #fcd34d;
+  --c-amber-400: #fbbf24;
+  --c-amber-500: #f59e0b;
+  --c-amber-600: #d97706;
+  --c-amber-700: #b45309;
+  --c-amber-800: #92400e;
+  --c-amber-900: #78350f;
+
+  --c-rose-50:  #fff1f2;
+  --c-rose-100: #ffe4e6;
+  --c-rose-200: #fecdd3;
+  --c-rose-300: #fda4af;
+  --c-rose-400: #fb7185;
+  --c-rose-500: #f43f5e;
+  --c-rose-600: #e11d48;
+  --c-rose-700: #be123c;
+  --c-rose-800: #9f1239;
+  --c-rose-900: #881337;
+
+  --c-red-50:  #fef2f2;
+  --c-red-100: #fee2e2;
+  --c-red-200: #fecaca;
+  --c-red-300: #fca5a5;
+  --c-red-400: #f87171;
+  --c-red-500: #ef4444;
+  --c-red-600: #dc2626;
+  --c-red-700: #b91c1c;
+  --c-red-800: #991b1b;
+  --c-red-900: #7f1d1d;
+  --c-red-950: #450a0a;
+
+  --page: #f6f8f7;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-soft: #eef4f1;
+  --line: rgba(15, 23, 42, 0.12);
+  --line-strong: rgba(5, 150, 105, 0.28);
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #059669;
+  --accent-bright: #10b981;
+}
+
+/* =============================================================================
+ * Backgrounds — student surfaces (light→dark) + admin/footer (stay dark)
+ * ============================================================================= */
+
+.bg-white { background-color: var(--c-white) !important; }
+.bg-white\/50 { background-color: var(--c-white-50) !important; }
+.bg-white\/80 { background-color: var(--c-white-80) !important; }
+.bg-white\/95 { background-color: var(--c-white-95) !important; }
+.bg-black { background-color: var(--c-black) !important; }
+.bg-black\/55 { background-color: var(--c-black-55) !important; }
+.bg-black\/60 { background-color: var(--c-black-60) !important; }
+.bg-black\/70 { background-color: var(--c-black-70) !important; }
+
+.bg-slate-50 { background-color: var(--c-slate-50) !important; }
+.bg-slate-50\/40 { background-color: var(--c-slate-50-40) !important; }
+.bg-slate-50\/60 { background-color: color-mix(in srgb, var(--c-slate-50) 60%, transparent) !important; }
+.bg-slate-50\/70 { background-color: var(--c-slate-50-70) !important; }
+.bg-slate-100 { background-color: var(--c-slate-100) !important; }
+.bg-slate-100\/70 { background-color: var(--c-slate-100-70) !important; }
+.bg-slate-200 { background-color: var(--c-slate-200) !important; }
+.bg-slate-300 { background-color: var(--c-slate-300) !important; }
+.bg-slate-400 { background-color: var(--c-slate-400) !important; }
+.bg-slate-500 { background-color: var(--c-slate-500) !important; }
+.bg-slate-600 { background-color: var(--c-slate-600) !important; }
+
+/* Dark slate shades used by admin/footer stay literal */
+.bg-slate-700 { background-color: var(--c-slate-700-bg) !important; }
+.bg-slate-800 { background-color: var(--c-slate-800-bg) !important; }
+.bg-slate-800\/80 { background-color: color-mix(in srgb, var(--c-slate-800-bg) 80%, transparent) !important; }
+.bg-slate-900 { background-color: var(--c-slate-900-bg) !important; }
+.bg-slate-900\/60 { background-color: color-mix(in srgb, var(--c-slate-900-bg) 60%, transparent) !important; }
+.bg-slate-950 { background-color: var(--c-slate-950-bg) !important; }
+.bg-slate-950\/50 { background-color: color-mix(in srgb, var(--c-slate-950-bg) 50%, transparent) !important; }
+.bg-slate-950\/70 { background-color: color-mix(in srgb, var(--c-slate-950-bg) 70%, transparent) !important; }
+
+/* Accent backgrounds */
+.bg-emerald-50 { background-color: var(--c-emerald-50) !important; }
+.bg-emerald-100 { background-color: var(--c-emerald-100) !important; }
+.bg-emerald-100\/20 { background-color: color-mix(in srgb, var(--c-emerald-100) 20%, transparent) !important; }
+.bg-emerald-200 { background-color: var(--c-emerald-200) !important; }
+.bg-emerald-200\/60 { background-color: color-mix(in srgb, var(--c-emerald-200) 60%, transparent) !important; }
+.bg-emerald-300 { background-color: var(--c-emerald-300) !important; }
+.bg-emerald-300\/30 { background-color: color-mix(in srgb, var(--c-emerald-300) 30%, transparent) !important; }
+.bg-emerald-400 { background-color: var(--c-emerald-400) !important; }
+.bg-emerald-400\/10 { background-color: color-mix(in srgb, var(--c-emerald-400) 10%, transparent) !important; }
+.bg-emerald-400\/20 { background-color: color-mix(in srgb, var(--c-emerald-400) 20%, transparent) !important; }
+.bg-emerald-500 { background-color: var(--c-emerald-500) !important; }
+.bg-emerald-500\/10 { background-color: color-mix(in srgb, var(--c-emerald-500) 10%, transparent) !important; }
+.bg-emerald-500\/20 { background-color: color-mix(in srgb, var(--c-emerald-500) 20%, transparent) !important; }
+.bg-emerald-600 { background-color: var(--c-emerald-600) !important; }
+
+.bg-blue-50 { background-color: var(--c-blue-50) !important; }
+.bg-blue-50\/70 { background-color: color-mix(in srgb, var(--c-blue-50) 70%, transparent) !important; }
+.bg-blue-100 { background-color: var(--c-blue-100) !important; }
+.bg-blue-200 { background-color: var(--c-blue-200) !important; }
+.bg-blue-500 { background-color: var(--c-blue-500) !important; }
+.bg-blue-600 { background-color: var(--c-blue-600) !important; }
+
+.bg-purple-50 { background-color: var(--c-purple-50) !important; }
+.bg-purple-100 { background-color: var(--c-purple-100) !important; }
+.bg-purple-200 { background-color: var(--c-purple-200) !important; }
+.bg-purple-500 { background-color: var(--c-purple-500) !important; }
+.bg-purple-600 { background-color: var(--c-purple-600) !important; }
+
+.bg-amber-50 { background-color: var(--c-amber-50) !important; }
+.bg-amber-100 { background-color: var(--c-amber-100) !important; }
+.bg-amber-200 { background-color: var(--c-amber-200) !important; }
+.bg-amber-300 { background-color: var(--c-amber-300) !important; }
+.bg-amber-400 { background-color: var(--c-amber-400) !important; }
+.bg-amber-400\/20 { background-color: color-mix(in srgb, var(--c-amber-400) 20%, transparent) !important; }
+.bg-amber-500 { background-color: var(--c-amber-500) !important; }
+
+.bg-rose-50 { background-color: var(--c-rose-50) !important; }
+.bg-rose-100 { background-color: var(--c-rose-100) !important; }
+.bg-rose-200 { background-color: var(--c-rose-200) !important; }
+.bg-rose-500 { background-color: var(--c-rose-500) !important; }
+.bg-rose-600 { background-color: var(--c-rose-600) !important; }
+
+.bg-red-50 { background-color: var(--c-red-50) !important; }
+.bg-red-100 { background-color: var(--c-red-100) !important; }
+.bg-red-200 { background-color: var(--c-red-200) !important; }
+.bg-red-500 { background-color: var(--c-red-500) !important; }
+.bg-red-600 { background-color: var(--c-red-600) !important; }
+.bg-red-950\/40 { background-color: color-mix(in srgb, var(--c-red-950) 40%, transparent) !important; }
+
+/* =============================================================================
+ * Text — primary text inverts (slate-500..900), light shades stay literal
+ * (slate-50..400 are used as light text on dark surfaces and must not flip)
+ * ============================================================================= */
+
+/* text-white / text-black stay literal — they are contrast colors on
+ * emerald/blue/amber/slate-900 backgrounds and must not invert with theme. */
+
+.text-slate-50 { color: var(--c-slate-50-text) !important; }
+.text-slate-100 { color: var(--c-slate-100-text) !important; }
+.text-slate-200 { color: var(--c-slate-200-text) !important; }
+.text-slate-300 { color: var(--c-slate-300-text) !important; }
+.text-slate-400 { color: var(--c-slate-400-text) !important; }
+.text-slate-500 { color: var(--c-slate-500) !important; }
+.text-slate-600 { color: var(--c-slate-600) !important; }
+.text-slate-700 { color: var(--c-slate-700) !important; }
+.text-slate-800 { color: var(--c-slate-800) !important; }
+.text-slate-900 { color: var(--c-slate-900) !important; }
+.text-slate-950 { color: var(--c-slate-950-bg) !important; }
+
+.text-emerald-100 { color: var(--c-emerald-100) !important; }
+.text-emerald-200 { color: var(--c-emerald-200) !important; }
+.text-emerald-300 { color: var(--c-emerald-300) !important; }
+.text-emerald-400 { color: var(--c-emerald-400) !important; }
+.text-emerald-500 { color: var(--c-emerald-500) !important; }
+.text-emerald-600 { color: var(--c-emerald-600) !important; }
+.text-emerald-700 { color: var(--c-emerald-700) !important; }
+.text-emerald-800 { color: var(--c-emerald-800) !important; }
+.text-emerald-900 { color: var(--c-emerald-900) !important; }
+
+.text-blue-100 { color: var(--c-blue-100) !important; }
+.text-blue-300 { color: var(--c-blue-300) !important; }
+.text-blue-400 { color: var(--c-blue-400) !important; }
+.text-blue-500 { color: var(--c-blue-500) !important; }
+.text-blue-600 { color: var(--c-blue-600) !important; }
+.text-blue-700 { color: var(--c-blue-700) !important; }
+.text-blue-800 { color: var(--c-blue-800) !important; }
+.text-blue-900 { color: var(--c-blue-900) !important; }
+
+.text-purple-100 { color: var(--c-purple-100) !important; }
+.text-purple-300 { color: var(--c-purple-300) !important; }
+.text-purple-400 { color: var(--c-purple-400) !important; }
+.text-purple-500 { color: var(--c-purple-500) !important; }
+.text-purple-600 { color: var(--c-purple-600) !important; }
+.text-purple-700 { color: var(--c-purple-700) !important; }
+.text-purple-800 { color: var(--c-purple-800) !important; }
+.text-purple-900 { color: var(--c-purple-900) !important; }
+
+.text-amber-100 { color: var(--c-amber-100) !important; }
+.text-amber-200 { color: var(--c-amber-200) !important; }
+.text-amber-300 { color: var(--c-amber-300) !important; }
+.text-amber-400 { color: var(--c-amber-400) !important; }
+.text-amber-500 { color: var(--c-amber-500) !important; }
+.text-amber-600 { color: var(--c-amber-600) !important; }
+.text-amber-700 { color: var(--c-amber-700) !important; }
+.text-amber-800 { color: var(--c-amber-800) !important; }
+.text-amber-900 { color: var(--c-amber-900) !important; }
+
+.text-rose-100 { color: var(--c-rose-100) !important; }
+.text-rose-300 { color: var(--c-rose-300) !important; }
+.text-rose-400 { color: var(--c-rose-400) !important; }
+.text-rose-500 { color: var(--c-rose-500) !important; }
+.text-rose-600 { color: var(--c-rose-600) !important; }
+.text-rose-700 { color: var(--c-rose-700) !important; }
+.text-rose-800 { color: var(--c-rose-800) !important; }
+.text-rose-900 { color: var(--c-rose-900) !important; }
+
+.text-red-100 { color: var(--c-red-100) !important; }
+.text-red-300 { color: var(--c-red-300) !important; }
+.text-red-400 { color: var(--c-red-400) !important; }
+.text-red-500 { color: var(--c-red-500) !important; }
+.text-red-600 { color: var(--c-red-600) !important; }
+.text-red-700 { color: var(--c-red-700) !important; }
+.text-red-800 { color: var(--c-red-800) !important; }
+.text-red-900 { color: var(--c-red-900) !important; }
+
+/* =============================================================================
+ * Borders
+ * ============================================================================= */
+
+.border-white { border-color: var(--c-white) !important; }
+.border-black { border-color: var(--c-black) !important; }
+
+/* Light borders adapt */
+.border-slate-100 { border-color: var(--c-slate-100) !important; }
+.border-slate-200 { border-color: var(--c-slate-200) !important; }
+.border-slate-200\/60 { border-color: color-mix(in srgb, var(--c-slate-200) 60%, transparent) !important; }
+.border-slate-200\/70 { border-color: color-mix(in srgb, var(--c-slate-200) 70%, transparent) !important; }
+.border-slate-200\/80 { border-color: color-mix(in srgb, var(--c-slate-200) 80%, transparent) !important; }
+.border-slate-200\/90 { border-color: color-mix(in srgb, var(--c-slate-200) 90%, transparent) !important; }
+.border-slate-300 { border-color: var(--c-slate-300) !important; }
+
+/* Dark borders stay literal */
+.border-slate-700 { border-color: var(--c-slate-700-bg) !important; }
+.border-slate-700\/60 { border-color: color-mix(in srgb, var(--c-slate-700-bg) 60%, transparent) !important; }
+.border-slate-800 { border-color: var(--c-slate-800-bg) !important; }
+.border-slate-900 { border-color: var(--c-slate-900-bg) !important; }
+
+.border-emerald-100 { border-color: var(--c-emerald-100) !important; }
+.border-emerald-200 { border-color: var(--c-emerald-200) !important; }
+.border-emerald-200\/60 { border-color: color-mix(in srgb, var(--c-emerald-200) 60%, transparent) !important; }
+.border-emerald-300 { border-color: var(--c-emerald-300) !important; }
+.border-emerald-300\/30 { border-color: color-mix(in srgb, var(--c-emerald-300) 30%, transparent) !important; }
+.border-emerald-400 { border-color: var(--c-emerald-400) !important; }
+.border-emerald-500\/30 { border-color: color-mix(in srgb, var(--c-emerald-500) 30%, transparent) !important; }
+.border-emerald-500\/40 { border-color: color-mix(in srgb, var(--c-emerald-500) 40%, transparent) !important; }
+
+.border-blue-200 { border-color: var(--c-blue-200) !important; }
+.border-blue-500\/30 { border-color: color-mix(in srgb, var(--c-blue-500) 30%, transparent) !important; }
+
+.border-purple-200 { border-color: var(--c-purple-200) !important; }
+
+.border-amber-100 { border-color: var(--c-amber-100) !important; }
+.border-amber-200 { border-color: var(--c-amber-200) !important; }
+.border-amber-300 { border-color: var(--c-amber-300) !important; }
+.border-amber-400 { border-color: var(--c-amber-400) !important; }
+.border-amber-400\/40 { border-color: color-mix(in srgb, var(--c-amber-400) 40%, transparent) !important; }
+.border-amber-500\/30 { border-color: color-mix(in srgb, var(--c-amber-500) 30%, transparent) !important; }
+.border-amber-500\/40 { border-color: color-mix(in srgb, var(--c-amber-500) 40%, transparent) !important; }
+
+.border-rose-200 { border-color: var(--c-rose-200) !important; }
+.border-red-200 { border-color: var(--c-red-200) !important; }
+
+/* =============================================================================
+ * Hover variants — selective ones used in the codebase
+ * ============================================================================= */
+
+.hover\:bg-slate-50:hover { background-color: var(--c-slate-50) !important; }
+.hover\:bg-slate-100:hover { background-color: var(--c-slate-100) !important; }
+.hover\:bg-slate-200:hover { background-color: var(--c-slate-200) !important; }
+.hover\:bg-slate-700:hover { background-color: var(--c-slate-700-bg) !important; }
+.hover\:bg-slate-800:hover { background-color: var(--c-slate-800-bg) !important; }
+.hover\:bg-emerald-600:hover { background-color: var(--c-emerald-600) !important; }
+.hover\:bg-emerald-700:hover { background-color: var(--c-emerald-700) !important; }
+.hover\:bg-red-50:hover { background-color: var(--c-red-50) !important; }
+.hover\:bg-red-700:hover { background-color: var(--c-red-700) !important; }
+
+.hover\:text-slate-900:hover { color: var(--c-slate-900) !important; }
+.hover\:text-slate-800:hover { color: var(--c-slate-800) !important; }
+.hover\:text-slate-700:hover { color: var(--c-slate-700) !important; }
+.hover\:text-slate-600:hover { color: var(--c-slate-600) !important; }
+.hover\:text-emerald-300:hover { color: var(--c-emerald-300) !important; }
+.hover\:text-emerald-400:hover { color: var(--c-emerald-400) !important; }
+.hover\:text-emerald-600:hover { color: var(--c-emerald-600) !important; }
+.hover\:text-emerald-700:hover { color: var(--c-emerald-700) !important; }
+.hover\:text-red-700:hover { color: var(--c-red-700) !important; }
+/* hover:text-white stays literal — see comment above .text-slate-50. */
+
+.hover\:border-emerald-300:hover { border-color: var(--c-emerald-300) !important; }
+.hover\:border-slate-300:hover { border-color: var(--c-slate-300) !important; }
+
+.focus\:ring-emerald-500:focus { --tw-ring-color: var(--c-emerald-500) !important; }
+.focus\:ring-emerald-600:focus { --tw-ring-color: var(--c-emerald-600) !important; }
+.focus\:ring-amber-400:focus { --tw-ring-color: var(--c-amber-400) !important; }
+.focus\:border-emerald-500:focus { border-color: var(--c-emerald-500) !important; }
+.focus\:border-amber-400:focus { border-color: var(--c-amber-400) !important; }
+.focus\:bg-white:focus { background-color: var(--c-white) !important; }
+
+/* =============================================================================
+ * Ring / placeholder
+ * ============================================================================= */
+
+.ring-emerald-50 { --tw-ring-color: var(--c-emerald-50) !important; }
+.ring-emerald-100 { --tw-ring-color: var(--c-emerald-100) !important; }
+.ring-amber-500\/40 { --tw-ring-color: color-mix(in srgb, var(--c-amber-500) 40%, transparent) !important; }
+.ring-white { --tw-ring-color: var(--c-white) !important; }
+
+.placeholder\:text-slate-400::placeholder { color: var(--c-slate-400-text) !important; }
+.placeholder\:text-slate-500::placeholder { color: var(--c-slate-500) !important; }
+
+/* =============================================================================
+ * Hero section gradient — theme-aware, replaces inline gradient utility
+ * ============================================================================= */
+
+.hero-section {
+  background-image: linear-gradient(
+    to bottom,
+    var(--surface-raised) 0%,
+    var(--page) 60%,
+    var(--page) 100%
+  );
+}
+
+/* =============================================================================
+ * Base typography & surfaces
+ * ============================================================================= */
+
 html,
 body {
   min-height: 100%;
   background: var(--page);
+  color: var(--ink);
 }
 
 body {
-  color: var(--ink);
   background-image:
     radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.14), transparent 28rem),
     radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.12), transparent 25rem);
@@ -38,30 +564,6 @@ body {
   outline-offset: 3px;
 }
 
-/* Dark surfaces for the existing Tailwind vocabulary. */
-.bg-white { background-color: var(--surface) !important; }
-.bg-white\/80 { background-color: rgba(13, 17, 24, 0.82) !important; border-color: var(--line-strong) !important; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05); transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out); }
-.bg-white\/80:hover { transform: translateY(-4px) rotateX(1deg); box-shadow: 0 25px 65px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(52, 211, 153, 0.1); }
-.bg-white\/95 { background-color: rgba(7, 9, 13, 0.88) !important; }
-.bg-slate-50, .bg-slate-50\/70 { background-color: var(--page) !important; }
-.bg-slate-50\/40 { background-color: rgba(7, 9, 13, 0.72) !important; }
-.bg-slate-900 { background-color: #030507 !important; }
-.bg-slate-100 { background-color: #151d27 !important; }
-.text-slate-900, .text-slate-950 { color: var(--ink) !important; }
-.text-slate-800 { color: #dce7e3 !important; }
-.text-slate-700 { color: #c4d0cc !important; }
-.text-slate-600 { color: #aab8b5 !important; }
-.text-slate-500 { color: var(--muted) !important; }
-.text-slate-400 { color: #84939f !important; }
-.text-slate-300 { color: #b7c5c0 !important; }
-.border-slate-100, .border-slate-200, .border-slate-200\/60, .border-slate-200\/70, .border-slate-200\/80 {
-  border-color: var(--line) !important;
-}
-.border-slate-800 { border-color: rgba(148, 163, 184, 0.18) !important; }
-.hover\:bg-slate-50:hover { background-color: #111923 !important; }
-.hover\:bg-slate-100:hover { background-color: #18232e !important; }
-.hover\:text-slate-900:hover, .hover\:text-slate-800:hover { color: var(--ink) !important; }
-
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
@@ -70,11 +572,16 @@ button:active, a:active {
   transform: scale(0.98);
 }
 
-button.bg-emerald-600, button.bg-emerald-500 {
+button.bg-emerald-600,
+button.bg-emerald-500,
+button.bg-amber-400 {
   box-shadow: 0 12px 28px rgba(16, 185, 129, 0.2);
 }
 
-/* Shared depth language: elevated panels feel physical without becoming noisy. */
+/* =============================================================================
+ * Elevated cards (depth language)
+ * ============================================================================= */
+
 .depth-card {
   position: relative;
   isolation: isolate;
@@ -126,13 +633,21 @@ button.bg-emerald-600, button.bg-emerald-500 {
   to { transform: translate3d(1.5rem, -1rem, 0) scale(1.04); }
 }
 
+/* =============================================================================
+ * Form controls
+ * ============================================================================= */
+
 input, textarea, select {
   color: var(--ink);
-  background-color: #0b1118;
+  background-color: var(--surface-soft);
   border-color: var(--line);
 }
 
-input::placeholder, textarea::placeholder { color: #71808c; }
+input::placeholder, textarea::placeholder { color: var(--muted); }
+
+/* =============================================================================
+ * Reduced motion
+ * ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -143,45 +658,9 @@ input::placeholder, textarea::placeholder { color: #71808c; }
   }
 }
 
-html.light {
-  color-scheme: light;
-  --page: #f6f8f7;
-  --surface: #ffffff;
-  --surface-raised: #ffffff;
-  --surface-soft: #eef4f1;
-  --line: rgba(15, 23, 42, 0.12);
-  --line-strong: rgba(5, 150, 105, 0.28);
-  --ink: #0f172a;
-  --muted: #64748b;
-}
-
-html.light body {
-  background-color: var(--page) !important;
-  color: var(--ink) !important;
-  background-image: radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.1), transparent 28rem), radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.08), transparent 25rem);
-}
-
-html.light .bg-white, html.light .bg-white\/80 { background-color: var(--surface) !important; }
-html.light .bg-white\/95 { background-color: rgba(255, 255, 255, 0.88) !important; }
-html.light .bg-slate-50, html.light .bg-slate-50\/70 { background-color: #f6f8f7 !important; }
-html.light .bg-slate-50\/40 { background-color: rgba(246, 248, 247, 0.8) !important; }
-html.light .bg-slate-900 { background-color: #0f172a !important; }
-html.light .bg-slate-100 { background-color: #f1f5f9 !important; }
-html.light .text-slate-900, html.light .text-slate-950 { color: #0f172a !important; }
-html.light .text-slate-800 { color: #1e293b !important; }
-html.light .text-slate-700 { color: #334155 !important; }
-html.light .text-slate-600 { color: #475569 !important; }
-html.light .text-slate-500 { color: #64748b !important; }
-html.light .text-slate-400 { color: #94a3b8 !important; }
-html.light .text-slate-300 { color: #64748b !important; }
-html.light .border-slate-100, html.light .border-slate-200, html.light .border-slate-200\/60, html.light .border-slate-200\/70, html.light .border-slate-200\/80 { border-color: rgba(15, 23, 42, 0.12) !important; }
-html.light .border-slate-800 { border-color: rgba(15, 23, 42, 0.16) !important; }
-html.light .hover\:bg-slate-50:hover { background-color: #f1f5f9 !important; }
-html.light .hover\:bg-slate-100:hover { background-color: #e2e8f0 !important; }
-html.light .hover\:text-slate-900:hover, html.light .hover\:text-slate-800:hover { color: #0f172a !important; }
-html.light .depth-card { background: linear-gradient(145deg, #ffffff, #eef6f2) !important; box-shadow: 0 18px 50px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
-html.light input, html.light textarea, html.light select { color: #0f172a; background-color: #ffffff; }
-html.light .theme-toggle { color: #475569 !important; background-color: #ffffff !important; }
+/* =============================================================================
+ * Reveal animations
+ * ============================================================================= */
 
 .reveal-up {
   opacity: 0;
@@ -196,4 +675,27 @@ html.light .theme-toggle { color: #475569 !important; background-color: #ffffff 
 
 @keyframes reveal-up {
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================================================
+ * Light theme tweaks — keep the dark identity but soften any hard-coded surfaces
+ * so the same components read coherently on a light background.
+ * ============================================================================= */
+
+html.light .depth-card {
+  background: linear-gradient(145deg, #ffffff, #eef6f2) !important;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+html.light .theme-toggle {
+  color: var(--c-slate-600) !important;
+  background-color: var(--c-white) !important;
+}
+
+html.light body {
+  background-color: var(--page);
+  color: var(--ink);
+  background-image:
+    radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.10), transparent 28rem),
+    radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.08), transparent 25rem);
 }
