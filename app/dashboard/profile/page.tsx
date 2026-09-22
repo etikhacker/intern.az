@@ -245,7 +245,7 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
                     id="university"
                     name="university"
                     type="text"
-                    placeholder="məs. ADA Universiteti, BDU, ADNSU, BMU"
+                    placeholder="məs. universitetinizin tam adı"
                     value={formData.university || ''}
                     onChange={handleChange}
                     disabled={isSubmitting}

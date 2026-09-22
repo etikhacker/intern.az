@@ -11,6 +11,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { Mail, MapPin, Phone, Send, CheckCircle2 } from 'lucide-react';
 
+const CONTACT_EMAIL = 'babayev.omr.23@gmail.com';
+
 export default function ContactPage() {
   const { language } = useLanguage();
   const isAz = language === 'az';
@@ -25,6 +27,11 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const subject = encodeURIComponent(`[Intern.az] ${formData.subject}`);
+    const body = encodeURIComponent(
+      `Ad və Soyad: ${formData.name}\nE-poçt: ${formData.email}\n\n${formData.message}`
+    );
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -58,7 +65,7 @@ export default function ContactPage() {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed pl-11">
-                  Bakı şəhəri, Azərbaycan
+                  Mingəçevir şəhəri, Azərbaycan
                 </p>
               </div>
 
@@ -72,7 +79,9 @@ export default function ContactPage() {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed pl-11">
-                  info@intern.az
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-emerald-700 transition-colors">
+                    {CONTACT_EMAIL}
+                  </a>
                 </p>
               </div>
 
@@ -86,7 +95,7 @@ export default function ContactPage() {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed pl-11">
-                  +994 (12) 500-00-00
+                  Yalnız e-poçt vasitəsilə
                 </p>
               </div>
             </div>
@@ -99,12 +108,12 @@ export default function ContactPage() {
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900">
-                    {isAz ? 'Müraciətiniz qəbul edildi!' : 'Message Sent Successfully!'}
+                    {isAz ? 'E-poçt proqramı açıldı!' : 'Email draft opened!'}
                   </h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     {isAz
-                      ? 'Ən qısa zamanda qeyd etdiyiniz e-poçt ünvanı ilə sizinlə əlaqə saxlanılacaq.'
-                      : 'Our support coordinators will review your message and reach out via email shortly.'}
+                      ? 'Mesajınız hazırlandı. Göndərmək üçün açılan e-poçt proqramında “Göndər” düyməsinə basın.'
+                      : 'Your message is ready. Press “Send” in the email application that opened.'}
                   </p>
                   <Button
                     variant="outline"
