@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage, Language } from '@/lib/i18n/language-context';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { GraduationCap, Menu, X, ArrowRight, User, Globe, LogOut } from 'lucide-react';
 
 export function Navbar() {
@@ -61,6 +62,7 @@ export function Navbar() {
 
           {/* Right Area: Language Switcher & Auth Actions */}
           <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
             {/* Language Switcher AZ / EN */}
             <div className="flex items-center bg-slate-100/70 p-0.5 rounded-lg text-xs font-semibold text-slate-400 border border-slate-200/80">
               <button
@@ -124,6 +126,7 @@ export function Navbar() {
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
             {/* Quick Lang Switcher on mobile header */}
             <button
               onClick={() => setLanguage(language === 'az' ? 'en' : 'az')}
