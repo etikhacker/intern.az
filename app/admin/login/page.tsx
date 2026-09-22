@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ShieldAlert, ArrowRight, Loader2, KeyRound, ArrowLeft } from 'lucide-react';
+import { ShieldAlert, ArrowRight, Loader2, KeyRound, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { SOLE_ADMIN_EMAIL } from '@/lib/auth/admin';
 
 export default function AdminLoginPage() {
@@ -25,6 +25,7 @@ export default function AdminLoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -148,17 +149,27 @@ export default function AdminLoginPage() {
 
               <div>
                 <Label htmlFor="password" className="text-slate-300">Admin Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isSubmitting}
-                  className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:ring-amber-500"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                    className="pr-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 focus:ring-amber-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-400 hover:text-slate-200"
+                    aria-label={showPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-xs text-red-400 mt-1">{errors.password}</p>
                 )}
