@@ -23,17 +23,17 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+    <header className="sticky top-0 z-30 w-full bg-black/55 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.25)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-700 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 shadow-[0_0_28px_rgba(52,211,153,0.28)] group-hover:rotate-3 group-hover:scale-105 transition-transform duration-200">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
               <span className="text-xl font-bold tracking-tight text-slate-900 block leading-tight">
-                Intern<span className="text-emerald-600">.az</span>
+                Intern<span className="text-emerald-400">.az</span>
               </span>
               <span className="text-[10px] tracking-wide text-slate-500 uppercase font-medium">
                 Təcrübə Portalı
@@ -42,7 +42,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-400">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -50,7 +50,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={`transition-colors hover:text-emerald-600 ${
-                    isActive ? 'text-emerald-600 font-semibold' : ''
+                    isActive ? 'text-emerald-300 font-semibold' : ''
                   }`}
                 >
                   {link.label}
@@ -62,13 +62,13 @@ export function Navbar() {
           {/* Right Area: Language Switcher & Auth Actions */}
           <div className="hidden md:flex items-center gap-4">
             {/* Language Switcher AZ / EN */}
-            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg text-xs font-semibold text-slate-600 border border-slate-200/80">
+            <div className="flex items-center bg-slate-100/70 p-0.5 rounded-lg text-xs font-semibold text-slate-400 border border-slate-200/80">
               <button
                 type="button"
-                onClick={() => setLanguage('az')}
-                className={`px-2 py-1 rounded-md transition-all ${
-                  language === 'az'
-                    ? 'bg-white text-emerald-700 shadow-2xs font-bold'
+                  onClick={() => setLanguage('az')}
+                  className={`px-2 py-1 rounded-md transition-all ${
+                    language === 'az'
+                    ? 'bg-emerald-400 text-slate-950 shadow-2xs font-bold'
                     : 'hover:text-slate-900'
                 }`}
               >
@@ -76,10 +76,10 @@ export function Navbar() {
               </button>
               <button
                 type="button"
-                onClick={() => setLanguage('en')}
-                className={`px-2 py-1 rounded-md transition-all ${
-                  language === 'en'
-                    ? 'bg-white text-emerald-700 shadow-2xs font-bold'
+                  onClick={() => setLanguage('en')}
+                  className={`px-2 py-1 rounded-md transition-all ${
+                    language === 'en'
+                    ? 'bg-emerald-400 text-slate-950 shadow-2xs font-bold'
                     : 'hover:text-slate-900'
                 }`}
               >

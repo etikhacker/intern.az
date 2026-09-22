@@ -32,7 +32,7 @@ export const viewport: Viewport = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="az">
-      <body suppressHydrationWarning className="min-h-screen bg-slate-50 text-slate-900 antialiased flex flex-col">
+      <body suppressHydrationWarning className="min-h-screen bg-[#07090d] text-slate-100 antialiased flex flex-col">
         <Providers>
           {children}
         </Providers>
