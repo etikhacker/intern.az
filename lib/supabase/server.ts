@@ -1,6 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { isSupabaseConfigured } from './config';
+import { isSupabaseConfigured, getSupabasePublicKey } from './config';
 
 export async function createClient() {
   if (!isSupabaseConfigured()) {
