@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useLanguage } from '@/lib/i18n/language-context';
+import { submitContactMessage } from '@/lib/contact/service';
 import { Mail, MapPin, Phone, Send, CheckCircle2 } from 'lucide-react';
 
 const CONTACT_EMAIL = 'babayev.omr.23@gmail.com';
@@ -18,6 +19,8 @@ export default function ContactPage() {
   const isAz = language === 'az';
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,14 +28,23 @@ export default function ContactPage() {
     message: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`[Intern.az] ${formData.subject}`);
-    const body = encodeURIComponent(
-      `Ad və Soyad: ${formData.name}\nE-poçt: ${formData.email}\n\n${formData.message}`
-    );
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    setServerError(null);
+    setIsSubmitting(true);
+
+    try {
+      const result = await submitContactMessage(formData);
+      if (!result.success) {
+        setServerError(result.error || 'Mesaj göndərilmədi.');
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setServerError('Mesaj göndərilərkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -95,13 +107,20 @@ export default function ContactPage() {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed pl-11">
-                  Yalnız e-poçt vasitəsilə
+                  <a href="tel:+994706449222" className="hover:text-emerald-700 transition-colors">
+                    +994 70 644 92 22
+                  </a>
                 </p>
               </div>
             </div>
 
             {/* Form */}
             <div className="md:col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-2xs">
+              {serverError && (
+                <Alert variant="destructive" className="mb-4 text-xs">
+                  <AlertDescription>{serverError}</AlertDescription>
+                </Alert>
+              )}
               {submitted ? (
                 <div className="py-12 text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
@@ -112,14 +131,15 @@ export default function ContactPage() {
                   </h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     {isAz
-                      ? 'Mesajınız hazırlandı. Göndərmək üçün açılan e-poçt proqramında “Göndər” düyməsinə basın.'
-                      : 'Your message is ready. Press “Send” in the email application that opened.'}
+                      ? 'Mesajınız uğurla göndərildi. Administrator panelində görünür.'
+                      : 'Your message was submitted and is now visible in the administrator panel.'}
                   </p>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
                       setSubmitted(false);
+                      setServerError(null);
                       setFormData({ name: '', email: '', subject: '', message: '' });
                     }}
                     className="mt-4"
@@ -188,9 +208,9 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="gap-2 shadow-xs">
+                  <Button type="submit" className="gap-2 shadow-xs" disabled={isSubmitting}>
                     <Send className="w-4 h-4" />
-                    {isAz ? 'Mesajı Göndər' : 'Send Message'}
+                    {isSubmitting ? (isAz ? 'Göndərilir...' : 'Sending...') : (isAz ? 'Mesajı Göndər' : 'Send Message')}
                   </Button>
                 </form>
               )}

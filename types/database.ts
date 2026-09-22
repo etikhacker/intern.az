@@ -1,5 +1,18 @@
 export type UserRole = 'student' | 'admin';
 
+export type ContactMessageStatus = 'new' | 'read' | 'archived';
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: ContactMessageStatus;
+  created_at: string;
+  read_at: string | null;
+}
+
 export interface Profile {
   id: string;
   user_id: string;
@@ -208,4 +221,3 @@ export interface CertificateCandidate {
   payment: CertificatePayment;
   certificate?: Certificate | null;
 }
-

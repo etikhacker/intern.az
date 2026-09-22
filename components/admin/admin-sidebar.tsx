@@ -16,6 +16,7 @@ import {
   CreditCard,
   Award,
   Bell,
+  Mail,
   Settings,
   LogOut,
   ChevronRight,
@@ -44,6 +45,7 @@ const adminNavItems: AdminNavItem[] = [
   { name: 'Sertifikatlar', href: '/admin/certificates', icon: Award },
   { name: 'Sertifikat parametrləri', href: '/admin/certificate-settings', icon: Settings },
   { name: 'Bildirişlər', href: '/admin/notifications', icon: Bell },
+  { name: 'Əlaqə mesajları', href: '/admin/contact-messages', icon: Mail },
 ];
 
 export function AdminSidebar() {
