@@ -170,7 +170,7 @@ const translations: Record<Language, Translations> = {
     footerDesc: 'Azərbaycan tələbələri üçün praktiki təcrübə proqramları, real layihələr və rəsmi sertifikatlaşdırma platforması.',
     footerPlatform: 'Platforma',
     footerRights: 'Bütün hüquqlar qorunur.',
-    footerBaku: 'Bakı, Azərbaycan',
+    footerBaku: 'Mingəçevir, Azərbaycan',
     privacy: 'Məxfilik siyasəti',
     terms: 'İstifadə qaydaları',
 
@@ -313,7 +313,7 @@ const translations: Record<Language, Translations> = {
     footerDesc: 'Empowering university students in Azerbaijan with hands-on industry internships, workplace projects, and verified career credentials.',
     footerPlatform: 'Platform',
     footerRights: 'All rights reserved.',
-    footerBaku: 'Baku, Azerbaijan',
+    footerBaku: 'Mingachevir, Azerbaijan',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
 

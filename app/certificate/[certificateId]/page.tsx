@@ -273,7 +273,7 @@ export default function PublicCertificateVerificationPage() {
       <footer className="w-full bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© {new Date().getFullYear()} Intern.az — Bütün hüquqlar qorunur.</span>
-          <span>Bakı, Azərbaycan</span>
+          <span>Mingəçevir, Azərbaycan</span>
         </div>
       </footer>
     </div>
