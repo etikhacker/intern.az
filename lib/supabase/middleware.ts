@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { isSupabaseConfigured } from './config';
+import { getSupabasePublicKey, getSupabaseUrl, isSupabaseConfigured } from './config';
+import { isSoleAdminEmail } from '@/lib/auth/admin';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -14,8 +15,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    getSupabaseUrl()!,
+    getSupabasePublicKey()!,
     {
       cookies: {
         getAll() {
@@ -57,14 +58,9 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Check user role from database
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'admin') {
+    // The sole admin identity is checked from the verified Supabase Auth user.
+    // Do not rely on a client-editable profile role for route protection.
+    if (!isSoleAdminEmail(user.email)) {
       const url = request.nextUrl.clone();
       url.pathname = '/dashboard';
       return NextResponse.redirect(url);

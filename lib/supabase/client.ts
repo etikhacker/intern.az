@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
-import { isSupabaseConfigured, getSupabasePublicKey } from './config';
+import { getSupabasePublicKey, getSupabaseUrl, isSupabaseConfigured } from './config';
 
 let browserClient: ReturnType<typeof createBrowserClient> | null = null;
 
@@ -11,7 +11,7 @@ export function createClient() {
 
   if (!browserClient) {
     browserClient = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      getSupabaseUrl()!,
       getSupabasePublicKey()!
     );
   }

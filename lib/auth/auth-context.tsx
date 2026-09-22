@@ -4,10 +4,9 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { isSoleAdminEmail, SOLE_ADMIN_EMAIL } from '@/lib/auth/admin';
 import { Profile, ProfileUpdateInput, UserRole } from '@/types/database';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-
-export const SOLE_ADMIN_EMAIL = 'babayev.omr.23@gmail.com';
 
 interface AuthContextType {
   user: { id: string; email: string } | null;
@@ -72,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
 
       if (!isConfigured) {
-        setError('Supabase konfiqurasiyası tapılmadı. Zəhmət olmasa NEXT_PUBLIC_SUPABASE_URL və NEXT_PUBLIC_SUPABASE_ANON_KEY parametrlərini yoxlayın.');
+        setError('Supabase konfiqurasiyası tapılmadı. Zəhmət olmasa NEXT_PUBLIC_SUPABASE_URL və NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY parametrlərini yoxlayın.');
         if (isMounted) setIsLoading(false);
         return;
       }
@@ -151,6 +150,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!isConfigured) {
       return { success: false, error: 'Supabase konfiqurasiya edilməyib. Zəhmət olmasa parametrləri tamamlayın.' };
+    }
+
+    if (isSoleAdminEmail(email)) {
+      return {
+        success: false,
+        error: 'Administrator hesabı public qeydiyyatla yaradıla bilməz. Bu hesab Supabase Auth panelindən yaradılmalıdır.',
+      };
     }
 
     const supabase = createClient();
@@ -269,12 +275,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (newProfile) prof = newProfile as Profile;
         }
 
-        const effectiveRole: UserRole =
-          cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase() && prof?.role === 'admin'
-            ? 'admin'
-            : prof?.role === 'admin' && cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase()
-            ? 'admin'
-            : 'student';
+        const effectiveRole: UserRole = isSoleAdminEmail(cleanEmail) ? 'admin' : 'student';
 
         setUser({ id: data.user.id, email: cleanEmail });
         setProfile(prof);

@@ -99,15 +99,6 @@ export async function submitTaskSolution({
   let resolvedFilePath = filePath || null;
   let resolvedFileName = fileName || null;
 
-  if (file) {
-    const uploadRes = await uploadSubmissionFile(studentId, taskId, file);
-    if (!uploadRes.success) {
-      return { success: false, error: uploadRes.error || 'Fayl yüklənə bilmədi.' };
-    }
-    resolvedFilePath = uploadRes.filePath || null;
-    resolvedFileName = uploadRes.fileName || null;
-  }
-
   if (!isSupabaseConfigured()) {
     return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
   }
@@ -116,6 +107,40 @@ export async function submitTaskSolution({
   if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
   try {
+    const [{ data: enrollment, error: enrollmentError }, { data: task, error: taskError }] = await Promise.all([
+      supabase
+        .from('enrollments')
+        .select('id, student_id, internship_id, status')
+        .eq('id', enrollmentId)
+        .maybeSingle(),
+      supabase
+        .from('internship_tasks')
+        .select('id, internship_id')
+        .eq('id', taskId)
+        .maybeSingle(),
+    ]);
+
+    if (enrollmentError || !enrollment || taskError || !task) {
+      return { success: false, error: 'Təcrübəçi qeydiyyatı və ya tapşırıq tapılmadı.' };
+    }
+
+    if (
+      enrollment.student_id !== studentId ||
+      enrollment.internship_id !== task.internship_id ||
+      enrollment.status === 'cancelled'
+    ) {
+      return { success: false, error: 'Bu tapşırıq üçün təqdimat göndərmək icazəniz yoxdur.' };
+    }
+
+    if (file) {
+      const uploadRes = await uploadSubmissionFile(studentId, taskId, file);
+      if (!uploadRes.success) {
+        return { success: false, error: uploadRes.error || 'Fayl yüklənə bilmədi.' };
+      }
+      resolvedFilePath = uploadRes.filePath || null;
+      resolvedFileName = uploadRes.fileName || null;
+    }
+
     // Check existing submission
     const { data: existing } = await supabase
       .from('task_submissions')

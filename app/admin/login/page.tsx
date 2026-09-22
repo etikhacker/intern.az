@@ -10,11 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ShieldAlert, ArrowRight, Loader2, KeyRound, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShieldAlert, ArrowRight, Loader2, KeyRound, ArrowLeft } from 'lucide-react';
+import { SOLE_ADMIN_EMAIL } from '@/lib/auth/admin';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { signIn, isConfigured } = useAuth();
+  const { signIn } = useAuth();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -70,8 +71,9 @@ export default function AdminLoginPage() {
 
       if (res.role !== 'admin') {
         setServerError(
-          'Access Denied: This account does not possess administrator privileges. Redirecting to student dashboard...'
+          'Giriş rədd edildi. Yalnız səlahiyyətli administrator hesabı bu səhifəyə daxil ola bilər.'
         );
+        setIsSubmitting(false);
         setTimeout(() => {
           router.push('/dashboard');
         }, 1500);
@@ -84,14 +86,6 @@ export default function AdminLoginPage() {
       setServerError(msg);
       setIsSubmitting(false);
     }
-  };
-
-  const fillDemoAdmin = () => {
-    setFormData({
-      email: 'admin@intern.az',
-      password: 'adminpassword',
-    });
-    setServerError(null);
   };
 
   return (
@@ -140,7 +134,7 @@ export default function AdminLoginPage() {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="admin@intern.az"
+                  placeholder={SOLE_ADMIN_EMAIL}
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isSubmitting}
@@ -190,18 +184,6 @@ export default function AdminLoginPage() {
               </Button>
             </form>
 
-            {!isConfigured && (
-              <div className="mt-4 pt-3 border-t border-slate-800 text-center">
-                <button
-                  type="button"
-                  onClick={fillDemoAdmin}
-                  className="text-[11px] text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-800/60 px-2.5 py-1 rounded-md font-medium inline-flex items-center gap-1.5 transition-colors"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                  Quick Fill Demo Admin (admin@intern.az)
-                </button>
-              </div>
-            )}
           </CardContent>
 
           <CardFooter className="flex flex-col gap-2 pt-0 text-center text-xs text-slate-400 border-t border-slate-800 mt-4 p-4">
