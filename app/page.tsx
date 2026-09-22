@@ -33,10 +33,13 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-white to-slate-50 py-20 lg:py-28 border-b border-slate-200/70">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#0d1717] via-[#07090d] to-[#07090d] py-20 lg:py-28 border-b border-slate-200/70">
+          <div className="hero-grid absolute inset-0 opacity-70" aria-hidden="true" />
+          <div className="hero-orb hero-orb-left" aria-hidden="true" />
+          <div className="hero-orb hero-orb-right" aria-hidden="true" />
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200/80 text-emerald-800 text-xs font-semibold mb-6 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold mb-6 shadow-[0_0_28px_rgba(52,211,153,0.12)]">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
               <span>
                 {isAz
                   ? 'Azərbaycan tələbələri üçün peşəkar təcrübə portalı'
@@ -44,21 +47,21 @@ export default function HomePage() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
               {isAz ? (
                 <>
                   Bacarıqlarını inkişaf etdir. Real layihələr qur.{' '}
-                  <span className="text-emerald-600">Sertifikat qazan.</span>
+                  <span className="text-emerald-300 [text-shadow:0_0_30px_rgba(52,211,153,0.35)]">Sertifikat qazan.</span>
                 </>
               ) : (
                 <>
                   Build Real Skills. Deliver Industry Projects.{' '}
-                  <span className="text-emerald-600">Get Certified.</span>
+                  <span className="text-emerald-300 [text-shadow:0_0_30px_rgba(52,211,153,0.35)]">Get Certified.</span>
                 </>
               )}
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
+            <p className="relative mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
               {isAz
                 ? 'Universitet biliklərini real iş mühitində tətbiq et. Mentorların rəhbərliyi ilə həftəlik tapşırıqları tamamla və təsdiq olunmuş rəsmi karyera sertifikatı əldə et.'
                 : 'Bridge the gap between academic theory and industry reality. Complete weekly workplace tasks with mentor guidance and earn verifiable certificates to boost your career.'}
@@ -80,7 +83,7 @@ export default function HomePage() {
             </div>
 
             {/* Trust Metrics */}
-            <div className="mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
+            <div className="relative mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
               <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
                 <div className="flex items-center gap-2 text-emerald-600 mb-1">
                   <GraduationCap className="w-4 h-4" />
