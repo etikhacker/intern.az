@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,18 +75,20 @@ export default function StudentTaskDetailPage({
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const loadData = async () => {
-    if (!profile?.id) return;
+  const studentId = profile?.id;
+
+  const loadData = useCallback(async () => {
+    if (!studentId) return;
     try {
       const [taskData, activeEnrollment] = await Promise.all([
         getTaskById(taskId),
-        getStudentActiveEnrollment(profile.id),
+        getStudentActiveEnrollment(studentId),
       ]);
       setTask(taskData);
       setEnrollment(activeEnrollment);
 
       if (taskData) {
-        const sub = await getSubmissionForTask(taskId, profile.id);
+        const sub = await getSubmissionForTask(taskId, studentId);
         setSubmission(sub);
         if (sub) {
           setGithubUrl(sub.github_url || '');
@@ -100,11 +102,43 @@ export default function StudentTaskDetailPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [taskId, studentId]);
 
   useEffect(() => {
-    loadData();
-  }, [taskId, profile?.id]);
+    let active = true;
+    const fetchAsync = async () => {
+      if (!studentId) return;
+      try {
+        const [taskData, activeEnrollment] = await Promise.all([
+          getTaskById(taskId),
+          getStudentActiveEnrollment(studentId),
+        ]);
+        if (!active) return;
+        setTask(taskData);
+        setEnrollment(activeEnrollment);
+
+        if (taskData) {
+          const sub = await getSubmissionForTask(taskId, studentId);
+          if (!active) return;
+          setSubmission(sub);
+          if (sub) {
+            setGithubUrl(sub.github_url || '');
+            setSubmissionUrl(sub.submission_url || '');
+            setTextAnswer(sub.text_answer || '');
+            setComment(sub.comment || '');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load task details:', err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchAsync();
+    return () => {
+      active = false;
+    };
+  }, [taskId, studentId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -412,7 +446,7 @@ export default function StudentTaskDetailPage({
                     {isAz ? 'Mentorun Tələbi:' : 'Mentor Instructions:'}
                   </span>
                   <p className="italic leading-relaxed">
-                    "{submission.admin_feedback}"
+                    &ldquo;{submission.admin_feedback}&rdquo;
                   </p>
                 </div>
               )}
@@ -500,7 +534,7 @@ export default function StudentTaskDetailPage({
 
               {submission.comment && (
                 <div className="text-xs text-slate-500 italic pt-1">
-                  <span className="font-semibold text-slate-700">{isAz ? 'Qeydiniz:' : 'Your note:'}</span> "{submission.comment}"
+                  <span className="font-semibold text-slate-700">{isAz ? 'Qeydiniz:' : 'Your note:'}</span> &ldquo;{submission.comment}&rdquo;
                 </div>
               )}
             </div>

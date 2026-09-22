@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,7 +85,7 @@ export default function AdminInternshipTasksPage({
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [internshipData, taskList] = await Promise.all([
         getInternshipById(internshipId),
@@ -98,10 +98,30 @@ export default function AdminInternshipTasksPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [internshipId]);
 
   useEffect(() => {
-    loadData();
+    let active = true;
+    const fetchAsync = async () => {
+      try {
+        const [internshipData, taskList] = await Promise.all([
+          getInternshipById(internshipId),
+          getAllTasksForInternship(internshipId, true),
+        ]);
+        if (active) {
+          setInternship(internshipData);
+          setTasks(taskList);
+        }
+      } catch (err) {
+        console.error('Failed to load tasks:', err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchAsync();
+    return () => {
+      active = false;
+    };
   }, [internshipId]);
 
   // Open modal for new task

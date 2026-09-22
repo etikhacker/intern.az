@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export default function AdminSubmissionsPage() {
   const [reviewError, setReviewError] = useState('');
   const [reviewing, setReviewing] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await getAllSubmissions();
       setSubmissions(data);
@@ -62,10 +62,24 @@ export default function AdminSubmissionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadData();
+    let active = true;
+    const fetchAsync = async () => {
+      try {
+        const data = await getAllSubmissions();
+        if (active) setSubmissions(data);
+      } catch (err) {
+        console.error('Failed to load submissions:', err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchAsync();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const openReviewModal = (sub: TaskSubmission) => {
@@ -555,7 +569,7 @@ export default function AdminSubmissionsPage() {
                     {isAz ? 'Tələbənin Əlavə Qeydi:' : 'Student Comment:'}
                   </span>
                   <p className="text-xs text-slate-300 italic">
-                    "{selectedSub.comment}"
+                    &ldquo;{selectedSub.comment}&rdquo;
                   </p>
                 </div>
               )}

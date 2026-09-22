@@ -418,7 +418,7 @@ export default function StudentMyInternshipPage() {
                                           {isAz ? 'İnzibatçı / Mentor Düzəliş Rəyi:' : 'Mentor Feedback:'}
                                         </span>
                                         <p className="text-orange-800 leading-relaxed">
-                                          "{itemStatus.submission.admin_feedback}"
+                                          &ldquo;{itemStatus.submission.admin_feedback}&rdquo;
                                         </p>
                                       </div>
                                     )}

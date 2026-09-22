@@ -139,6 +139,7 @@ export async function submitTaskSolution({
   githubUrl,
   filePath,
   fileName,
+  file,
   comment,
 }: {
   taskId: string;
@@ -149,8 +150,21 @@ export async function submitTaskSolution({
   githubUrl?: string | null;
   filePath?: string | null;
   fileName?: string | null;
+  file?: File | null;
   comment?: string | null;
 }): Promise<{ success: boolean; error?: string; submission?: TaskSubmission }> {
+  let resolvedFilePath = filePath || null;
+  let resolvedFileName = fileName || null;
+
+  if (file) {
+    const uploadRes = await uploadSubmissionFile(studentId, taskId, file);
+    if (!uploadRes.success) {
+      return { success: false, error: uploadRes.error || 'Fayl yüklənə bilmədi.' };
+    }
+    resolvedFilePath = uploadRes.filePath || null;
+    resolvedFileName = uploadRes.fileName || null;
+  }
+
   const isConfigured = isSupabaseConfigured();
 
   if (isConfigured) {
@@ -173,7 +187,7 @@ export async function submitTaskSolution({
         text_answer: textAnswer || null,
         submission_url: submissionUrl || null,
         github_url: githubUrl || null,
-        file_path: filePath || null,
+        file_path: resolvedFilePath,
         comment: comment || null,
         status: 'pending' as SubmissionStatus,
         admin_feedback: null,
@@ -228,8 +242,8 @@ export async function submitTaskSolution({
     text_answer: textAnswer || null,
     submission_url: submissionUrl || null,
     github_url: githubUrl || null,
-    file_path: filePath || null,
-    file_name: fileName || null,
+    file_path: resolvedFilePath || (existingIndex >= 0 ? list[existingIndex].file_path : null),
+    file_name: resolvedFileName || (existingIndex >= 0 ? list[existingIndex].file_name : null),
     comment: comment || null,
     status: 'pending',
     admin_feedback: null,

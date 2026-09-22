@@ -309,7 +309,7 @@ export default function AdminSingleSubmissionPage({
               <span className="font-semibold text-amber-400 not-italic mr-1.5">
                 {isAz ? 'Tələbə Qeydi:' : 'Student Note:'}
               </span>
-              "{submission.comment}"
+              &ldquo;{submission.comment}&rdquo;
             </div>
           )}
         </div>
