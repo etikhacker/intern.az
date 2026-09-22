@@ -4,10 +4,9 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
+import { isSoleAdminEmail, SOLE_ADMIN_EMAIL } from '@/lib/auth/admin';
 import { Profile, ProfileUpdateInput, UserRole } from '@/types/database';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-
-export const SOLE_ADMIN_EMAIL = 'babayev.omr.23@gmail.com';
 
 interface AuthContextType {
   user: { id: string; email: string } | null;
@@ -269,12 +268,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (newProfile) prof = newProfile as Profile;
         }
 
-        const effectiveRole: UserRole =
-          cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase() && prof?.role === 'admin'
-            ? 'admin'
-            : prof?.role === 'admin' && cleanEmail === SOLE_ADMIN_EMAIL.toLowerCase()
-            ? 'admin'
-            : 'student';
+        const effectiveRole: UserRole = isSoleAdminEmail(cleanEmail) ? 'admin' : 'student';
 
         setUser({ id: data.user.id, email: cleanEmail });
         setProfile(prof);

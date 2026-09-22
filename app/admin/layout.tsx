@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
+import { isSoleAdminEmail } from '@/lib/auth/admin';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { Loader2 } from 'lucide-react';
 
@@ -11,7 +12,8 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, profile, role, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
+  const isAdmin = isSoleAdminEmail(user?.email);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -25,12 +27,12 @@ export default function AdminLayout({
       if (!user) {
         // Unauthenticated -> redirect to /admin/login
         router.push('/admin/login');
-      } else if (role !== 'admin') {
+      } else if (!isAdmin) {
         // Student -> redirect to /dashboard
         router.push('/dashboard');
       }
     }
-  }, [user, role, isLoading, router, pathname]);
+  }, [user, isAdmin, isLoading, router, pathname]);
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
@@ -48,7 +50,7 @@ export default function AdminLayout({
   }
 
   // If user is not admin, do not render content while redirecting
-  if (!user || role !== 'admin') {
+  if (!user || !isAdmin) {
     return (
       <div className="flex-1 min-h-screen bg-slate-900 flex items-center justify-center p-12">
         <div className="text-center text-slate-400 text-xs">

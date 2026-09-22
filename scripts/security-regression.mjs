@@ -3,9 +3,11 @@ import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
-const [config, middleware, admin, students, migration, certificates, submissions, tasks] = await Promise.all([
+const [config, middleware, adminLayout, adminLogin, admin, students, migration, certificates, submissions, tasks] = await Promise.all([
   read('lib/supabase/config.ts'),
   read('lib/supabase/middleware.ts'),
+  read('app/admin/layout.tsx'),
+  read('app/admin/login/page.tsx'),
   read('app/admin/page.tsx'),
   read('app/admin/students/page.tsx'),
   read('supabase/migrations/20260922000006_harden_storage_ownership.sql'),
@@ -18,6 +20,10 @@ assert.match(config, /process\.env\.SUPABASE_URL/);
 assert.match(config, /process\.env\.SUPABASE_PUBLISHABLE_KEY/);
 assert.match(middleware, /getSupabasePublicKey\(\)/);
 assert.match(middleware, /getSupabaseUrl\(\)/);
+assert.match(middleware, /isSoleAdminEmail\(user\.email\)/);
+assert.match(adminLayout, /isSoleAdminEmail\(user\?\.email\)/);
+assert.match(adminLogin, /SOLE_ADMIN_EMAIL/);
+assert.doesNotMatch(adminLogin, /admin@intern\.az|Quick Fill Demo Admin/);
 assert.doesNotMatch(admin, /localStorage\.getItem\(['"]internship_az_demo_profiles/);
 assert.doesNotMatch(students, /localStorage\.getItem\(['"]internship_az_demo_profiles/);
 assert.match(migration, /storage\.foldername\(name\)\)\[1\]/);
