@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
 
       if (!isConfigured) {
-        setError('Supabase konfiqurasiyası tapılmadı. Zəhmət olmasa NEXT_PUBLIC_SUPABASE_URL və NEXT_PUBLIC_SUPABASE_ANON_KEY parametrlərini yoxlayın.');
+        setError('Supabase konfiqurasiyası tapılmadı. Zəhmət olmasa NEXT_PUBLIC_SUPABASE_URL və NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY parametrlərini yoxlayın.');
         if (isMounted) setIsLoading(false);
         return;
       }

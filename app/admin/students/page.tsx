@@ -29,14 +29,6 @@ export default function AdminStudentsPage() {
             .order('created_at', { ascending: false });
           if (isMounted && data) setStudents(data as Profile[]);
         }
-      } else if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem('internship_az_demo_profiles');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (isMounted && Array.isArray(parsed)) {
-            setStudents(parsed.filter((p: Profile) => p.role === 'student'));
-          }
-        }
       }
       if (isMounted) setLoading(false);
     }

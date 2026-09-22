@@ -69,14 +69,6 @@ export default function AdminOverviewPage() {
             setStudents(data as Profile[]);
           }
         }
-      } else if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem('internship_az_demo_profiles');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            setStudents(parsed.filter((p: Profile) => p.role === 'student'));
-          }
-        }
       }
     } catch (err) {
       console.warn('Failed to load admin data:', err);
@@ -109,15 +101,6 @@ export default function AdminOverviewPage() {
             if (!isMounted) return;
             if (!error && data) {
               setStudents(data as Profile[]);
-            }
-          }
-        } else if (typeof window !== 'undefined') {
-          const stored = localStorage.getItem('internship_az_demo_profiles');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (!isMounted) return;
-            if (Array.isArray(parsed)) {
-              setStudents(parsed.filter((p: Profile) => p.role === 'student'));
             }
           }
         }

@@ -321,19 +321,6 @@ export async function submitCertificatePayment({
   let finalReceiptPath = receiptPath || '';
   let finalReceiptName = receiptName || '';
 
-  if (receiptFile) {
-    const uploadRes = await uploadReceiptFile(studentId, enrollmentId, receiptFile);
-    if (!uploadRes.success) {
-      return { success: false, error: uploadRes.error || 'Qəbz faylı yüklənə bilmədi.' };
-    }
-    finalReceiptPath = uploadRes.filePath || '';
-    finalReceiptName = uploadRes.fileName || '';
-  }
-
-  if (!finalReceiptPath) {
-    return { success: false, error: 'Zəhmət olmasa ödəniş qəbzini yükləyin.' };
-  }
-
   if (!isSupabaseConfigured()) {
     return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
   }
@@ -355,6 +342,23 @@ export async function submitCertificatePayment({
 
     if (enrollmentData.status !== 'completed') {
       return { success: false, error: 'Ödəniş yalnız proqramı uğurla tamamlamış tələbələr tərəfindən göndərilə bilər.' };
+    }
+
+    if (enrollmentData.student_id !== studentId || enrollmentData.internship_id !== internshipId) {
+      return { success: false, error: 'Təcrübəçi qeydiyyatı ilə göndərilən tələbə/proqram məlumatları uyğun gəlmir.' };
+    }
+
+    if (receiptFile) {
+      const uploadRes = await uploadReceiptFile(studentId, enrollmentId, receiptFile);
+      if (!uploadRes.success) {
+        return { success: false, error: uploadRes.error || 'Qəbz faylı yüklənə bilmədi.' };
+      }
+      finalReceiptPath = uploadRes.filePath || '';
+      finalReceiptName = uploadRes.fileName || '';
+    }
+
+    if (!finalReceiptPath) {
+      return { success: false, error: 'Zəhmət olmasa ödəniş qəbzini yükləyin.' };
     }
 
     // Check existing pending payment

@@ -168,14 +168,19 @@ export async function reorderTasks(
 
   try {
     for (const item of orders) {
-      await supabase
+      const { error } = await supabase
         .from('internship_tasks')
         .update({
           week_number: item.week_number,
           task_number: item.task_number,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', item.id);
+        .eq('id', item.id)
+        .eq('internship_id', internshipId);
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
     }
     return { success: true };
   } catch (err: unknown) {
