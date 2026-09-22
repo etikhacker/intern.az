@@ -42,8 +42,8 @@ const adminNavItems: AdminNavItem[] = [
   { name: 'Tamamlanmış təcrübələr', href: '/admin/completed', icon: FileBadge },
   { name: 'Sertifikat sifarişləri', href: '/admin/certificate-orders', icon: CreditCard },
   { name: 'Sertifikatlar', href: '/admin/certificates', icon: Award },
+  { name: 'Sertifikat parametrləri', href: '/admin/certificate-settings', icon: Settings },
   { name: 'Bildirişlər', href: '/admin/notifications', icon: Bell },
-  { name: 'Parametrlər', href: '/admin/settings', icon: Settings },
 ];
 
 export function AdminSidebar() {

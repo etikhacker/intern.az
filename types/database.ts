@@ -144,3 +144,68 @@ export interface TaskSubmission {
   reviewer?: Profile;
 }
 
+export type PaymentStatus = 'pending' | 'approved' | 'rejected';
+export type CertificateStatus = 'pending' | 'issued' | 'revoked';
+
+export interface CertificateSettings {
+  id: string;
+  internship_id: string;
+  price: number;
+  currency: string;
+  card_number: string;
+  is_enabled: boolean;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  internship?: Internship;
+}
+
+export interface CertificatePayment {
+  id: string;
+  student_id: string;
+  internship_id: string;
+  enrollment_id: string;
+  amount: number;
+  currency: string;
+  receipt_path: string;
+  receipt_name?: string | null;
+  status: PaymentStatus;
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  student?: Profile;
+  internship?: Internship;
+  enrollment?: Enrollment;
+  reviewer?: Profile;
+}
+
+export interface Certificate {
+  id: string;
+  certificate_id: string;
+  student_id: string;
+  internship_id: string;
+  enrollment_id: string;
+  student_name: string;
+  internship_title: string;
+  issued_at: string;
+  certificate_file_path: string;
+  status: CertificateStatus;
+  created_at: string;
+  updated_at: string;
+  // Relational joins
+  student?: Profile;
+  internship?: Internship;
+  enrollment?: Enrollment;
+}
+
+export interface CertificateCandidate {
+  enrollment: Enrollment;
+  student: Profile;
+  internship: Internship;
+  payment: CertificatePayment;
+  certificate?: Certificate | null;
+}
+

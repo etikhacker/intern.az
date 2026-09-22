@@ -115,6 +115,44 @@ export interface Translations {
   rejectConfirm: string;
   capacityReached: string;
   manageProgram: string;
+
+  // Certificates & Payments (Phase 4)
+  certificate: string;
+  certificateSubtitle: string;
+  certificatePayment: string;
+  certificatePrice: string;
+  paymentCardNumber: string;
+  copyCardNumber: string;
+  cardNumberCopied: string;
+  uploadReceipt: string;
+  uploadReceiptDesc: string;
+  submitPayment: string;
+  paymentPending: string;
+  paymentApproved: string;
+  paymentRejected: string;
+  certificatePreparing: string;
+  certificateIssued: string;
+  certificateRevoked: string;
+  certificateId: string;
+  issuedDate: string;
+  viewCertificate: string;
+  downloadCertificate: string;
+  verifyCertificate: string;
+  notEligibleTitle: string;
+  notEligibleDesc: string;
+  paymentUnderReviewDesc: string;
+  paymentApprovedDesc: string;
+  paymentRejectedDesc: string;
+  publicVerifySuccess: string;
+  publicVerifyNotice: string;
+  publicVerifyNotFound: string;
+  certificateSettings: string;
+  certificateOrders: string;
+  certificatesRegistry: string;
+  candidateAwaitingCert: string;
+  uploadPdfCertificate: string;
+  revokeCertificate: string;
+  revokeConfirm: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -222,6 +260,44 @@ const translations: Record<Language, Translations> = {
     rejectConfirm: 'Bu müraciəti rədd etmək istəyirsiniz?',
     capacityReached: 'Bu təcrübə proqramında boş yer qalmayıb.',
     manageProgram: 'Bu proqramı idarə et',
+
+    // Phase 4 Translations (AZ)
+    certificate: 'Sertifikat',
+    certificateSubtitle: 'Rəsmi təcrübə sertifikatınız, ödəniş statusu və verifikasiya məlumatları.',
+    certificatePayment: 'Sertifikat ödənişi',
+    certificatePrice: 'Qiymət',
+    paymentCardNumber: 'Ödəniş üçün kart',
+    copyCardNumber: 'Kart nömrəsini kopyala',
+    cardNumberCopied: 'Kopyalandı!',
+    uploadReceipt: 'Ödəniş qəbzi',
+    uploadReceiptDesc: 'Bank və ya mobil tətbiqdən ödəniş qəbzini (JPG, PNG, PDF) yükləyin.',
+    submitPayment: 'Qəbzi göndər',
+    paymentPending: 'Ödəniş yoxlanılır',
+    paymentApproved: 'Ödəniş təsdiqlənib',
+    paymentRejected: 'Ödəniş rədd edilib',
+    certificatePreparing: 'Ödəniş təsdiqləndi. Sertifikatınız hazırlanır.',
+    certificateIssued: 'Sertifikat təqdim edildi',
+    certificateRevoked: 'Sertifikat ləğv edilib',
+    certificateId: 'Sertifikat ID',
+    issuedDate: 'Verilmə tarixi',
+    viewCertificate: 'Sertifikata bax',
+    downloadCertificate: 'Sertifikatı yüklə',
+    verifyCertificate: 'Sertifikatı yoxla',
+    notEligibleTitle: 'Sertifikat hələ əlçatan deyil',
+    notEligibleDesc: 'Sertifikat əldə etmək üçün təcrübə proqramındakı bütün tələb olunan (required) tapşırıqları uğurla tamamlamalı və mentor tərəfindən təsdiq olunmalıdır.',
+    paymentUnderReviewDesc: 'Ödəniş qəbziniz inzibatçı tərəfindən yoxlanılır. Təsdiqləndikdən sonra sertifikatınız tərtib olunacaq.',
+    paymentApprovedDesc: 'Ödənişiniz uğurla təsdiq edildi. Rəsmi PDF sertifikatınız koordinator tərəfindən hazırlanır.',
+    paymentRejectedDesc: 'Ödənişiniz təsdiqlənmədi. Zəhmət olmasa aşağıdakı qeydi oxuyun və yeni qəbz yükləyin.',
+    publicVerifySuccess: 'Sertifikat rəsmi olaraq təsdiqlənmişdir',
+    publicVerifyNotice: 'Bu sertifikat Intern.az platformasında təcrübə proqramını uğurla tamamlamış tələbəyə rəsmi olaraq verilmişdir.',
+    publicVerifyNotFound: 'Daxil edilmiş identifikator üzrə aktiv və ya etibarlı sertifikat tapılmadı.',
+    certificateSettings: 'Sertifikat Parametrləri',
+    certificateOrders: 'Sertifikat Sifarişləri',
+    certificatesRegistry: 'Verilmiş Sertifikatlar Reyestri',
+    candidateAwaitingCert: 'Sertifikat tərtibatı gözləyən tələbələr',
+    uploadPdfCertificate: 'Sertifikat PDF Yüklə',
+    revokeCertificate: 'Sertifikatı ləğv et',
+    revokeConfirm: 'Bu sertifikatı ləğv etmək istədiyinizə əminsiniz? Ləğv edildikdən sonra ictimai verifikasiyada etibarsız görünəcək.',
   },
   en: {
     navHome: 'Home',
@@ -327,6 +403,44 @@ const translations: Record<Language, Translations> = {
     rejectConfirm: 'Are you sure you want to reject this application?',
     capacityReached: 'This internship program is at full capacity.',
     manageProgram: 'Manage this program',
+
+    // Phase 4 Translations (EN)
+    certificate: 'Certificate',
+    certificateSubtitle: 'Official verified internship credential, payment status, and verification records.',
+    certificatePayment: 'Certificate Payment',
+    certificatePrice: 'Price',
+    paymentCardNumber: 'Card for Payment',
+    copyCardNumber: 'Copy Card Number',
+    cardNumberCopied: 'Copied!',
+    uploadReceipt: 'Payment Receipt',
+    uploadReceiptDesc: 'Upload your bank transfer receipt (JPG, PNG, WEBP or PDF).',
+    submitPayment: 'Submit Receipt',
+    paymentPending: 'Payment under review',
+    paymentApproved: 'Payment approved',
+    paymentRejected: 'Payment rejected',
+    certificatePreparing: 'Payment approved. Your certificate is being prepared.',
+    certificateIssued: 'Certificate issued',
+    certificateRevoked: 'Certificate revoked',
+    certificateId: 'Certificate ID',
+    issuedDate: 'Issue Date',
+    viewCertificate: 'View Certificate',
+    downloadCertificate: 'Download Certificate',
+    verifyCertificate: 'Verify Certificate',
+    notEligibleTitle: 'Certificate is not available yet',
+    notEligibleDesc: 'To earn an official certificate, you must successfully finish all required internship assignments and have them approved by mentors.',
+    paymentUnderReviewDesc: 'Your payment receipt is being reviewed by the administration. Once verified, your certificate will be issued.',
+    paymentApprovedDesc: 'Your payment was successfully confirmed. Your official certificate PDF is being prepared by our team.',
+    paymentRejectedDesc: 'Your payment could not be verified. Please review the note below and submit a valid receipt.',
+    publicVerifySuccess: 'Certificate Authenticated & Verified',
+    publicVerifyNotice: 'This credential was officially issued by Intern.az to recognize successful completion of an industry internship program.',
+    publicVerifyNotFound: 'No active or valid certificate was found matching this credential ID.',
+    certificateSettings: 'Certificate Settings',
+    certificateOrders: 'Certificate Orders',
+    certificatesRegistry: 'Issued Certificates Registry',
+    candidateAwaitingCert: 'Candidates Awaiting Certificate Issuance',
+    uploadPdfCertificate: 'Upload Certificate PDF',
+    revokeCertificate: 'Revoke Certificate',
+    revokeConfirm: 'Are you sure you want to revoke this certificate? Once revoked, it will no longer verify on public verification pages.',
   },
 };
 

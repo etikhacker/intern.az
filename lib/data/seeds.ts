@@ -367,3 +367,41 @@ export const DEFAULT_SEED_SUBMISSIONS: TaskSubmission[] = [
     updated_at: new Date(Date.now() - 12 * 3600000).toISOString(),
   },
 ];
+
+import { Certificate, CertificatePayment } from '@/types/database';
+
+export const DEFAULT_SEED_CERTIFICATE_PAYMENTS: CertificatePayment[] = [
+  {
+    id: 'pay-seed-1',
+    student_id: 'student-demo-1',
+    internship_id: 'internship-seed-2',
+    enrollment_id: 'enroll-completed-demo-1',
+    amount: 30,
+    currency: 'AZN',
+    receipt_path: 'student-demo-1/receipt-sample.png',
+    receipt_name: 'odenis_qebzi_leobank.png',
+    status: 'approved',
+    admin_note: 'Ödəniş qəbzi yoxlanıldı və təsdiq edildi.',
+    reviewed_by: 'admin-demo-1',
+    reviewed_at: new Date(Date.now() - 2 * 86400000).toISOString(),
+    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 86400000).toISOString(),
+  },
+];
+
+export const DEFAULT_SEED_CERTIFICATES: Certificate[] = [
+  {
+    id: 'cert-seed-1',
+    certificate_id: 'CERT-AZ2026-UIUX-0941',
+    student_id: 'student-demo-1',
+    internship_id: 'internship-seed-2',
+    enrollment_id: 'enroll-completed-demo-1',
+    student_name: 'Ömər Babayev',
+    internship_title: 'UI/UX Dizayn & Məhsul Prototipləşdirilməsi',
+    issued_at: new Date(Date.now() - 1 * 86400000).toISOString(),
+    certificate_file_path: 'student-demo-1/cert-uiux-2026.pdf',
+    status: 'issued',
+    created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 86400000).toISOString(),
+  },
+];
