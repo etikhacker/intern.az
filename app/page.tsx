@@ -88,7 +88,7 @@ export default function HomePage() {
                     {isAz ? 'Universitetlər' : 'Universities'}
                   </span>
                 </div>
-                <p className="text-sm font-bold text-slate-900">ADA, BDU, ADNSU, BMU</p>
+                <p className="text-sm font-bold text-slate-900">Bütün universitetlər</p>
               </div>
 
               <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
