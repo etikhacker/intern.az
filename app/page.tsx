@@ -38,7 +38,7 @@ export default function HomePage() {
           <div className="hero-orb hero-orb-left" aria-hidden="true" />
           <div className="hero-orb hero-orb-right" aria-hidden="true" />
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold mb-6 shadow-[0_0_28px_rgba(52,211,153,0.12)]">
+            <div className="reveal-up reveal-delay-1 relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold mb-6 shadow-[0_0_28px_rgba(52,211,153,0.12)]">
               <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
               <span>
                 {isAz
@@ -47,7 +47,7 @@ export default function HomePage() {
               </span>
             </div>
 
-            <h1 className="relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
+            <h1 className="reveal-up reveal-delay-2 relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
               {isAz ? (
                 <>
                   Bacarıqlarını inkişaf etdir. Real layihələr qur.{' '}
@@ -61,14 +61,14 @@ export default function HomePage() {
               )}
             </h1>
 
-            <p className="relative mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
+            <p className="reveal-up reveal-delay-3 relative mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
               {isAz
                 ? 'Universitet biliklərini real iş mühitində tətbiq et. Mentorların rəhbərliyi ilə həftəlik tapşırıqları tamamla və təsdiq olunmuş rəsmi karyera sertifikatı əldə et.'
                 : 'Bridge the gap between academic theory and industry reality. Complete weekly workplace tasks with mentor guidance and earn verifiable certificates to boost your career.'}
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="reveal-up reveal-delay-3 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto gap-2 text-base px-8 h-12 shadow-sm">
                   {isAz ? 'Tələbə kimi qeydiyyatdan keç' : 'Apply as a Student'}
@@ -83,7 +83,7 @@ export default function HomePage() {
             </div>
 
             {/* Trust Metrics */}
-            <div className="relative mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
+            <div className="reveal-up reveal-delay-4 relative mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
               <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
                 <div className="flex items-center gap-2 text-emerald-600 mb-1">
                   <GraduationCap className="w-4 h-4" />
