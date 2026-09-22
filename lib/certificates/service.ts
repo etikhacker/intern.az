@@ -125,14 +125,16 @@ export function saveLocalCertificates(certs: Certificate[]) {
   }
 }
 
-// Generate unique certificate ID (e.g. CERT-A1B2C3D4E5F6)
+// Generate unique standardized certificate ID (e.g. AZ-INT-2026-7A9B)
 export function generateCertificateId(): string {
+  const year = new Date().getFullYear();
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let random = '';
-  for (let i = 0; i < 10; i++) {
-    random += chars.charAt(Math.floor(Math.random() * chars.length));
+  let rand = '';
+  for (let i = 0; i < 8; i++) {
+    if (i === 4) rand += '-';
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `CERT-${random.substring(0, 4)}-${random.substring(4, 8)}-${random.substring(8, 10)}`;
+  return `AZ-INT-${year}-${rand}`;
 }
 
 // ==========================================
@@ -304,32 +306,28 @@ export async function getStudentCertificateEligibility(studentId: string): Promi
 }> {
   const enrollments = await getStudentEnrollments(studentId);
 
-  // Check enrollments that have status === 'completed'
-  let completed = enrollments.filter((e) => e.status === 'completed');
+  // Business Rule: A student is eligible for a certificate ONLY when enrollments.status === 'completed'
+  const completed = enrollments.filter((e) => e.status === 'completed');
 
-  // Also check if any active enrollment has completed all required tasks, mark or treat as completed
-  for (const en of enrollments) {
-    if (en.status === 'active') {
-      const tasks = await getAllTasksForInternship(en.internship_id, false);
+  // Find primary enrollment for context (either completed or most recent active for progress calculation)
+  const activeEnrollment = enrollments.find((e) => e.status === 'active');
+  const targetEnrollment = completed.length > 0 ? completed[0] : activeEnrollment;
+
+  let tasksCompletedCount = 0;
+  let totalRequiredTasksCount = 0;
+
+  if (targetEnrollment) {
+    try {
+      const tasks = await getAllTasksForInternship(targetEnrollment.internship_id, false);
       const reqTasks = tasks.filter((t) => t.is_required && t.status === 'published');
-      if (reqTasks.length > 0) {
-        const subs = await getStudentSubmissionsForEnrollment(studentId, en.id);
-        const approvedCount = reqTasks.filter((t) =>
-          subs.some((s) => s.task_id === t.id && s.status === 'approved')
-        ).length;
+      totalRequiredTasksCount = reqTasks.length;
 
-        if (approvedCount === reqTasks.length) {
-          // All required tasks are approved!
-          const completedEnrollment: Enrollment = {
-            ...en,
-            status: 'completed',
-            completed_at: en.completed_at || new Date().toISOString(),
-          };
-          if (!completed.some((c) => c.id === en.id)) {
-            completed.push(completedEnrollment);
-          }
-        }
-      }
+      const subs = await getStudentSubmissionsForEnrollment(studentId, targetEnrollment.id);
+      tasksCompletedCount = reqTasks.filter((t) =>
+        subs.some((s) => s.task_id === t.id && s.status === 'approved')
+      ).length;
+    } catch {
+      // ignore
     }
   }
 
@@ -338,9 +336,11 @@ export async function getStudentCertificateEligibility(studentId: string): Promi
       eligible: false,
       completedEnrollments: [],
       eligibleEnrollment: null,
-      settings: null,
+      settings: targetEnrollment ? await getCertificateSettings(targetEnrollment.internship_id) : null,
       currentPayment: null,
       currentCertificate: null,
+      tasksCompletedCount,
+      totalRequiredTasksCount,
     };
   }
 
@@ -362,6 +362,8 @@ export async function getStudentCertificateEligibility(studentId: string): Promi
     settings,
     currentPayment,
     currentCertificate: certificate,
+    tasksCompletedCount,
+    totalRequiredTasksCount,
   };
 }
 
@@ -510,12 +512,29 @@ export async function submitCertificatePayment({
   studentId: string;
   internshipId: string;
   enrollmentId: string;
-  amount: number;
+  amount?: number;
   currency?: string;
   receiptFile?: File | null;
   receiptPath?: string;
   receiptName?: string;
 }): Promise<{ success: boolean; error?: string; payment?: CertificatePayment }> {
+  // Security Hardening: Derive canonical amount and currency from certificate_settings
+  let finalAmount = amount;
+  let finalCurrency = currency;
+  try {
+    const settings = await getCertificateSettings(internshipId);
+    if (settings && typeof settings.price === 'number') {
+      finalAmount = settings.price;
+      finalCurrency = settings.currency || 'AZN';
+    }
+  } catch (settErr) {
+    console.warn('Could not derive price from settings, using provided:', settErr);
+  }
+
+  if (typeof finalAmount !== 'number' || finalAmount < 0) {
+    finalAmount = 0;
+  }
+
   let finalReceiptPath = receiptPath || '';
   let finalReceiptName = receiptName || '';
 
@@ -539,6 +558,21 @@ export async function submitCertificatePayment({
     if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
     try {
+      // Validate enrollment status
+      const { data: enrollmentData, error: enrollError } = await supabase
+        .from('enrollments')
+        .select('id, status, student_id, internship_id')
+        .eq('id', enrollmentId)
+        .single();
+
+      if (enrollError || !enrollmentData) {
+        return { success: false, error: 'Təcrübəçi qeydiyyatı tapılmadı.' };
+      }
+
+      if (enrollmentData.status !== 'completed') {
+        return { success: false, error: 'Ödəniş yalnız proqramı uğurla tamamlamış tələbələr tərəfindən göndərilə bilər.' };
+      }
+
       // Check existing pending payment to prevent duplicate pending payments for the same enrollment
       const { data: existingPending } = await supabase
         .from('certificate_payments')
@@ -553,8 +587,8 @@ export async function submitCertificatePayment({
         const { data: updated, error: updateError } = await supabase
           .from('certificate_payments')
           .update({
-            amount,
-            currency,
+            amount: finalAmount,
+            currency: finalCurrency,
             receipt_path: finalReceiptPath,
             updated_at: new Date().toISOString(),
           })
@@ -572,8 +606,8 @@ export async function submitCertificatePayment({
         student_id: studentId,
         internship_id: internshipId,
         enrollment_id: enrollmentId,
-        amount,
-        currency,
+        amount: finalAmount,
+        currency: finalCurrency,
         receipt_path: finalReceiptPath,
         status: 'pending',
         admin_note: null,
@@ -611,8 +645,8 @@ export async function submitCertificatePayment({
     student_id: studentId,
     internship_id: internshipId,
     enrollment_id: enrollmentId,
-    amount,
-    currency,
+    amount: finalAmount,
+    currency: finalCurrency,
     receipt_path: finalReceiptPath,
     receipt_name: finalReceiptName,
     status: 'pending',
@@ -1069,7 +1103,6 @@ export async function issueCertificate({
     return { success: false, error: 'Zəhmət olmasa tərtib edilmiş sertifikat PDF faylını yükləyin.' };
   }
 
-  const certificateId = generateCertificateId();
   const isConfigured = isSupabaseConfigured();
 
   if (isConfigured) {
@@ -1077,10 +1110,58 @@ export async function issueCertificate({
     if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
     try {
+      // 1. Primary: Invoke the atomic secure database RPC
+      const { data: rpcData, error: rpcError } = await supabase.rpc('issue_certificate_secure', {
+        p_enrollment_id: enrollmentId,
+        p_student_id: studentId,
+        p_internship_id: internshipId,
+        p_student_name: studentName.trim(),
+        p_internship_title: internshipTitle.trim(),
+        p_certificate_file_path: finalPath,
+      });
+
+      if (!rpcError && rpcData) {
+        const certRecord = typeof rpcData === 'string' ? JSON.parse(rpcData) : rpcData;
+        return { success: true, certificate: certRecord as Certificate };
+      }
+
+      // If RPC error was a business rule violation, return it directly
+      if (rpcError && rpcError.message && !rpcError.message.includes('function') && !rpcError.message.includes('not found')) {
+        return { success: false, error: rpcError.message };
+      }
+
+      // 2. Direct database query fallback with strict checks
+      // Validate that the enrollment exists and is completed
+      const { data: enrollmentData, error: enrollError } = await supabase
+        .from('enrollments')
+        .select('id, status, student_id, internship_id')
+        .eq('id', enrollmentId)
+        .single();
+
+      if (enrollError || !enrollmentData) {
+        return { success: false, error: 'Təcrübəçi qeydiyyatı tapılmadı.' };
+      }
+
+      if (enrollmentData.status !== 'completed') {
+        return { success: false, error: 'Sertifikat yalnız tamamlanmış təcrübə proqramı üçün verilə bilər.' };
+      }
+
+      // Validate that the enrollment has an approved payment before certificate issuance
+      const { data: approvedPayment } = await supabase
+        .from('certificate_payments')
+        .select('id, status')
+        .eq('enrollment_id', enrollmentId)
+        .eq('status', 'approved')
+        .maybeSingle();
+
+      if (!approvedPayment) {
+        return { success: false, error: 'Sertifikat yalnız təsdiqlənmiş ödənişdən sonra verilə bilər.' };
+      }
+
       // Check if existing certificate for enrollment
       const { data: existing } = await supabase
         .from('certificates')
-        .select('id')
+        .select('id, certificate_id')
         .eq('enrollment_id', enrollmentId)
         .maybeSingle();
 
@@ -1105,8 +1186,9 @@ export async function issueCertificate({
         return { success: true, certificate: updated as Certificate };
       }
 
+      const generatedId = generateCertificateId();
       const payload = {
-        certificate_id: certificateId,
+        certificate_id: generatedId,
         student_id: studentId,
         internship_id: internshipId,
         enrollment_id: enrollmentId,
@@ -1134,14 +1216,30 @@ export async function issueCertificate({
     }
   }
 
-  // Demo fallback
+  // Demo fallback: Check enrollment completion & approved payment
+  const demoEnrollments = (await import('@/lib/enrollments/service')).getLocalEnrollments();
+  const demoEnrollment = demoEnrollments.find((e) => e.id === enrollmentId);
+  if (!demoEnrollment || demoEnrollment.status !== 'completed') {
+    return { success: false, error: 'Sertifikat yalnız tamamlanmış təcrübə proqramı üçün verilə bilər.' };
+  }
+
+  const payments = getLocalCertificatePayments();
+  const hasApprovedPayment = payments.some(
+    (p) => p.enrollment_id === enrollmentId && p.status === 'approved'
+  );
+  if (!hasApprovedPayment) {
+    return { success: false, error: 'Sertifikat yalnız təsdiqlənmiş ödənişdən sonra verilə bilər.' };
+  }
+
   const list = getLocalCertificates();
   const existingIdx = list.findIndex((c) => c.enrollment_id === enrollmentId);
   const internship = await getInternshipById(internshipId);
 
+  const generatedId = existingIdx >= 0 ? list[existingIdx].certificate_id : generateCertificateId();
+
   const newCert: Certificate = {
     id: existingIdx >= 0 ? list[existingIdx].id : `cert-${Date.now()}`,
-    certificate_id: existingIdx >= 0 ? list[existingIdx].certificate_id : certificateId,
+    certificate_id: generatedId,
     student_id: studentId,
     internship_id: internshipId,
     enrollment_id: enrollmentId,
@@ -1168,7 +1266,8 @@ export async function issueCertificate({
 
 // Revoke Certificate
 export async function revokeCertificate(
-  idOrCertId: string
+  idOrCertId: string,
+  adminNote?: string
 ): Promise<{ success: boolean; error?: string }> {
   const isConfigured = isSupabaseConfigured();
 
@@ -1177,6 +1276,16 @@ export async function revokeCertificate(
     if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
     try {
+      // Try calling revoke RPC first
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('revoke_certificate_secure', {
+        p_certificate_id: idOrCertId,
+        p_admin_note: adminNote || null,
+      });
+
+      if (!rpcErr && rpcData) {
+        return { success: true };
+      }
+
       const { error } = await supabase
         .from('certificates')
         .update({
@@ -1247,7 +1356,6 @@ export async function getCertificateSignedUrl(certificateFilePath: string): Prom
 // 5. Public Certificate Verification
 // ==========================================
 // Public verification: accessible without login.
-// ONLY returns if status === 'issued'.
 // Safely exposes ONLY: certificate_id, student_name, internship_title, issued_at, status.
 // NEVER exposes: email, phone, university, payment info, or raw storage path.
 export async function getPublicCertificate(certificateId: string): Promise<{
@@ -1255,7 +1363,7 @@ export async function getPublicCertificate(certificateId: string): Promise<{
   student_name: string;
   internship_title: string;
   issued_at: string;
-  status: 'issued';
+  status: 'issued' | 'revoked';
 } | null> {
   if (!certificateId || !certificateId.trim()) return null;
 
@@ -1270,16 +1378,15 @@ export async function getPublicCertificate(certificateId: string): Promise<{
           .from('certificates')
           .select('certificate_id, student_name, internship_title, issued_at, status')
           .eq('certificate_id', cleanId)
-          .eq('status', 'issued')
           .maybeSingle();
 
-        if (!error && data && data.status === 'issued') {
+        if (!error && data && (data.status === 'issued' || data.status === 'revoked')) {
           return {
             certificate_id: data.certificate_id,
             student_name: data.student_name,
             internship_title: data.internship_title,
             issued_at: data.issued_at,
-            status: 'issued',
+            status: data.status as 'issued' | 'revoked',
           };
         }
       } catch (err) {
@@ -1291,13 +1398,13 @@ export async function getPublicCertificate(certificateId: string): Promise<{
   // Demo fallback
   const list = getLocalCertificates();
   const found = list.find((c) => c.certificate_id.toLowerCase() === cleanId.toLowerCase());
-  if (found && found.status === 'issued') {
+  if (found && (found.status === 'issued' || found.status === 'revoked')) {
     return {
       certificate_id: found.certificate_id,
       student_name: found.student_name,
       internship_title: found.internship_title,
       issued_at: found.issued_at,
-      status: 'issued',
+      status: found.status as 'issued' | 'revoked',
     };
   }
 

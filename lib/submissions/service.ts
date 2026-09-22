@@ -442,6 +442,16 @@ export async function reviewSubmission({
         return { success: false, error: error.message };
       }
 
+      // If approved, verify if this completes all required tasks for the enrollment
+      if (targetStatus === 'approved' && updated.enrollment_id) {
+        try {
+          const { checkAndUpdateEnrollmentCompletion } = await import('@/lib/enrollments/service');
+          await checkAndUpdateEnrollmentCompletion(updated.enrollment_id);
+        } catch (compErr) {
+          console.warn('Failed to check enrollment completion trigger:', compErr);
+        }
+      }
+
       return { success: true, submission: updated as TaskSubmission };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Təqdimat yoxlanılarkən xəta baş verdi.';
@@ -468,6 +478,16 @@ export async function reviewSubmission({
   const nextList = [...list];
   nextList[index] = updated;
   saveLocalSubmissions(nextList);
+
+  // If approved in demo mode, verify completion
+  if (targetStatus === 'approved' && updated.enrollment_id) {
+    try {
+      const { checkAndUpdateEnrollmentCompletion } = await import('@/lib/enrollments/service');
+      await checkAndUpdateEnrollmentCompletion(updated.enrollment_id);
+    } catch (compErr) {
+      console.warn('Failed to trigger demo enrollment completion check:', compErr);
+    }
+  }
 
   return { success: true, submission: updated };
 }

@@ -10,7 +10,6 @@ import {
   issueCertificate,
   revokeCertificate,
   getCertificateSignedUrl,
-  generateCertificateId,
 } from '@/lib/certificates/service';
 import {
   Certificate,
@@ -62,6 +61,7 @@ export default function AdminCertificatesPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+  const [issuedSuccessCert, setIssuedSuccessCert] = useState<Certificate | null>(null);
 
   // Signed URLs cache
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
@@ -192,7 +192,9 @@ export default function AdminCertificatesPage() {
       });
 
       if (res.success && res.certificate) {
+        const created = res.certificate;
         setIssuingCandidate(null);
+        setIssuedSuccessCert(created);
         await loadData();
       } else {
         setModalError(res.error || 'Sertifikat təqdim edilərkən xəta baş verdi.');
@@ -540,13 +542,18 @@ export default function AdminCertificatesPage() {
 
             {/* Form */}
             <form onSubmit={handleIssueSubmit} className="p-5 space-y-4 text-xs">
-              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-500 block">
-                  Avtomatik Generasiya Olunacaq Sertifikat ID
-                </span>
-                <span className="font-mono text-sm font-bold text-amber-300 block">
-                  {generateCertificateId()}
-                </span>
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block">
+                    Sertifikat ID İdentifikatoru
+                  </span>
+                  <p className="text-xs text-slate-300">
+                    Təsdiq zamanı verilənlər bazası tərəfindən unikal olaraq generasiya ediləcək
+                  </p>
+                </div>
+                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-300 font-mono text-[10px] shrink-0">
+                  AZ-INT-YYYY-XXXX
+                </Badge>
               </div>
 
               {/* Student Name */}
@@ -656,6 +663,75 @@ export default function AdminCertificatesPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Issuance Success Modal */}
+      {issuedSuccessCert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-2xs">
+          <div className="relative w-full max-w-md bg-slate-900 border border-emerald-500/30 rounded-2xl shadow-2xl p-6 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-white">Sertifikat Uğurla Təqdim Edildi!</h3>
+              <p className="text-xs text-slate-400">
+                {issuedSuccessCert.student_name} üçün rəsmi sertifikat bazada qeydə alındı.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">
+                Rəsmi Təsdiqlənmiş Sertifikat ID
+              </span>
+              <span className="font-mono text-sm font-bold text-amber-300 block">
+                {issuedSuccessCert.certificate_id}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleCopyLink(issuedSuccessCert.certificate_id)}
+                className="text-xs border-slate-700 text-slate-300 hover:text-white gap-1.5"
+              >
+                {copiedId === issuedSuccessCert.certificate_id ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Kopyalandı</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Linki Kopyala</span>
+                  </>
+                )}
+              </Button>
+
+              <Link href={`/certificate/${issuedSuccessCert.certificate_id}`} target="_blank">
+                <Button
+                  size="sm"
+                  className="text-xs bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold gap-1.5"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Səhifəyə Bax</span>
+                </Button>
+              </Link>
+            </div>
+
+            <div className="pt-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setIssuedSuccessCert(null)}
+                className="w-full text-xs text-slate-400 hover:text-white"
+              >
+                Bağla
+              </Button>
+            </div>
           </div>
         </div>
       )}

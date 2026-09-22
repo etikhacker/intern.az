@@ -34,7 +34,7 @@ export default function PublicCertificateVerificationPage() {
     student_name: string;
     internship_title: string;
     issued_at: string;
-    status: 'issued';
+    status: 'issued' | 'revoked';
   } | null>(null);
 
   const [copied, setCopied] = useState(false);
@@ -126,29 +126,50 @@ export default function PublicCertificateVerificationPage() {
           </Card>
         ) : (
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
-            {/* Top Verified Banner */}
-            <div className="p-4 rounded-2xl bg-emerald-600 text-white shadow-sm flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
+            {/* Top Verification Status Banner */}
+            {certData.status === 'revoked' ? (
+              <div className="p-4 rounded-2xl bg-red-600 text-white shadow-sm flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <AlertCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold">
+                      Sertifikat Ləğv Edilmişdir
+                    </h3>
+                    <p className="text-xs text-red-100">
+                      Bu sertifikat etibarsızdır və Intern.az inzibatçısı tərəfindən ləğv edilmişdir.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold">
-                    Rəsmi Təsdiqlənmiş Təcrübə Sertifikatı
-                  </h3>
-                  <p className="text-xs text-emerald-100">
-                    Sənəd Intern.az reyestrində qeydiyyatdan keçmiş və həqiqidir.
-                  </p>
-                </div>
+                <Badge className="bg-white text-red-800 text-xs font-bold px-2.5 py-1 border-0 shrink-0">
+                  Status: Ləğv edilib
+                </Badge>
               </div>
-              <Badge className="bg-white text-emerald-800 text-xs font-bold px-2.5 py-1 border-0 shrink-0">
-                Status: Qüvvədədir
-              </Badge>
-            </div>
+            ) : (
+              <div className="p-4 rounded-2xl bg-emerald-600 text-white shadow-sm flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold">
+                      Rəsmi Təsdiqlənmiş Təcrübə Sertifikatı
+                    </h3>
+                    <p className="text-xs text-emerald-100">
+                      Sənəd Intern.az reyestrində qeydiyyatdan keçmiş və həqiqidir.
+                    </p>
+                  </div>
+                </div>
+                <Badge className="bg-white text-emerald-800 text-xs font-bold px-2.5 py-1 border-0 shrink-0">
+                  Status: Qüvvədədir
+                </Badge>
+              </div>
+            )}
 
             {/* Certificate Card */}
-            <Card className="border-slate-200 bg-white shadow-md overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500" />
+            <Card className={`bg-white shadow-md overflow-hidden ${certData.status === 'revoked' ? 'border-red-300' : 'border-slate-200'}`}>
+              <div className={`h-2 ${certData.status === 'revoked' ? 'bg-red-500' : 'bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500'}`} />
               
               <CardContent className="p-6 sm:p-8 space-y-6">
                 {/* Header */}
