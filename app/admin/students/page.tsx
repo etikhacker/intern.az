@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Users, GraduationCap, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { formatDate } from '@/lib/utils/date';
 
 export default function AdminStudentsPage() {
   const [students, setStudents] = useState<Profile[]>([]);
@@ -113,7 +114,7 @@ export default function AdminStudentsPage() {
                       {student.phone || '—'}
                     </td>
                     <td className="px-6 py-3.5 text-slate-400 text-[11px]">
-                      {student.created_at ? new Date(student.created_at).toLocaleDateString('az-AZ') : '—'}
+                      {formatDate(student.created_at)}
                     </td>
                   </tr>
                 ))}

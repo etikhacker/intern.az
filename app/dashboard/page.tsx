@@ -11,6 +11,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getStudentApplications } from '@/lib/applications/service';
 import { Enrollment, Application } from '@/types/database';
+import { formatDate } from '@/lib/utils/date';
 import {
   User,
   GraduationCap,
@@ -59,11 +60,7 @@ export default function StudentDashboardPage() {
   const rejectedCount = applications.filter((a) => a.status === 'rejected').length;
 
   const formattedJoinDate = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+    ? formatDate(profile.created_at)
     : (isAz ? 'Yenicə' : 'Recently');
 
   return (

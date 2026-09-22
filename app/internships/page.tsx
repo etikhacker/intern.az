@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getPublishedInternships } from '@/lib/internships/service';
 import { Internship } from '@/types/database';
+import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import {
   Briefcase,
   Search,
@@ -105,11 +106,7 @@ export default function InternshipsPage() {
     if (!dateStr) return null;
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
+      return formatDisplayDate(d);
     } catch {
       return dateStr;
     }

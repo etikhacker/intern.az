@@ -18,6 +18,7 @@ import {
   reorderTasks,
 } from '@/lib/tasks/service';
 import { taskSchema, TaskFormData } from '@/lib/validations/task';
+import { formatDate } from '@/lib/utils/date';
 import {
   Internship,
   InternshipTask,
@@ -480,11 +481,7 @@ export default function AdminInternshipTasksPage({
                         <Clock className="w-3.5 h-3.5" />
                         <span>
                           {isAz ? 'Son təhvil tarixi:' : 'Deadline:'}{' '}
-                          {new Date(task.deadline).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
+                          {formatDate(task.deadline)}
                         </span>
                       </div>
                     )}

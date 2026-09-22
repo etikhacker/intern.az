@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getPublicCertificate, getCertificateForEnrollment, getCertificateSignedUrl } from '@/lib/certificates/service';
+import { formatDate } from '@/lib/utils/date';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -232,11 +233,7 @@ export default function PublicCertificateVerificationPage() {
                         Verilmə Tarixi
                       </span>
                       <p className="text-xs font-semibold text-slate-800 mt-1">
-                        {new Date(certData.issued_at).toLocaleDateString('az-AZ', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+                        {formatDate(certData.issued_at)}
                       </p>
                     </div>
 
