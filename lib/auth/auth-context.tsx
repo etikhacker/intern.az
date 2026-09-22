@@ -152,6 +152,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'Supabase konfiqurasiya edilməyib. Zəhmət olmasa parametrləri tamamlayın.' };
     }
 
+    if (isSoleAdminEmail(email)) {
+      return {
+        success: false,
+        error: 'Administrator hesabı public qeydiyyatla yaradıla bilməz. Bu hesab Supabase Auth panelindən yaradılmalıdır.',
+      };
+    }
+
     const supabase = createClient();
     if (!supabase) return { success: false, error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
 
