@@ -9,7 +9,7 @@ type Theme = 'dark' | 'light';
 
 function getTheme(): Theme {
   const saved = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
-  return saved ?? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  return saved ?? 'dark';
 }
 
 function subscribe(callback: () => void) {
