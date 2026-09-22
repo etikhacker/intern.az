@@ -1,25 +1,37 @@
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import './globals.css'; // Global styles
 import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {
-  title: 'Internship Management Platform',
-  description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured applications, weekly tasks, student submissions, mentor reviews, manual payment verification, and official certificate issuance.',
+  title: 'Intern.az',
+  description: 'Azərbaycan tələbələri üçün təcrübə platforması.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
-    title: 'Internship Management Platform',
-    description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured applications, weekly tasks, student submissions, mentor reviews, manual payment verification, and official certificate issuance.',
+    title: 'Intern.az',
+    description: 'Azərbaycan tələbələri üçün təcrübə platforması.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Internship Management Platform',
-    description: 'Azerbaijan-focused internship platform for students and administrators, featuring verified internship catalogs, structured applications, weekly tasks, student submissions, mentor reviews, manual payment verification, and official certificate issuance.',
+    title: 'Intern.az',
+    description: 'Azərbaycan tələbələri üçün təcrübə platforması.',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#00a651',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en">
+    <html lang="az">
       <body suppressHydrationWarning className="min-h-screen bg-slate-50 text-slate-900 antialiased flex flex-col">
         <Providers>
           {children}

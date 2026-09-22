@@ -11,8 +11,8 @@ export default function AdminSettingsPage() {
   const [saved, setSaved] = useState(false);
   const [settings, setSettings] = useState({
     platformName: 'Intern.az',
-    supportEmail: 'info@intern.az',
-    contactPhone: '+994 (12) 500-00-00',
+    supportEmail: 'babayev.omr.23@gmail.com',
+    contactPhone: '+994 70 644 92 22',
     certificatePrice: '15 AZN',
   });
 
