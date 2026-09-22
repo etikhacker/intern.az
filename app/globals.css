@@ -156,6 +156,8 @@ html.light {
 }
 
 html.light body {
+  background-color: var(--page) !important;
+  color: var(--ink) !important;
   background-image: radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.1), transparent 28rem), radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.08), transparent 25rem);
 }
 
