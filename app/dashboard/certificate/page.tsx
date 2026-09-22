@@ -16,6 +16,7 @@ import {
   Certificate,
   Enrollment,
 } from '@/types/database';
+import { formatDate } from '@/lib/utils/date';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -467,11 +468,7 @@ export default function StudentCertificatePage() {
                     {t('issuedDate')}
                   </p>
                   <p className="text-xs font-semibold text-slate-800 mt-0.5">
-                    {new Date(certificate.issued_at).toLocaleDateString(language === 'az' ? 'az-AZ' : 'en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    {formatDate(certificate.issued_at)}
                   </p>
                 </div>
                 <div>
@@ -625,7 +622,7 @@ export default function StudentCertificatePage() {
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === 'az' ? 'Təsdiqlənmə Tarixi' : 'Approval Date'}</span>
                 <span className="font-medium text-slate-800 mt-0.5 block">
-                  {payment.reviewed_at ? new Date(payment.reviewed_at).toLocaleDateString() : new Date().toLocaleDateString()}
+                  {formatDate(payment.reviewed_at || new Date())}
                 </span>
               </div>
               <div>
@@ -692,7 +689,7 @@ export default function StudentCertificatePage() {
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === 'az' ? 'Göndərilmə Tarixi' : 'Submission Date'}</span>
-                <span className="font-medium text-slate-800 mt-0.5 block">{new Date(payment.created_at).toLocaleDateString()}</span>
+                <span className="font-medium text-slate-800 mt-0.5 block">{formatDate(payment.created_at)}</span>
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">{t('uploadReceipt')}</span>

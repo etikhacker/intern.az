@@ -14,6 +14,7 @@ import { getInternshipBySlug } from '@/lib/internships/service';
 import { getStudentApplications } from '@/lib/applications/service';
 import { getStudentEnrollments } from '@/lib/enrollments/service';
 import { Internship, Application, Enrollment } from '@/types/database';
+import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import {
   Briefcase,
   Calendar,
@@ -144,11 +145,7 @@ export default function InternshipDetailsPage({ params }: Props) {
     if (!dateStr) return null;
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
+      return formatDisplayDate(d);
     } catch {
       return dateStr;
     }

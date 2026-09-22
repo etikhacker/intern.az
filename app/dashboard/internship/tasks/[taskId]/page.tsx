@@ -24,6 +24,7 @@ import {
   TaskSubmissionType,
   Enrollment,
 } from '@/types/database';
+import { formatDate } from '@/lib/utils/date';
 import {
   ArrowLeft,
   Clock,
@@ -328,11 +329,7 @@ export default function StudentTaskDetailPage({
               <Clock className="w-3.5 h-3.5 text-amber-600" />
               <span>
                 {isAz ? 'Son təhvil tarixi:' : 'Deadline:'}{' '}
-                {new Date(task.deadline).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
+                {formatDate(task.deadline)}
               </span>
             </div>
           )}

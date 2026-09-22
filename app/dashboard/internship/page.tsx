@@ -10,6 +10,7 @@ import { useLanguage } from '@/lib/i18n/language-context';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getAllTasksForInternship } from '@/lib/tasks/service';
 import { getStudentSubmissionsForEnrollment } from '@/lib/submissions/service';
+import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import { calculateInternshipProgress, ProgressResult } from '@/lib/tasks/progress';
 import {
   Enrollment,
@@ -78,16 +79,7 @@ export default function StudentMyInternshipPage() {
   }, [profile?.id]);
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return null;
-    try {
-      return new Date(dateStr).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
+    return dateStr ? formatDisplayDate(dateStr) : null;
   };
 
   const getDifficultyBadge = (difficulty: TaskDifficulty) => {
@@ -428,11 +420,7 @@ export default function StudentMyInternshipPage() {
                                         <Clock className="w-3.5 h-3.5 text-slate-400" />
                                         <span>
                                           {isAz ? 'Son təhvil:' : 'Deadline:'}{' '}
-                                          {new Date(task.deadline).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-                                            day: 'numeric',
-                                            month: 'short',
-                                            year: 'numeric',
-                                          })}
+                                          {formatDisplayDate(task.deadline)}
                                         </span>
                                       </div>
                                     )}

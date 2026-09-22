@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
+import { formatDate } from '@/lib/utils/date';
 import {
   Users,
   Briefcase,
@@ -453,7 +454,7 @@ export default function AdminOverviewPage() {
                       </Badge>
                     </td>
                     <td className="px-6 py-3.5 text-slate-400 text-[11px]">
-                      {student.created_at ? new Date(student.created_at).toLocaleDateString('az-AZ') : '—'}
+                      {formatDate(student.created_at)}
                     </td>
                   </tr>
                 ))}

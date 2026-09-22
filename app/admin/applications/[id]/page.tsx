@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getApplicationById, reviewApplication } from '@/lib/applications/service';
 import { Application, ApplicationStatus } from '@/types/database';
+import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -144,18 +145,7 @@ export default function AdminApplicationReviewPage({ params }: Props) {
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '—';
-    try {
-      return new Date(dateStr).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return dateStr;
-    }
+    return dateStr ? formatDisplayDate(dateStr) : '—';
   };
 
   const getStatusBadge = (status: ApplicationStatus) => {

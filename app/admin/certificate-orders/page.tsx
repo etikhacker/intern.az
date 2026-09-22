@@ -9,6 +9,7 @@ import {
   getPaymentReceiptSignedUrl,
 } from '@/lib/certificates/service';
 import { CertificatePayment, PaymentStatus } from '@/types/database';
+import { formatDateTime } from '@/lib/utils/date';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -303,7 +304,7 @@ export default function AdminCertificateOrdersPage() {
                       </span>
                       <span className="text-slate-500">•</span>
                       <span>
-                        Tarix: {new Date(p.created_at).toLocaleDateString()} {new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        Tarix: {formatDateTime(p.created_at)}
                       </span>
                     </div>
 

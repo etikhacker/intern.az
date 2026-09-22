@@ -16,6 +16,7 @@ import {
   CertificateCandidate,
   CertificateStatus,
 } from '@/types/database';
+import { formatDate } from '@/lib/utils/date';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -317,7 +318,7 @@ export default function AdminCertificatesPage() {
                     </div>
                     <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/60">
                       <span>Ödəniş: {cand.payment.amount} {cand.payment.currency}</span>
-                      <span>{new Date(cand.payment.reviewed_at || cand.payment.created_at).toLocaleDateString()}</span>
+                      <span>{formatDate(cand.payment.reviewed_at || cand.payment.created_at)}</span>
                     </div>
                   </div>
 
@@ -443,7 +444,7 @@ export default function AdminCertificatesPage() {
                         </span>
                         <span className="text-slate-600">•</span>
                         <span>
-                          Verilmə tarixi: {new Date(cert.issued_at).toLocaleDateString()}
+                          Verilmə tarixi: {formatDate(cert.issued_at)}
                         </span>
                       </div>
                     </div>

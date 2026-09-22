@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getStudentApplications, withdrawApplication } from '@/lib/applications/service';
 import { Application } from '@/types/database';
+import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import {
   FileText,
   ArrowRight,
@@ -84,16 +85,7 @@ export default function StudentApplicationsPage() {
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '';
-    try {
-      return new Date(dateStr).toLocaleDateString(isAz ? 'az-AZ' : 'en-US', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
+    return dateStr ? formatDisplayDate(dateStr) : '';
   };
 
   const getStatusBadge = (status: Application['status']) => {

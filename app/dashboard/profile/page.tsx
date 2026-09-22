@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { createClient } from '@/lib/supabase/client';
+import { formatDate } from '@/lib/utils/date';
 import { profileUpdateSchema, ProfileUpdateFormData } from '@/lib/validations/profile';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,6 +47,7 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,13 +102,48 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
     }
   };
 
-  const formattedDate = profile?.created_at
-    ? new Date(profile.created_at).toLocaleDateString('az-AZ', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : '—';
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (!file.type.startsWith('image/')) {
+      setServerError('Zəhmət olmasa şəkil faylı seçin.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setServerError('Profil şəkli maksimum 5 MB ola bilər.');
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setServerError(null);
+    setSuccessMessage(null);
+
+    try {
+      const supabase = createClient();
+      if (!supabase) throw new Error('Supabase bağlantısı qurulmadı.');
+
+      const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${user.id}/profile.${extension}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+      setFormData((prev) => ({ ...prev, avatarUrl: data.publicUrl }));
+      setSuccessMessage('Şəkil yükləndi. Dəyişiklikləri yadda saxlamağı unutmayın.');
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : 'Profil şəkli yüklənmədi.');
+    } finally {
+      setIsUploadingAvatar(false);
+      e.target.value = '';
+    }
+  };
+
+  const formattedDate = profile?.created_at ? formatDate(profile.created_at) : '—';
 
   return (
     <div className="space-y-6">
@@ -238,24 +276,23 @@ function ProfileForm({ profile, user, updateProfile }: ProfileFormProps) {
                   )}
                 </div>
 
-                {/* Avatar URL */}
+                {/* Avatar upload */}
                 <div>
-                  <Label htmlFor="avatarUrl" className="text-xs font-semibold text-slate-700">
-                    Profil Şəkli Linki (İstəyə bağlı)
+                  <Label htmlFor="avatarFile" className="text-xs font-semibold text-slate-700">
+                    Profil Şəkli (İstəyə bağlı)
                   </Label>
-                  <Input
-                    id="avatarUrl"
-                    name="avatarUrl"
-                    type="url"
-                    placeholder="https://images.unsplash.com/..."
-                    value={formData.avatarUrl || ''}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                    className="mt-1"
-                  />
-                  {errors.avatarUrl && (
-                    <p className="text-xs text-red-600 mt-1">{errors.avatarUrl}</p>
-                  )}
+                  <div className="mt-1 flex items-center gap-3">
+                    <Input
+                      id="avatarFile"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handleAvatarUpload}
+                      disabled={isSubmitting || isUploadingAvatar}
+                      className="file:mr-3 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-emerald-700"
+                    />
+                    {isUploadingAvatar && <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />}
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-400">PNG, JPG və ya WEBP — maksimum 5 MB.</p>
                 </div>
               </CardContent>
 
