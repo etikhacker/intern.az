@@ -1,496 +1,194 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
 import {
   ArrowRight,
-  CheckCircle2,
+  ArrowUpRight,
+  Award,
+  BarChart3,
+  Briefcase,
+  Check,
   Code2,
   Database,
-  BarChart3,
-  Award,
+  GraduationCap,
+  Layers3,
   Sparkles,
   Users,
-  Briefcase,
-  GraduationCap,
-  Building2,
-  Check,
 } from 'lucide-react';
+
+const tracks = [
+  {
+    number: '01',
+    icon: Code2,
+    tone: 'violet',
+    azTitle: 'Frontend & Web Engineering',
+    enTitle: 'Frontend & Web Engineering',
+    azText: 'Next.js, TypeScript, UI sistemləri və real məhsul interfeysləri.',
+    enText: 'Next.js, TypeScript, UI systems, and real product interfaces.',
+  },
+  {
+    number: '02',
+    icon: Database,
+    tone: 'green',
+    azTitle: 'Backend & Data Systems',
+    enTitle: 'Backend & Data Systems',
+    azText: 'API-lər, PostgreSQL, verilənlər bazası dizaynı və təhlükəsiz serverlər.',
+    enText: 'APIs, PostgreSQL, database design, and secure server systems.',
+  },
+  {
+    number: '03',
+    icon: BarChart3,
+    tone: 'orange',
+    azTitle: 'AI, Analytics & Automation',
+    enTitle: 'AI, Analytics & Automation',
+    azText: 'AI alətləri, data düşüncəsi və iş axınlarını avtomatlaşdıran layihələr.',
+    enText: 'AI tools, data thinking, and projects that automate real workflows.',
+  },
+];
+
+const steps = [
+  ['01', 'Qeydiyyat', 'Profilini yarat, universitet və maraq sahələrini əlavə et.'],
+  ['02', 'İstiqamət seçimi', 'Sənə uyğun təcrübə proqramına müraciət et.'],
+  ['03', 'Real tapşırıqlar', 'Mentor dəstəyi ilə həftəlik layihələr üzərində işləyin.'],
+  ['04', 'Sertifikat', 'Nəticəni göstərən təsdiqlənə bilən sertifikat əldə et.'],
+];
 
 export default function HomePage() {
   const { language } = useLanguage();
   const isAz = language === 'az';
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="portfolio-page flex min-h-screen flex-col">
       <Navbar />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="hero-section relative overflow-hidden py-20 lg:py-28 border-b border-slate-200/70">
-          <div className="hero-grid absolute inset-0 opacity-70" aria-hidden="true" />
-          <div className="hero-orb hero-orb-left" aria-hidden="true" />
-          <div className="hero-orb hero-orb-right" aria-hidden="true" />
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="reveal-up reveal-delay-1 relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-300/30 text-emerald-200 text-xs font-semibold mb-6 shadow-[0_0_28px_rgba(52,211,153,0.12)]">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-              <span>
+        <section className="portfolio-hero relative overflow-hidden">
+          <div className="portfolio-noise" aria-hidden="true" />
+          <div className="portfolio-hero-glow portfolio-hero-glow-one" aria-hidden="true" />
+          <div className="portfolio-hero-glow portfolio-hero-glow-two" aria-hidden="true" />
+          <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:px-10 lg:pb-32 lg:pt-28">
+            <div className="relative z-10">
+              <div className="reveal-up reveal-delay-1 mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                {isAz ? 'Azərbaycan tələbələri üçün' : 'For university students in Azerbaijan'}
+              </div>
+              <h1 className="reveal-up reveal-delay-2 max-w-4xl text-[3.25rem] font-black leading-[0.98] tracking-[-0.065em] text-white sm:text-6xl lg:text-[6.5rem]">
+                {isAz ? (
+                  <>Təcrübəni <span className="portfolio-gradient-text">portfelə</span> çevir.</>
+                ) : (
+                  <>Turn experience into a <span className="portfolio-gradient-text">portfolio.</span></>
+                )}
+              </h1>
+              <p className="reveal-up reveal-delay-3 mt-8 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
                 {isAz
-                  ? 'Azərbaycan tələbələri üçün peşəkar təcrübə portalı'
-                  : 'Professional internship platform for university students in Azerbaijan'}
-              </span>
-            </div>
-
-            <h1 className="reveal-up reveal-delay-2 relative text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-              {isAz ? (
-                <>
-                  Bacarıqlarını inkişaf etdir. Real layihələr qur.{' '}
-                  <span className="text-emerald-300 [text-shadow:0_0_30px_rgba(52,211,153,0.35)]">Sertifikat qazan.</span>
-                </>
-              ) : (
-                <>
-                  Build Real Skills. Deliver Industry Projects.{' '}
-                  <span className="text-emerald-300 [text-shadow:0_0_30px_rgba(52,211,153,0.35)]">Get Certified.</span>
-                </>
-              )}
-            </h1>
-
-            <p className="reveal-up reveal-delay-3 relative mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
-              {isAz
-                ? 'Universitet biliklərini real iş mühitində tətbiq et. Mentorların rəhbərliyi ilə həftəlik tapşırıqları tamamla və təsdiq olunmuş rəsmi karyera sertifikatı əldə et.'
-                : 'Bridge the gap between academic theory and industry reality. Complete weekly workplace tasks with mentor guidance and earn verifiable certificates to boost your career.'}
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="reveal-up reveal-delay-3 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto gap-2 text-base px-8 h-12 shadow-sm">
-                  {isAz ? 'Tələbə kimi qeydiyyatdan keç' : 'Apply as a Student'}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/internships" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 h-12">
-                  {isAz ? 'Təcrübə proqramlarına bax' : 'Explore Internships'}
-                </Button>
-              </Link>
-            </div>
-
-            {/* Trust Metrics */}
-            <div className="reveal-up reveal-delay-4 relative mt-14 pt-8 border-t border-slate-200/60 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-              <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <GraduationCap className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {isAz ? 'Universitetlər' : 'Universities'}
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900">Bütün universitetlər</p>
-              </div>
-
-              <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <Briefcase className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {isAz ? 'Format' : 'Format'}
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900">
-                  {isAz ? 'Praktiki və Onlayn' : 'Hands-on & Remote'}
-                </p>
-              </div>
-
-              <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <Award className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {isAz ? 'Sertifikat' : 'Credential'}
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900">
-                  {isAz ? 'Rəsmi və Təsdiqlənmiş' : 'Official & Verifiable'}
-                </p>
-              </div>
-
-              <div className="p-4 bg-white/80 rounded-xl border border-slate-200/60 shadow-2xs">
-                <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                  <Users className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {isAz ? 'Mentorluq' : 'Mentorship'}
-                  </span>
-                </div>
-                <p className="text-sm font-bold text-slate-900">
-                  {isAz ? 'Fərdi Əks-əlaqə' : '1-on-1 Feedback'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works Section */}
-        <section id="how-it-works" className="py-16 sm:py-24 bg-white border-b border-slate-200/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">
-                {isAz ? 'Addım-addım proses' : 'Step-by-step Process'}
-              </h2>
-              <h3 className="text-3xl font-bold text-slate-900 tracking-tight sm:text-4xl">
-                {isAz ? 'Təcrübə proqramı necə işləyir?' : 'How The Internship Program Works'}
-              </h3>
-              <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
-                {isAz
-                  ? 'Tələbələrin karyera başlanğıcını sürətləndirən 4 əsas mərhələ.'
-                  : 'A four-step pathway designed to transform academic learning into verified industry capability.'}
+                  ? 'Intern.az universitetdə öyrəndiklərini real layihələrə, mentor rəyinə və karyeran üçün görünən nəticələrə çevirir.'
+                  : 'Intern.az turns what you learn at university into real projects, mentor feedback, and visible career proof.'}
               </p>
+              <div className="reveal-up reveal-delay-4 mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link href="/register">
+                  <Button size="lg" className="portfolio-primary-button h-13 w-full gap-2 rounded-full px-7 sm:w-auto">
+                    {isAz ? 'Səyahətə başla' : 'Start your journey'}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </Link>
+                <Link href="/internships">
+                  <Button variant="outline" size="lg" className="portfolio-outline-button h-13 w-full gap-2 rounded-full px-7 sm:w-auto">
+                    {isAz ? 'Proqramları kəşf et' : 'Explore programs'}
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="reveal-up reveal-delay-4 mt-12 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/10 pt-6 text-xs text-slate-400">
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-300" /> Real layihələr</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-300" /> Mentor rəyi</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-300" /> Verifiable sertifikat</span>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Step 1 */}
-              <Card className="border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <CardHeader>
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center mb-2">
-                    01
+            <div className="portfolio-hero-art reveal-up reveal-delay-3 relative mx-auto h-[27rem] w-full max-w-[30rem] lg:h-[34rem]" aria-label="Intern.az tələbə inkişaf platformasının vizual önizləməsi">
+              <div className="portfolio-orbit portfolio-orbit-one" aria-hidden="true" />
+              <div className="portfolio-orbit portfolio-orbit-two" aria-hidden="true" />
+              <div className="portfolio-main-card">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-300 text-slate-950 shadow-[0_0_30px_rgba(110,231,183,0.35)]">
+                      <GraduationCap className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-200">Intern.az</p>
+                      <p className="mt-1 text-sm text-slate-400">Student workspace</p>
+                    </div>
                   </div>
-                  <CardTitle className="text-base">
-                    {isAz ? 'Qeydiyyat və Profil' : 'Registration & Profile'}
-                  </CardTitle>
-                  <CardDescription>
-                    {isAz
-                      ? 'Universitet məlumatlarını daxil edərək tələbə profilini yarat.'
-                      : 'Sign up with your university details and create your student profile.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-xs text-slate-500">
-                  {isAz
-                    ? 'Bütün Azərbaycan universitetlərinin tələbələri üçün açıqdır.'
-                    : 'Open to all university students across Azerbaijan.'}
-                </CardContent>
-              </Card>
-
-              {/* Step 2 */}
-              <Card className="border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <CardHeader>
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center mb-2">
-                    02
-                  </div>
-                  <CardTitle className="text-base">
-                    {isAz ? 'Seçim və Qəbul' : 'Cohort Selection'}
-                  </CardTitle>
-                  <CardDescription>
-                    {isAz
-                      ? 'İstiqamətini seç, müraciət et və təcrübə qrupuna qoşul.'
-                      : 'Choose your desired track and join the active cohort.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-xs text-slate-500">
-                  {isAz
-                    ? 'Müraciətlər mütəxəssislər tərəfindən dəyərləndirilir.'
-                    : 'Applications are carefully evaluated by industry coordinators.'}
-                </CardContent>
-              </Card>
-
-              {/* Step 3 */}
-              <Card className="border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <CardHeader>
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center mb-2">
-                    03
-                  </div>
-                  <CardTitle className="text-base">
-                    {isAz ? 'Praktiki Tapşırıqlar' : 'Weekly Tasks'}
-                  </CardTitle>
-                  <CardDescription>
-                    {isAz
-                      ? 'Həftəlik real iş tapşırıqlarını və layihələri yerinə yetir.'
-                      : 'Deliver practical assignments modeled after modern company workflows.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-xs text-slate-500">
-                  {isAz
-                    ? 'Mentor rəyi ilə portfel layihələri formalaşdır.'
-                    : 'Build strong portfolio projects with constructive feedback.'}
-                </CardContent>
-              </Card>
-
-              {/* Step 4 */}
-              <Card className="border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
-                <CardHeader>
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center mb-2">
-                    04
-                  </div>
-                  <CardTitle className="text-base">
-                    {isAz ? 'Rəsmi Sertifikat' : 'Verified Certificate'}
-                  </CardTitle>
-                  <CardDescription>
-                    {isAz
-                      ? 'Yekun layihəni uğurla təqdim edib rəsmi sertifikat qazan.'
-                      : 'Earn an official verifiable credential upon successful project completion.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-xs text-slate-500">
-                  {isAz
-                    ? 'LinkedIn və CV üçün unikal nömrəli təsdiq.'
-                    : 'Equipped with a unique verification link for CVs and LinkedIn.'}
-                </CardContent>
-              </Card>
+                  <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-bold text-emerald-200">ACTIVE</span>
+                </div>
+                <div className="mt-12">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Current focus</p>
+                  <h2 className="mt-3 max-w-xs text-4xl font-black tracking-[-0.05em] text-white">Build. Learn. Show it.</h2>
+                </div>
+                <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <div className="mb-4 flex items-center justify-between text-xs text-slate-400"><span>Weekly progress</span><span className="font-bold text-emerald-200">72%</span></div>
+                  <div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[72%] rounded-full bg-gradient-to-r from-emerald-400 to-cyan-300" /></div>
+                  <div className="mt-4 flex items-center gap-2 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-emerald-300" /> 3 tasks completed this week</div>
+                </div>
+                <div className="mt-6 grid grid-cols-3 gap-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Layers3 className="h-4 w-4 text-violet-300" /><p className="mt-3 text-lg font-black text-white">04</p><p className="text-[10px] text-slate-500">Projects</p></div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Users className="h-4 w-4 text-emerald-300" /><p className="mt-3 text-lg font-black text-white">1:1</p><p className="text-[10px] text-slate-500">Mentoring</p></div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Award className="h-4 w-4 text-orange-300" /><p className="mt-3 text-lg font-black text-white">01</p><p className="text-[10px] text-slate-500">Credential</p></div>
+                </div>
+              </div>
+              <div className="portfolio-floating-tag portfolio-floating-tag-top"><Briefcase className="h-4 w-4 text-orange-300" /> Real work</div>
+              <div className="portfolio-floating-tag portfolio-floating-tag-bottom"><span className="h-2 w-2 rounded-full bg-emerald-300" /> Mentor feedback</div>
             </div>
           </div>
         </section>
 
-        {/* Categories / Tracks */}
-        <section className="py-16 sm:py-24 bg-slate-50/70 border-b border-slate-200/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">
-                {isAz ? 'İstiqamətlər' : 'Disciplines'}
-              </h2>
-              <h3 className="text-3xl font-bold text-slate-900 tracking-tight sm:text-4xl">
-                {isAz ? 'Təcrübə İstiqamətləri' : 'Featured Internship Tracks'}
-              </h3>
-              <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
-                {isAz
-                  ? 'Azərbaycanda və qlobal bazarda ən çox tələbat olan sahələr.'
-                  : 'High-demand industry sectors designed for student career growth.'}
-              </p>
-            </div>
+        <div className="portfolio-marquee border-y border-white/10 bg-white/[0.025] py-5">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 sm:justify-between sm:px-8 lg:px-10">
+            <span>Frontend</span><span>Backend</span><span>Data</span><span>AI & Automation</span><span>Cybersecurity</span><span>Product thinking</span>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Category 1 */}
-              <div className="p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                  <Code2 className="w-6 h-6" />
-                </div>
-                <Badge variant="blue" className="mb-2">
-                  {isAz ? 'Frontend və Veb İnkişafı' : 'Frontend & Web'}
-                </Badge>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">
-                  {isAz ? 'React və Müasir Veb Mühəndisliyi' : 'React & Web Engineering'}
-                </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  {isAz
-                    ? 'Next.js, TypeScript, müasir interfeys arxitekturası və API inteqrasiyası ilə real tətbiqlər.'
-                    : 'Next.js, TypeScript, modern UI architectures, and responsive interactive web applications.'}
-                </p>
-              </div>
+        <section className="portfolio-section mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+          <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="max-w-2xl"><p className="portfolio-kicker">01 / Tracks</p><h2 className="portfolio-heading">{isAz ? 'Sənə uyğun istiqaməti seç.' : 'Choose your direction.'}</h2></div>
+            <Link href="/internships" className="portfolio-text-link">{isAz ? 'Bütün proqramlara bax' : 'View all programs'} <ArrowUpRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="grid gap-5 lg:grid-cols-3">
+            {tracks.map((track) => {
+              const Icon = track.icon;
+              return <Link href="/internships" key={track.number} className={`portfolio-track-card portfolio-track-${track.tone}`}>
+                <div className="flex items-start justify-between"><span className="text-xs font-bold tracking-[0.18em] text-slate-500">{track.number}</span><span className="portfolio-track-icon"><Icon className="h-5 w-5" aria-hidden="true" /></span></div>
+                <h3 className="mt-16 text-2xl font-black tracking-[-0.04em] text-white">{isAz ? track.azTitle : track.enTitle}</h3>
+                <p className="mt-4 min-h-14 text-sm leading-6 text-slate-400">{isAz ? track.azText : track.enText}</p>
+                <span className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-white">{isAz ? 'İstiqaməti aç' : 'Open track'} <ArrowUpRight className="h-4 w-4" /></span>
+              </Link>;
+            })}
+          </div>
+        </section>
 
-              {/* Category 2 */}
-              <div className="p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
-                  <Database className="w-6 h-6" />
-                </div>
-                <Badge variant="default" className="mb-2">
-                  {isAz ? 'Backend və Məlumatlar' : 'Backend & Data'}
-                </Badge>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">
-                  {isAz ? 'Bulud Verilənlər Bazası və API' : 'Cloud Databases & APIs'}
-                </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  {isAz
-                    ? 'PostgreSQL, verilənlər bazası dizaynı, sorğu optimallaşdırılması və server təhlükəsizliyi.'
-                    : 'Relational databases, PostgreSQL schema design, query optimization, and secure API services.'}
-                </p>
-              </div>
-
-              {/* Category 3 */}
-              <div className="p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-all">
-                <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6" />
-                </div>
-                <Badge variant="secondary" className="mb-2">
-                  {isAz ? 'Məhsul və İdarəetmə' : 'Product & Quality'}
-                </Badge>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">
-                  {isAz ? 'Məhsul İdarəetməsi və QA' : 'Product Management & QA'}
-                </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  {isAz
-                    ? 'Biznes tələbləri, çevik iş axınları (Agile/Scrum), istifadəçi təcrübəsi və keyfiyyətə nəzarət.'
-                    : 'Product discovery, user journey mapping, agile workflows, and systematic quality assurance.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10 text-center">
-              <Link href="/internships">
-                <Button variant="outline" className="gap-2">
-                  {isAz ? 'Bütün təcrübə proqramlarına bax' : 'View All Internship Programs'}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+        <section className="border-y border-white/10 bg-[#0b1016]">
+          <div className="mx-auto grid max-w-7xl gap-14 px-5 py-24 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-10 lg:py-32">
+            <div><p className="portfolio-kicker">02 / Process</p><h2 className="portfolio-heading">{isAz ? 'Bir addım. Sonra bir addım da.' : 'One step. Then another.'}</h2><p className="mt-6 max-w-md text-base leading-7 text-slate-400">{isAz ? 'Mürəkkəb karyera yolunu aydın və ölçülə bilən mərhələlərə bölürük.' : 'We turn an overwhelming career start into a clear, measurable sequence of steps.'}</p></div>
+            <div className="grid gap-0">
+              {steps.map(([number, title, text], index) => <div key={number} className="portfolio-step-row"><span className="portfolio-step-number">{number}</span><div><h3 className="text-xl font-bold text-white">{isAz ? title : ['Registration', 'Direction', 'Real tasks', 'Certificate'][index]}</h3><p className="mt-2 max-w-lg text-sm leading-6 text-slate-400">{isAz ? text : ['Create your profile and add your university details.', 'Choose a program that fits your interests.', 'Work on practical projects with mentor guidance.', 'Earn a credential you can verify and share.'][index]}</p></div><ArrowUpRight className="ml-auto hidden h-5 w-5 text-emerald-300 sm:block" aria-hidden="true" /></div>)}
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-16 sm:py-24 bg-white border-b border-slate-200/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">
-                  {isAz ? 'Tələbə Üstünlükləri' : 'Student Advantages'}
-                </h2>
-                <h3 className="text-3xl font-bold text-slate-900 tracking-tight sm:text-4xl">
-                  {isAz ? 'Niyə Intern.az?' : 'Why Choose Intern.az?'}
-                </h3>
-                <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-                  {isAz
-                    ? 'Universitet kursları nəzəri təməl yaradır; Intern.az isə işəgötürənlərə nümayiş etdirə biləcəyiniz praktiki nəticələr təqdim edir.'
-                    : 'Academic courses provide theoretical knowledge; Intern.az gives you tangible project execution that recruiters can directly evaluate.'}
-                </p>
-
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 p-1 rounded-md bg-emerald-100 text-emerald-700">
-                      <Check className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-900">
-                        {isAz ? 'Real İş Şəraitinə Uyğun Tapşırıqlar' : 'Workplace-Realistic Assignments'}
-                      </h4>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        {isAz
-                          ? 'Azərbaycanın qabaqcıl şirkətlərinin tələblərinə uyğunlaşdırılmış praktiki layihələr.'
-                          : 'Projects curated to align with current hiring expectations in Azerbaijan.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 p-1 rounded-md bg-emerald-100 text-emerald-700">
-                      <Check className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-900">
-                        {isAz ? 'Tələbə Məxfiliyi və Təhlükəsizlik' : 'Secure Student Profile & Privacy'}
-                      </h4>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        {isAz
-                          ? 'Məlumatlarınız müasir təhlükəsizlik standartları ilə tam qorunur.'
-                          : 'Student portfolios and identity are protected with modern security standards.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 p-1 rounded-md bg-emerald-100 text-emerald-700">
-                      <Check className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-900">
-                        {isAz ? 'Rəsmi Karyera Sertifikatı' : 'Official Career Credential'}
-                      </h4>
-                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        {isAz
-                          ? 'Proqramı tamamladıqdan sonra CV və LinkedIn-də paylaşıla bilən təsdiq olunmuş sertifikat.'
-                          : 'Sharable on LinkedIn and resumes with verifiable credentials.'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <Link href="/register">
-                    <Button size="lg" className="gap-2">
-                      {isAz ? 'İndi Başla' : 'Get Started'}
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Showcase Box */}
-              <div className="bg-slate-50 rounded-2xl border border-slate-200 p-8 shadow-2xs">
-                <div className="space-y-4">
-                  <div className="p-4 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg">
-                        <Users className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-900">
-                          {isAz ? 'Tələbə Profili' : 'Student Profile'}
-                        </p>
-                        <p className="text-[11px] text-slate-500">
-                          {isAz ? 'Universitet və əlaqə məlumatları' : 'University & contact verification'}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="default">{isAz ? 'Aktiv' : 'Active'}</Badge>
-                  </div>
-
-                  <div className="p-4 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-blue-50 text-blue-600 rounded-lg">
-                        <Briefcase className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-900">
-                          {isAz ? 'Təcrübə Proqramı' : 'Internship Track'}
-                        </p>
-                        <p className="text-[11px] text-slate-500">
-                          {isAz ? 'Praktiki tapşırıqlar və rəylər' : 'Hands-on project milestones'}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="blue">{isAz ? 'Praktiki' : 'Applied'}</Badge>
-                  </div>
-
-                  <div className="p-4 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-purple-50 text-purple-600 rounded-lg">
-                        <Award className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-900">
-                          {isAz ? 'Rəsmi Sertifikat' : 'Verified Certificate'}
-                        </p>
-                        <p className="text-[11px] text-slate-500">
-                          {isAz ? 'Unikal nömrə ilə yoxlanıla bilən' : 'Unique verifiable serial number'}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary">{isAz ? 'Rəsmi' : 'Official'}</Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA Banner */}
-        <section className="py-16 bg-slate-900 text-white">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight mb-4">
-              {isAz
-                ? 'Karyerana ilk addımı atmağa hazırsan?'
-                : 'Ready to launch your practical career journey?'}
-            </h3>
-            <p className="text-slate-400 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed">
-              {isAz
-                ? 'İndi qeydiyyatdan keçərək tələbə profilini yarat və təcrübə proqramlarına qatıl.'
-                : 'Register today to create your verified student profile and access structured internships.'}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">
-                  {isAz ? 'Qeydiyyatdan Keç' : 'Register as Student'}
-                </Button>
-              </Link>
-              <Link href="/login" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent border-slate-700 text-slate-200 hover:bg-slate-800">
-                  {isAz ? 'Tələbə Girişi' : 'Student Sign In'}
-                </Button>
-              </Link>
-            </div>
+        <section className="portfolio-cta mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+          <div className="relative overflow-hidden rounded-[2rem] border border-emerald-300/20 bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 px-7 py-14 text-center shadow-[0_30px_100px_rgba(16,185,129,0.2)] sm:px-12">
+            <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full border-[40px] border-white/10" aria-hidden="true" /><div className="absolute -bottom-32 -left-10 h-72 w-72 rounded-full border-[45px] border-white/10" aria-hidden="true" />
+            <p className="relative text-xs font-black uppercase tracking-[0.2em] text-emerald-950/70">Intern.az / 2026</p>
+            <h2 className="relative mx-auto mt-5 max-w-3xl text-4xl font-black tracking-[-0.055em] text-slate-950 sm:text-6xl">{isAz ? 'Öyrəndiklərini göstərməyə başla.' : 'Start showing what you can do.'}</h2>
+            <p className="relative mx-auto mt-5 max-w-xl text-sm leading-6 text-emerald-950/75">{isAz ? 'İlk real layihənə bir klik məsafədəsən.' : 'Your first real project is one click away.'}</p>
+            <Link href="/register" className="relative mt-8 inline-block"><Button size="lg" className="h-13 rounded-full bg-slate-950 px-8 text-white shadow-xl hover:bg-slate-800">{isAz ? 'Qeydiyyatdan keç' : 'Create your profile'} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
