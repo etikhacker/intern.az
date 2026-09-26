@@ -681,6 +681,57 @@ input, textarea, select {
 input::placeholder, textarea::placeholder { color: var(--muted); }
 
 /* =============================================================================
+ * Authentication pages
+ *
+ * Login is deliberately theme-independent. It is a focused task flow and must
+ * retain legible text, input surfaces, and button contrast even if a visitor
+ * previously saved the site-wide dark theme.
+ * =============================================================================
+ */
+
+.auth-login-page,
+.auth-login-panel {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.auth-login-page .text-slate-900 { color: #0f172a !important; }
+.auth-login-page .text-slate-700 { color: #334155 !important; }
+.auth-login-page .text-slate-600 { color: #475569 !important; }
+.auth-login-page .text-slate-500 { color: #64748b !important; }
+.auth-login-page .text-slate-400 { color: #94a3b8 !important; }
+.auth-login-page .bg-white { background-color: #ffffff !important; }
+.auth-login-page .bg-slate-50 { background-color: #f8fafc !important; }
+.auth-login-page .bg-slate-50\/50 { background-color: rgba(248, 250, 252, 0.72) !important; }
+.auth-login-page .border-slate-100 { border-color: #f1f5f9 !important; }
+.auth-login-page .border-slate-200 { border-color: #e2e8f0 !important; }
+.auth-login-page input {
+  color: #0f172a !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+.auth-login-page input::placeholder { color: #94a3b8 !important; }
+
+.auth-login-brand,
+.auth-login-mobile-brand {
+  color: #ffffff !important;
+}
+
+.auth-login-brand .text-emerald-50,
+.auth-login-mobile-brand .text-emerald-50 {
+  color: rgba(236, 253, 245, 0.92) !important;
+}
+
+@media (max-width: 380px) {
+  .auth-login-page .auth-login-panel > div:first-child {
+    padding-inline: 1rem;
+  }
+  .auth-login-page .auth-login-panel > div:first-child a {
+    font-size: 0.7rem;
+  }
+}
+
+/* =============================================================================
  * Reduced motion
  * ============================================================================= */
 

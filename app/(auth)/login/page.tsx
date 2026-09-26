@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
-  BookOpen,
   Briefcase,
   Check,
   Eye,
@@ -24,7 +23,6 @@ import {
   Lock,
   ShieldCheck,
   Sparkles,
-  Star,
   Users,
 } from 'lucide-react';
 
@@ -36,7 +34,7 @@ const REMEMBER_KEY = 'intern-az-remember-email';
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
   return (
-    <div className="relative hidden h-full overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+    <div className="auth-login-brand relative hidden min-h-[100dvh] overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
       {/* Decorative orbs */}
       <div
         aria-hidden="true"
@@ -141,46 +139,6 @@ function BrandPanel() {
         </div>
       </div>
 
-      {/* Floating review card (top-right) */}
-      <div
-        aria-hidden="true"
-        className="absolute right-8 top-1/2 hidden -translate-y-1/2 rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-emerald-900/30 backdrop-blur-md xl:block"
-      >
-        <div className="flex items-center gap-1 text-amber-500">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className="h-3.5 w-3.5 fill-current" />
-          ))}
-        </div>
-        <p className="mt-2 max-w-[13rem] text-xs font-medium leading-snug">
-          &ldquo;İlk təcrübəmdə real layihə gördüm, sertifikatım indi CV-də parlayır.&rdquo;
-        </p>
-        <div className="mt-3 flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">
-            LM
-          </div>
-          <div>
-            <p className="text-[11px] font-bold">Leyla M.</p>
-            <p className="text-[9px] text-slate-500">Frontend, 2025</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating book card (bottom-left) */}
-      <div
-        aria-hidden="true"
-        className="absolute bottom-44 left-8 hidden -rotate-6 rounded-2xl border border-white/20 bg-white/95 p-3 text-slate-900 shadow-2xl shadow-emerald-900/30 backdrop-blur-md xl:block"
-      >
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-            <BookOpen className="h-4 w-4" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-slate-500">YENİ</p>
-            <p className="text-xs font-bold leading-tight">AI & Automation</p>
-            <p className="text-[9px] text-slate-400">Track 03</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -190,7 +148,7 @@ function BrandPanel() {
  * ------------------------------------------------------------------------ */
 function MobileBrand() {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 px-6 py-7 text-white lg:hidden">
+    <div className="auth-login-mobile-brand relative overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 px-6 py-7 text-white lg:hidden">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-300/40 blur-3xl"
@@ -318,7 +276,7 @@ function LoginForm() {
   return (
     <div className="relative flex w-full flex-col">
       {/* Top bar: back-to-landing link + admin link */}
-      <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 sm:px-10">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 sm:px-10">
         <Link
           href="/"
           className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-600"
@@ -561,7 +519,7 @@ function LoginForm() {
  * ------------------------------------------------------------------------ */
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white lg:flex-row">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:flex-row">
       <Suspense
         fallback={
           <div className="flex min-h-[60vh] w-full items-center justify-center text-sm text-slate-500">
@@ -574,7 +532,7 @@ export default function LoginPage() {
         }
       >
         <BrandPanel />
-        <div className="flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+        <div className="auth-login-panel flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
           <MobileBrand />
           <LoginForm />
         </div>
