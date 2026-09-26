@@ -814,10 +814,85 @@ html.light .portfolio-hero { background-image: radial-gradient(circle at 75% 30%
 html.light .portfolio-hero h1, html.light .portfolio-heading, html.light .portfolio-track-card h3, html.light .portfolio-main-card h2 { color: #0f172a !important; }
 html.light .portfolio-hero p, html.light .portfolio-track-card p { color: #475569 !important; }
 html.light .portfolio-main-card { background: linear-gradient(145deg, #ffffff, #e9f6f0); border-color: rgba(5,150,105,.24); box-shadow: 30px 35px 80px rgba(15,23,42,.12), inset 0 1px 0 #fff; }
-html.light .portfolio-floating-tag { background: rgba(255,255,255,.9); color: #334155; }
+html.light .portfolio-floating-tag { background: rgba(255,255,255,.9); color: #334155; border-color: rgba(15, 23, 42, 0.10); }
 html.light .portfolio-track-card { background: linear-gradient(145deg, #ffffff, #eef6f2); border-color: rgba(15,23,42,.12); box-shadow: 0 18px 50px rgba(15,23,42,.08); }
 html.light .portfolio-step-row, html.light .portfolio-marquee { border-color: rgba(15,23,42,.12); }
 html.light .portfolio-section + section { background: #eef4f1 !important; }
+
+/* Light-theme overrides for elements that were hard-coded dark in the
+ * original portfolio CSS. Without these, the primary button reads as a
+ * pale-green pill, the outline button is invisible, and the gradient
+ * heading word ("portfelə") is unreadable on white. */
+html.light .portfolio-primary-button {
+  background: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 30px rgba(5, 150, 105, 0.22) !important;
+}
+html.light .portfolio-primary-button:hover {
+  background: #047857 !important;
+}
+html.light .portfolio-outline-button {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  background: rgba(15, 23, 42, 0.03) !important;
+  color: #0f172a !important;
+}
+html.light .portfolio-outline-button:hover {
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+html.light .portfolio-kicker { color: #047857 !important; }
+html.light .portfolio-text-link { color: #047857 !important; }
+html.light .portfolio-text-link:hover { color: #065f46 !important; }
+html.light .portfolio-step-number {
+  color: #047857 !important;
+  border-color: rgba(5, 150, 105, 0.25) !important;
+  background: rgba(5, 150, 105, 0.08);
+}
+html.light .portfolio-track-card .text-white { color: #0f172a !important; }
+html.light .portfolio-track-card .text-slate-500,
+html.light .portfolio-track-card .text-slate-400 { color: #475569 !important; }
+html.light .portfolio-track-card .text-emerald-300 { color: #047857 !important; }
+html.light .portfolio-track-icon { background: rgba(5, 150, 105, 0.10) !important; color: #047857 !important; }
+html.light .portfolio-track-violet .portfolio-track-icon { background: rgba(124, 58, 237, 0.10) !important; color: #6d28d9 !important; }
+html.light .portfolio-track-orange .portfolio-track-icon { background: rgba(234, 88, 12, 0.10) !important; color: #c2410c !important; }
+
+/* "portfelə" gradient text — in dark mode it's a light cyan→emerald sweep
+ * that pops against black; on white it needs a deeper emerald→teal sweep
+ * to keep contrast. */
+html.light .portfolio-gradient-text {
+  color: #047857 !important;
+  background: linear-gradient(100deg, #047857, #0d9488) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Marquee tracks on dark look like slate-500; on light they need to read
+ * as muted slate-600. */
+html.light .portfolio-marquee { background: #ffffff !important; border-color: rgba(15, 23, 42, 0.10) !important; }
+html.light .portfolio-marquee .text-slate-500 { color: #475569 !important; }
+
+/* Hero / tracks sections have text-white / text-slate-* literal classes.
+ * In light theme these need to flip to dark text so they read on the
+ * light page background. */
+html.light .portfolio-hero h1 { color: #0f172a !important; }
+html.light .portfolio-hero .text-slate-300 { color: #475569 !important; }
+html.light .portfolio-hero .text-emerald-200 { color: #047857 !important; }
+html.light .portfolio-hero .text-emerald-300 { color: #047857 !important; }
+html.light .portfolio-hero .border-emerald-300\/25,
+html.light .portfolio-hero .border-emerald-300\/20 { border-color: rgba(5, 150, 105, 0.25) !important; }
+html.light .portfolio-hero .bg-emerald-300\/10 { background-color: rgba(5, 150, 105, 0.08) !important; }
+html.light .portfolio-hero .border-white\/10 { border-color: rgba(15, 23, 42, 0.10) !important; }
+html.light .portfolio-hero .bg-white\/\[0\.04\],
+html.light .portfolio-hero .bg-white\/\[0\.035\] { background-color: rgba(15, 23, 42, 0.03) !important; }
+html.light .portfolio-hero .text-slate-400 { color: #64748b !important; }
+html.light .portfolio-hero .text-slate-500 { color: #475569 !important; }
+html.light .portfolio-hero .text-white { color: #0f172a !important; }
+html.light .portfolio-hero .bg-gradient-to-r.from-emerald-400.to-cyan-300 {
+  background-image: linear-gradient(to right, #10b981, #0d9488) !important;
+}
+
+/* The Process section uses bg-[#0b1016] which is literal dark; keep it
+ * dark in light mode for visual rhythm (alternating bands). */
 
 @media (max-width: 640px) {
   .portfolio-main-card { inset: 2rem .3rem 2rem 1rem; padding: 1.4rem; }

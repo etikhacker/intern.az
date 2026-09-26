@@ -127,12 +127,12 @@ export default function ContactPage() {
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900">
-                    {isAz ? 'E-poçt proqramı açıldı!' : 'Email draft opened!'}
+                    {isAz ? 'Mesajınız göndərildi!' : 'Message sent!'}
                   </h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     {isAz
-                      ? 'Mesajınız uğurla göndərildi. Administrator panelində görünür.'
-                      : 'Your message was submitted and is now visible in the administrator panel.'}
+                      ? 'Mesajınız uğurla göndərildi. Administrator panelində görünür və tezliklə cavablanacaq.'
+                      : 'Your message was submitted and is now visible in the administrator panel. We will respond shortly.'}
                   </p>
                   <Button
                     variant="outline"

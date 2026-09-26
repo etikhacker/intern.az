@@ -69,8 +69,8 @@ function BrandPanel() {
           at.
         </h2>
         <p className="text-base leading-relaxed text-emerald-50/90">
-          Qeydiyyatdan keç, universitetini və maraq sahəni əlavə et — sənə uyğun
-          proqramları və real layihələri biz tövsiyə edək.
+          Hesab yarat, universitetini göstər — biz sənə uyğun layihələri və
+          mentor proqramlarını tövsiyə edək.
         </p>
         <ul className="space-y-2.5 pt-2 text-sm text-emerald-50/90">
           <li className="flex items-center gap-2.5">
@@ -120,7 +120,7 @@ function BrandPanel() {
 
       <div
         aria-hidden="true"
-        className="absolute right-8 top-1/2 hidden -translate-y-1/2 rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-emerald-900/30 backdrop-blur-md xl:block"
+        className="absolute bottom-44 right-6 hidden -rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-emerald-900/30 backdrop-blur-md 2xl:block"
       >
         <div className="flex items-center gap-1 text-amber-500">
           {[...Array(5)].map((_, i) => (
