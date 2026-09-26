@@ -31,10 +31,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="az" className="dark">
+    <html lang="az" className="light" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-[var(--page)] text-slate-100 antialiased flex flex-col"
+        className="min-h-screen bg-[var(--page)] antialiased flex flex-col"
+        style={{ color: 'var(--ink)' }}
       >
         <Providers>
           {children}

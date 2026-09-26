@@ -3,22 +3,17 @@
 /* =============================================================================
  * Theme tokens & Tailwind remap
  *
- * The codebase is inconsistent: student pages use light-theme Tailwind classes
- * (bg-white, text-slate-900, bg-emerald-50, ...) while admin/dashboard shell
- * components use dark-theme Tailwind classes (bg-slate-900, text-slate-300,
- * border-slate-800, ...). Without a single source of truth, the two halves
- * render with conflicting palettes.
+ * The codebase has been built around a dark hero / accent shell while keeping
+ * semantic utility classes (bg-white, text-slate-900, ...) for surfaces and
+ * copy. To support a real light theme without rewriting every page, we keep
+ * the existing Tailwind remap (admin/dashboard rely on literal dark
+ * bg-slate-700/800/900 + text-white / text-slate-300 contrast classes, so those
+ * stay anchored to dark) and add a properly inverted set of tokens under
+ * `html.light`. The result:
  *
- * Strategy:
- *   - In DARK theme (default) and LIGHT theme, override only the shades that
- *     are used as light surfaces / dark text in the student-facing pages.
- *   - Leave the dark Tailwind classes that admin relies on (bg-slate-700/800/
- *     900, text-slate-300/400, text-slate-950 contrast on amber, ...) alone,
- *     so admin's existing palette keeps working.
- *   - Brand accent (emerald) and categorical accents (blue, amber, rose, red,
- *     purple) are remapped so that light tints (50/100) read as subtle
- *     overlays on dark surfaces, while mid/strong tones (400–700) stay
- *     visible against both themes.
+ *   - Public/student/auth pages  → light by default (switchable)
+ *   - Admin shell                → dark by design (literal classes never flip)
+ *   - Portfolio / marketing      → has its own light overrides (see bottom)
  * =============================================================================
  */
 
@@ -151,126 +146,126 @@ html.dark {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* =============================================================================
+ * LIGHT THEME — proper inversion for student/public/auth pages.
+ * Admin's literal dark classes (bg-slate-700/800/900, text-white,
+ * text-slate-300) are kept anchored to dark via the -bg / -text token
+ * variants defined in the base dark block above. This means admin's chrome
+ * stays dark on a light site — by design.
+ * =============================================================================
+ */
 html.light {
-  /* Light theme intentionally mirrors dark — the codebase relies on
-   * literal text-white / text-slate-300 classes for contrast on dark
-   * hero/CTA surfaces. A real light theme would require rewriting every
-   * page. Until then, we lock the design to dark to keep contrast
-   * consistent. */
-  color-scheme: dark;
+  color-scheme: light;
 
-  --c-white: #0d1118;
-  --c-white-50: rgba(13, 17, 24, 0.50);
-  --c-white-80: rgba(13, 17, 24, 0.82);
-  --c-white-95: rgba(13, 17, 24, 0.92);
-  --c-black: #030507;
-  --c-black-55: rgba(7, 9, 13, 0.55);
-  --c-black-60: rgba(7, 9, 13, 0.60);
-  --c-black-70: rgba(7, 9, 13, 0.70);
+  /* Surfaces */
+  --c-white: #ffffff;
+  --c-white-50: rgba(255, 255, 255, 0.50);
+  --c-white-80: rgba(255, 255, 255, 0.82);
+  --c-white-95: rgba(255, 255, 255, 0.94);
+  --c-black: #0f172a;
+  --c-black-55: rgba(15, 23, 42, 0.55);
+  --c-black-60: rgba(15, 23, 42, 0.60);
+  --c-black-70: rgba(15, 23, 42, 0.70);
 
-  --c-slate-50:  rgba(241, 245, 249, 0.06);
-  --c-slate-50-40: rgba(7, 9, 13, 0.72);
-  --c-slate-50-70: rgba(7, 9, 13, 0.85);
-  --c-slate-100: #151d27;
-  --c-slate-100-70: rgba(21, 29, 39, 0.70);
-  --c-slate-200: rgba(148, 163, 184, 0.18);
-  --c-slate-300: rgba(148, 163, 184, 0.28);
-  --c-slate-400: rgba(148, 163, 184, 0.40);
-  --c-slate-500: #94a3b8;
-  --c-slate-600: #c4d0cc;
-  --c-slate-700: #dce7e3;
-  --c-slate-800: #f1f5f9;
-  --c-slate-900: #f3f7f5;
-  --c-slate-950: #ffffff;
+  --c-slate-50:  #f8fafc;
+  --c-slate-50-40: rgba(248, 250, 252, 0.40);
+  --c-slate-50-70: rgba(248, 250, 252, 0.70);
+  --c-slate-100: #f1f5f9;
+  --c-slate-100-70: rgba(241, 245, 249, 0.70);
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+  --c-slate-800: #1e293b;
+  --c-slate-900: #0f172a;
+  --c-slate-950: #020617;
 
-  --c-slate-700-bg: #334155;
-  --c-slate-800-bg: #1e293b;
-  --c-slate-900-bg: #0f172a;
-  --c-slate-950-bg: #020617;
+  /* Brand surfaces (light theme) */
+  --page: #f6f8f7;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-soft: #f1f5f9;
+  --line: rgba(15, 23, 42, 0.10);
+  --line-strong: rgba(5, 150, 105, 0.22);
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #059669;
+  --accent-bright: #10b981;
 
-  --c-slate-50-text: #f8fafc;
-  --c-slate-100-text: #f1f5f9;
-  --c-slate-200-text: #e2e8f0;
-  --c-slate-300-text: #cbd5e1;
-  --c-slate-400-text: #94a3b8;
-
-  --c-emerald-50:  rgba(16, 185, 129, 0.14);
-  --c-emerald-100: rgba(16, 185, 129, 0.20);
-  --c-emerald-200: rgba(16, 185, 129, 0.30);
+  /* Emerald on light surfaces — keep brand vivid on white */
+  --c-emerald-50:  #ecfdf5;
+  --c-emerald-100: #d1fae5;
+  --c-emerald-200: #a7f3d0;
   --c-emerald-300: #6ee7b7;
   --c-emerald-400: #34d399;
   --c-emerald-500: #10b981;
-  --c-emerald-600: #10b981;
-  --c-emerald-700: #34d399;
-  --c-emerald-800: #6ee7b7;
-  --c-emerald-900: #a7f3d0;
+  --c-emerald-600: #059669;
+  --c-emerald-700: #047857;
+  --c-emerald-800: #065f46;
+  --c-emerald-900: #064e3b;
 
-  --c-blue-50:  rgba(59, 130, 246, 0.16);
-  --c-blue-100: rgba(59, 130, 246, 0.22);
-  --c-blue-200: rgba(59, 130, 246, 0.32);
+  /* Blue */
+  --c-blue-50:  #eff6ff;
+  --c-blue-100: #dbeafe;
+  --c-blue-200: #bfdbfe;
   --c-blue-300: #93c5fd;
   --c-blue-400: #60a5fa;
   --c-blue-500: #3b82f6;
-  --c-blue-600: #3b82f6;
-  --c-blue-700: #60a5fa;
-  --c-blue-800: #93c5fd;
-  --c-blue-900: #bfdbfe;
+  --c-blue-600: #2563eb;
+  --c-blue-700: #1d4ed8;
+  --c-blue-800: #1e40af;
+  --c-blue-900: #1e3a8a;
 
-  --c-purple-50:  rgba(168, 85, 247, 0.16);
-  --c-purple-100: rgba(168, 85, 247, 0.22);
-  --c-purple-200: rgba(168, 85, 247, 0.32);
+  /* Purple */
+  --c-purple-50:  #faf5ff;
+  --c-purple-100: #f3e8ff;
+  --c-purple-200: #e9d5ff;
   --c-purple-300: #d8b4fe;
   --c-purple-400: #c084fc;
   --c-purple-500: #a855f7;
-  --c-purple-600: #a855f7;
-  --c-purple-700: #c084fc;
-  --c-purple-800: #d8b4fe;
-  --c-purple-900: #e9d5ff;
+  --c-purple-600: #9333ea;
+  --c-purple-700: #7e22ce;
+  --c-purple-800: #6b21a8;
+  --c-purple-900: #581c87;
 
-  --c-amber-50:  rgba(245, 158, 11, 0.16);
-  --c-amber-100: rgba(245, 158, 11, 0.22);
-  --c-amber-200: rgba(245, 158, 11, 0.32);
+  /* Amber */
+  --c-amber-50:  #fffbeb;
+  --c-amber-100: #fef3c7;
+  --c-amber-200: #fde68a;
   --c-amber-300: #fcd34d;
   --c-amber-400: #fbbf24;
   --c-amber-500: #f59e0b;
-  --c-amber-600: #f59e0b;
-  --c-amber-700: #fbbf24;
-  --c-amber-800: #fcd34d;
-  --c-amber-900: #fde68a;
+  --c-amber-600: #d97706;
+  --c-amber-700: #b45309;
+  --c-amber-800: #92400e;
+  --c-amber-900: #78350f;
 
-  --c-rose-50:  rgba(244, 63, 94, 0.16);
-  --c-rose-100: rgba(244, 63, 94, 0.22);
-  --c-rose-200: rgba(244, 63, 94, 0.32);
+  /* Rose */
+  --c-rose-50:  #fff1f2;
+  --c-rose-100: #ffe4e6;
+  --c-rose-200: #fecdd3;
   --c-rose-300: #fda4af;
   --c-rose-400: #fb7185;
   --c-rose-500: #f43f5e;
-  --c-rose-600: #f43f5e;
-  --c-rose-700: #fb7185;
-  --c-rose-800: #fda4af;
-  --c-rose-900: #fecdd3;
+  --c-rose-600: #e11d48;
+  --c-rose-700: #be123c;
+  --c-rose-800: #9f1239;
+  --c-rose-900: #881337;
 
-  --c-red-50:  rgba(239, 68, 68, 0.16);
-  --c-red-100: rgba(239, 68, 68, 0.22);
-  --c-red-200: rgba(239, 68, 68, 0.32);
+  /* Red */
+  --c-red-50:  #fef2f2;
+  --c-red-100: #fee2e2;
+  --c-red-200: #fecaca;
   --c-red-300: #fca5a5;
   --c-red-400: #f87171;
   --c-red-500: #ef4444;
-  --c-red-600: #ef4444;
-  --c-red-700: #f87171;
-  --c-red-800: #fca5a5;
-  --c-red-900: #fecaca;
+  --c-red-600: #dc2626;
+  --c-red-700: #b91c1c;
+  --c-red-800: #991b1b;
+  --c-red-900: #7f1d1d;
   --c-red-950: #450a0a;
-
-  --page: #07090d;
-  --surface: #0d1118;
-  --surface-raised: #121923;
-  --surface-soft: #0a0f16;
-  --line: rgba(148, 163, 184, 0.16);
-  --line-strong: rgba(52, 211, 153, 0.34);
-  --ink: #f3f7f5;
-  --muted: #9aa8b6;
-  --accent: #34d399;
-  --accent-bright: #6ee7b7;
 }
 
 /* =============================================================================
@@ -556,11 +551,23 @@ body {
   background-image:
     radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.14), transparent 28rem),
     radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.12), transparent 25rem);
+  transition: background-color 320ms ease, color 320ms ease;
+}
+
+html.light body {
+  background-image:
+    radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.10), transparent 30rem),
+    radial-gradient(circle at 90% 0%, rgba(14, 116, 144, 0.08), transparent 28rem);
 }
 
 ::selection {
   color: #04120d;
   background: var(--accent-bright);
+}
+
+html.light ::selection {
+  color: #ffffff;
+  background: #059669;
 }
 
 :focus-visible {
@@ -579,7 +586,16 @@ button:active, a:active {
 button.bg-emerald-600,
 button.bg-emerald-500,
 button.bg-amber-400 {
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.20);
+}
+
+html.light button.bg-emerald-600,
+html.light button.bg-emerald-500 {
+  box-shadow: 0 10px 24px rgba(5, 150, 105, 0.25);
+}
+
+html.light button.bg-amber-400 {
+  box-shadow: 0 10px 24px rgba(217, 119, 6, 0.22);
 }
 
 /* =============================================================================
@@ -594,6 +610,12 @@ button.bg-amber-400 {
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.055);
   transform: translateZ(0);
   transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms ease;
+}
+
+html.light .depth-card {
+  background: linear-gradient(145deg, #ffffff, #eef6f2) !important;
+  border: 1px solid var(--line-strong) !important;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.10), inset 0 1px 0 #ffffff;
 }
 
 .depth-card::after {
@@ -612,10 +634,19 @@ button.bg-amber-400 {
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(52, 211, 153, 0.08);
 }
 
+html.light .depth-card:hover {
+  border-color: rgba(5, 150, 105, 0.45) !important;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(5, 150, 105, 0.10);
+}
+
 .hero-grid {
   background-image: linear-gradient(rgba(52, 211, 153, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(52, 211, 153, 0.08) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+
+html.light .hero-grid {
+  background-image: linear-gradient(rgba(5, 150, 105, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(5, 150, 105, 0.08) 1px, transparent 1px);
 }
 
 .hero-orb {
@@ -682,9 +713,10 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 }
 
 /* =============================================================================
- * Light theme is locked to dark by design (see :root, html.dark block above).
- * The html.light selector is retained so existing saved preferences don't
- * break the page; it points at the same token values as the dark theme.
+ * Light theme is now a real, properly inverted token set (see html.light
+ * block at the top). Admin shell stays dark on purpose — admin's literal
+ * bg-slate-700/800/900 + text-white classes are anchored to the *-bg /
+ * *-text variant tokens defined under :root, so they never flip.
  * ============================================================================= */
 
 /* Portfolio homepage direction */
@@ -740,4 +772,77 @@ html.light .portfolio-section + section { background: #eef4f1 !important; }
   .portfolio-main-card { inset: 2rem .3rem 2rem 1rem; padding: 1.4rem; }
   .portfolio-floating-tag-top { right: -.4rem; top: 2.2rem; }
   .portfolio-floating-tag-bottom { left: -.2rem; bottom: 1.2rem; }
+}
+
+/* =============================================================================
+ * LIGHT THEME — site chrome (navbar / footer / generic dark surfaces)
+ *
+ * Components like the navbar and footer are coded with Tailwind classes that
+ * rely on the dark-theme remap. To keep them readable on a light page without
+ * rewriting every class, we override the visible result here. Admin chrome
+ * stays dark because it uses the literal `-bg` and `-text` variants.
+ * =============================================================================
+ */
+
+/* Navbar — light theme reads as a clean white/95 glass with dark text. */
+html.light header.bg-slate-950\/60 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
+}
+html.light header .text-slate-100 { color: #0f172a !important; }
+html.light header .text-slate-300 { color: #475569 !important; }
+html.light header .text-slate-400 { color: #64748b !important; }
+html.light header .text-emerald-300 { color: #059669 !important; }
+html.light header .text-emerald-400 { color: #059669 !important; }
+html.light header .text-slate-500 { color: #64748b !important; }
+html.light header .text-slate-600 { color: #475569 !important; }
+html.light header .text-slate-700 { color: #334155 !important; }
+html.light header .bg-slate-100\/70 { background-color: #f1f5f9 !important; }
+html.light header .bg-slate-100 { background-color: #f1f5f9 !important; }
+html.light header .border-slate-200\/80 { border-color: rgba(15, 23, 42, 0.10) !important; }
+html.light header .border-slate-200 { border-color: rgba(15, 23, 42, 0.10) !important; }
+html.light header .hover\:text-slate-900:hover { color: #0f172a !important; }
+html.light header .hover\:text-slate-800:hover { color: #1e293b !important; }
+html.light header .hover\:bg-slate-100:hover { background-color: #f1f5f9 !important; }
+html.light header .hover\:text-emerald-600:hover { color: #059669 !important; }
+html.light header .hover\:text-emerald-700:hover { color: #047857 !important; }
+
+/* Footer — light theme reads as soft slate surface. */
+html.light footer.bg-slate-950\/70 {
+  background-color: #ffffff !important;
+  border-top-color: rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+html.light footer { color: #475569 !important; }
+html.light footer .text-slate-300 { color: #475569 !important; }
+html.light footer .text-slate-400 { color: #64748b !important; }
+html.light footer .text-slate-500 { color: #64748b !important; }
+html.light footer .text-white { color: #0f172a !important; }
+html.light footer .border-slate-800 { border-color: rgba(15, 23, 42, 0.10) !important; }
+html.light footer .hover\:text-emerald-400:hover { color: #059669 !important; }
+
+/* Mobile menu dropdown — light card. */
+html.light header .md\:hidden.bg-white {
+  background-color: #ffffff !important;
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+html.light header .md\:hidden .text-slate-700 { color: #334155 !important; }
+html.light header .md\:hidden .text-slate-600 { color: #475569 !important; }
+html.light header .md\:hidden .text-slate-500 { color: #64748b !important; }
+html.light header .md\:hidden .text-emerald-700 { color: #047857 !important; }
+html.light header .md\:hidden .hover\:text-emerald-600:hover { color: #059669 !important; }
+html.light header .md\:hidden .bg-slate-100 { background-color: #f1f5f9 !important; }
+html.light header .md\:hidden .border-slate-100 { border-color: rgba(15, 23, 42, 0.08) !important; }
+html.light header .md\:hidden .border-slate-200 { border-color: rgba(15, 23, 42, 0.10) !important; }
+
+/* Theme toggle button — keep readable in both themes. */
+html.light .theme-toggle {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #475569 !important;
+}
+html.light .theme-toggle:hover {
+  color: #059669 !important;
+  border-color: #6ee7b7 !important;
 }

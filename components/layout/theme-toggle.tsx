@@ -1,34 +1,85 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Moon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
 
 const STORAGE_KEY = 'intern-az-theme';
 
+type Theme = 'light' | 'dark';
+
+function readSavedTheme(): Theme | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const v = window.localStorage.getItem(STORAGE_KEY);
+    if (v === 'light' || v === 'dark') return v;
+  } catch {
+    /* localStorage may be unavailable — non-fatal */
+  }
+  return null;
+}
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement;
+  if (theme === 'dark') {
+    root.classList.add('dark');
+    root.classList.remove('light');
+  } else {
+    root.classList.add('light');
+    root.classList.remove('dark');
+  }
+}
+
 export function ThemeToggle() {
-  // Light theme was removed — the codebase uses literal text-white /
-  // text-slate-300 contrast classes on hero and CTA surfaces, which would
-  // become invisible on a light background. We force dark and keep the
-  // icon as a decorative element so layout doesn't shift.
+  const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
+
+  // Read saved preference on mount so client and server agree visually.
+  // This is the standard React pattern for "read something client-only after
+  // hydration" — the cascading render is the entire point here.
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.documentElement.classList.remove('light');
+    const saved = readSavedTheme();
+    const next: Theme = saved ?? 'light';
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTheme(next);
+    applyTheme(next);
+    setMounted(true);
+  }, []);
+
+  const toggle = () => {
+    const next: Theme = theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+    applyTheme(next);
     try {
-      window.localStorage.setItem(STORAGE_KEY, 'dark');
+      window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* localStorage may be unavailable — non-fatal */
     }
-  }, []);
+  };
+
+  const isLight = theme === 'light';
+  const label = isLight ? 'Qaranlıq tema' : 'Açıq tema';
+  const title = isLight ? 'Qaranlıq temaya keç' : 'Açıq temaya keç';
 
   return (
     <button
       type="button"
-      aria-label="Qaranlıq tema"
-      title="Qaranlıq tema"
-      onClick={(e) => e.preventDefault()}
-      className="theme-toggle inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-100/70 text-slate-300 transition-transform duration-200 hover:-translate-y-0.5 hover:text-emerald-300"
+      aria-label={label}
+      title={title}
+      onClick={toggle}
+      className="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-all duration-200 hover:-translate-y-0.5 hover:text-emerald-600 hover:border-emerald-300 hover:shadow-sm"
     >
-      <Moon className="h-4 w-4" aria-hidden="true" />
+      {/* Render both icons; CSS visibility swaps on light vs dark. Avoids
+       * layout shift when the user toggles and keeps server/client markup
+       * identical before hydration. */}
+      <Sun
+        aria-hidden="true"
+        className={`h-4 w-4 ${mounted && isLight ? 'block' : 'hidden'}`}
+      />
+      <Moon
+        aria-hidden="true"
+        className={`h-4 w-4 ${mounted && !isLight ? 'block' : 'hidden'}`}
+      />
+      {!mounted && <Sun aria-hidden="true" className="h-4 w-4 opacity-0" />}
     </button>
   );
 }
