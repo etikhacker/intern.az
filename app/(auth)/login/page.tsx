@@ -21,7 +21,6 @@ import {
   Loader2,
   Mail,
   Lock,
-  ShieldCheck,
   Sparkles,
   Users,
 } from 'lucide-react';
@@ -275,8 +274,8 @@ function LoginForm() {
 
   return (
     <div className="relative flex w-full flex-col">
-      {/* Top bar: back-to-landing link + admin link */}
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 sm:px-10">
+      {/* Top bar */}
+      <div className="flex items-center border-b border-slate-100 px-6 py-4 sm:px-10">
         <Link
           href="/"
           className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-600"
@@ -285,13 +284,6 @@ function LoginForm() {
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </span>
           <span>Ana səhifə</span>
-        </Link>
-        <Link
-          href="/admin/login"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 transition-colors hover:text-slate-900"
-        >
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-          Administrator girişi
         </Link>
       </div>
 
@@ -445,53 +437,6 @@ function LoginForm() {
               )}
             </Button>
           </form>
-
-          {/* Divider */}
-          <div className="my-7 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              və ya
-            </span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
-
-          {/* Social placeholders — visual only, not wired to OAuth yet */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              disabled
-              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              aria-label="Google ilə daxil ol"
-            >
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  fill="#EA4335"
-                  d="M12 10.2v3.9h5.5c-.2 1.4-1.7 4.2-5.5 4.2-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.2.8 3.9 1.5l2.6-2.5C16.9 3.6 14.6 2.7 12 2.7 6.9 2.7 2.8 6.8 2.8 12s4.1 9.3 9.2 9.3c5.3 0 8.8-3.7 8.8-9 0-.6-.1-1-.1-1.5H12z"
-                />
-              </svg>
-              Google
-            </button>
-            <button
-              type="button"
-              disabled
-              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              aria-label="Apple ilə daxil ol"
-            >
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M16.365 1.43c.07 1.32-.45 2.6-1.27 3.5-.81.91-2.16 1.62-3.27 1.55-.08-1.28.5-2.6 1.3-3.49.83-.94 2.27-1.62 3.24-1.56zM20.5 17.39c-.49 1.13-.72 1.63-1.35 2.63-.88 1.4-2.13 3.13-3.67 3.15-1.38.02-1.73-.9-3.6-.9-1.87 0-2.27.92-3.64.92-1.54-.02-2.72-1.59-3.6-2.99-2.46-3.92-2.72-8.52-1.2-10.97 1.08-1.74 2.78-2.76 4.39-2.76 1.63 0 2.66.9 4.01.9 1.31 0 2.1-.9 3.98-.9 1.42 0 2.93.78 4.01 2.12-3.52 1.93-2.95 6.96.67 8.8z" />
-              </svg>
-              Apple
-            </button>
-          </div>
 
           {/* Footer link */}
           <p className="mt-8 text-center text-xs text-slate-500">
