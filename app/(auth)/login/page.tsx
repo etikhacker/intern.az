@@ -33,7 +33,7 @@ const REMEMBER_KEY = 'intern-az-remember-email';
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
   return (
-    <div className="auth-login-brand relative hidden min-h-[100dvh] overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+    <div className="auth-login-brand relative hidden min-h-[100dvh] overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:self-stretch lg:p-12 xl:p-16">
       {/* Decorative orbs */}
       <div
         aria-hidden="true"

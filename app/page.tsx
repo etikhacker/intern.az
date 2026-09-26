@@ -78,9 +78,9 @@ export default function HomePage() {
               </div>
               <h1 className="reveal-up reveal-delay-2 max-w-4xl text-[3.25rem] font-black leading-[0.98] tracking-[-0.065em] text-white sm:text-6xl lg:text-[6.5rem]">
                 {isAz ? (
-                  <>Təcrübəni <span className="portfolio-gradient-text">portfelə</span> çevir.</>
+                  <>Gələcəyini <span className="portfolio-gradient-text">bu gün</span> qur.</>
                 ) : (
-                  <>Turn experience into a <span className="portfolio-gradient-text">portfolio.</span></>
+                  <>Build your <span className="portfolio-gradient-text">future</span> today.</>
                 )}
               </h1>
               <p className="reveal-up reveal-delay-3 mt-8 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">

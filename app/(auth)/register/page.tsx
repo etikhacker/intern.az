@@ -34,7 +34,7 @@ import {
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
   return (
-    <div className="relative hidden h-full overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+    <div className="relative hidden overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:self-stretch lg:p-12 xl:p-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-emerald-300/40 blur-3xl"
@@ -305,9 +305,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white lg:flex-row">
+    <div className="auth-login-page flex min-h-screen w-full flex-col bg-white lg:flex-row">
       <BrandPanel />
-      <div className="flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+      <div className="auth-login-panel flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
         <MobileBrand />
 
         <div className="relative flex w-full flex-col bg-white">

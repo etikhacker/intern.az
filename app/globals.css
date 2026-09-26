@@ -689,29 +689,45 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
  * =============================================================================
  */
 
+/* =============================================================================
+ * Login theme overrides — now theme-aware.
+ *
+ * Earlier versions of this block hardcoded #ffffff / dark-slate colors so the
+ * login flow always rendered in a light theme regardless of the user's site
+ * preference. That made the page look "broken" when a returning visitor had
+ * dark mode saved. The selectors below still scope all overrides to the
+ * `.auth-login-page` subtree (so public-page styles can't bleed in), but the
+ * values now resolve through CSS variables, so the page follows the global
+ * light/dark theme. The brand panels stay anchored to white text because
+ * they sit on a fixed emerald gradient.
+ * =============================================================================
+ */
+
 .auth-login-page,
 .auth-login-panel {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background-color: var(--surface) !important;
+  color: var(--ink) !important;
 }
 
-.auth-login-page .text-slate-900 { color: #0f172a !important; }
-.auth-login-page .text-slate-700 { color: #334155 !important; }
-.auth-login-page .text-slate-600 { color: #475569 !important; }
-.auth-login-page .text-slate-500 { color: #64748b !important; }
-.auth-login-page .text-slate-400 { color: #94a3b8 !important; }
-.auth-login-page .bg-white { background-color: #ffffff !important; }
-.auth-login-page .bg-slate-50 { background-color: #f8fafc !important; }
-.auth-login-page .bg-slate-50\/50 { background-color: rgba(248, 250, 252, 0.72) !important; }
-.auth-login-page .border-slate-100 { border-color: #f1f5f9 !important; }
-.auth-login-page .border-slate-200 { border-color: #e2e8f0 !important; }
+.auth-login-page .text-slate-900 { color: var(--c-slate-900) !important; }
+.auth-login-page .text-slate-700 { color: var(--c-slate-700) !important; }
+.auth-login-page .text-slate-600 { color: var(--c-slate-600) !important; }
+.auth-login-page .text-slate-500 { color: var(--c-slate-500) !important; }
+.auth-login-page .text-slate-400 { color: var(--c-slate-400) !important; }
+.auth-login-page .bg-white { background-color: var(--c-white) !important; }
+.auth-login-page .bg-slate-50 { background-color: var(--c-slate-50) !important; }
+.auth-login-page .bg-slate-50\/50 { background-color: var(--c-slate-50-70) !important; }
+.auth-login-page .border-slate-100 { border-color: var(--c-slate-100) !important; }
+.auth-login-page .border-slate-200 { border-color: var(--c-slate-200) !important; }
 .auth-login-page input {
-  color: #0f172a !important;
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+  color: var(--ink) !important;
+  background-color: var(--surface-soft) !important;
+  border-color: var(--line) !important;
 }
-.auth-login-page input::placeholder { color: #94a3b8 !important; }
+.auth-login-page input::placeholder { color: var(--muted) !important; }
 
+/* Brand panels always render on the emerald gradient regardless of theme,
+ * so their text stays white. */
 .auth-login-brand,
 .auth-login-mobile-brand {
   color: #ffffff !important;
