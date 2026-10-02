@@ -27,13 +27,27 @@ import {
 
 const REMEMBER_KEY = 'intern-az-remember-email';
 
+/**
+ * Only same-origin, in-app destinations are accepted after login.
+ * Anything protocol-relative (`//evil.tld`), absolute (`https://evil.tld`),
+ * backslash-slashed (`/\evil.tld`) or outside the student area is discarded, so
+ * the `?redirect=` parameter cannot be turned into an open redirect.
+ */
+function safeRedirectPath(raw: string | null): string {
+  if (!raw) return '/dashboard';
+  if (!raw.startsWith('/dashboard')) return '/dashboard';
+  if (raw.startsWith('//') || raw.startsWith('/\\')) return '/dashboard';
+  if (/[\r\n\t]/.test(raw)) return '/dashboard';
+  return raw;
+}
+
 /* ---------------------------------------------------------------------------
  * Left brand panel — shown on desktop. Marketing copy, abstract art and
  * social proof stacked above decorative gradient orbs.
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
   return (
-    <div className="auth-login-brand relative hidden min-h-[100dvh] overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:self-stretch lg:p-12 xl:p-16">
+    <div className="auth-login-brand relative hidden overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
       {/* Decorative orbs */}
       <div
         aria-hidden="true"
@@ -176,7 +190,7 @@ function MobileBrand() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
+  const redirectPath = safeRedirectPath(searchParams.get('redirect'));
   const { signIn } = useAuth();
 
   const [formData, setFormData] = useState<LoginFormData>({
@@ -189,6 +203,26 @@ function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
+
+  // Middleware sends visitors here with a reason instead of dropping them on a
+  // blank redirect, so a blocked /admin or /dashboard URL always explains itself.
+  const notice = (() => {
+    const reason = searchParams.get('reason');
+    const denied = searchParams.get('denied');
+    if (denied === 'admin') {
+      return 'Bu sahifə yalnız administrator hesabı üçün əlçatandır. Tələbə hesabı ilə davam edin.';
+    }
+    if (reason === 'setup') {
+      return 'Sistemin təhlükəsizlik parametrləri qurulmayıb. Giriş müvəqqəti olaraq əlçatan deyil.';
+    }
+    if (reason === 'unavailable') {
+      return 'Giriş xidməti ilə əlaqə kurulmadı. Bir az sonra yenidən yoxlayın.';
+    }
+    if (searchParams.get('redirect')) {
+      return 'Davam etmək üçün hesabınıza daxil olun.';
+    }
+    return null;
+  })();
 
   // Restore remembered email on mount (client-only via typeof guard).
   // setState-in-effect here is intentional — the entire purpose is to
@@ -254,17 +288,20 @@ function LoginForm() {
       });
 
       if (!res.success) {
-        setServerError(res.error || 'İstifadəçi adı və ya şifrə yanlışdır');
+        // Never surface the provider's raw message ("Email not confirmed",
+        // "User already registered", ...): it confirms which addresses exist
+        // on the platform. One generic message for every failure.
+        setServerError(
+          'E-poçt və ya şifrə yanlışdır. Əgər hesabınız yoxdursa, qeydiyyatdan keçin.'
+        );
         setIsSubmitting(false);
         return;
       }
 
       if (res.role === 'admin') {
-        router.push('/admin');
+        router.replace('/admin');
       } else {
-        router.push(
-          redirectPath.startsWith('/dashboard') ? redirectPath : '/dashboard'
-        );
+        router.replace(redirectPath);
       }
     } catch {
       setServerError('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
@@ -273,7 +310,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="relative flex w-full flex-col">
+    <div className="relative flex w-full flex-1 flex-col">
       {/* Top bar */}
       <div className="flex items-center border-b border-slate-100 px-6 py-4 sm:px-10">
         <Link
@@ -287,8 +324,8 @@ function LoginForm() {
         </Link>
       </div>
 
-      {/* Form area */}
-      <div className="flex-1 px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
+      {/* Form area — this is the only scrolling region on desktop */}
+      <div className="auth-login-scroll flex flex-1 items-center px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
         <div className="mx-auto w-full max-w-md">
           {/* Heading */}
           <div className="space-y-2">
@@ -311,6 +348,13 @@ function LoginForm() {
               className="mt-6 text-xs"
             >
               <AlertDescription>{serverError}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Route guard notice (blocked /admin, /dashboard, setup, etc.) */}
+          {notice && !serverError && (
+            <Alert variant="warning" className="mt-6 text-xs">
+              <AlertDescription>{notice}</AlertDescription>
             </Alert>
           )}
 
@@ -464,7 +508,7 @@ function LoginForm() {
  * ------------------------------------------------------------------------ */
 export default function LoginPage() {
   return (
-    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:flex-row">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:h-[100dvh] lg:flex-row lg:overflow-hidden">
       <Suspense
         fallback={
           <div className="flex min-h-[60vh] w-full items-center justify-center text-sm text-slate-500">
@@ -477,7 +521,7 @@ export default function LoginPage() {
         }
       >
         <BrandPanel />
-        <div className="auth-login-panel flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+        <div className="auth-login-panel flex w-full flex-col lg:h-full lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
           <MobileBrand />
           <LoginForm />
         </div>

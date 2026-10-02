@@ -109,11 +109,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="portfolio-hero-art reveal-up reveal-delay-3 relative mx-auto h-[27rem] w-full max-w-[30rem] lg:h-[34rem]" aria-label="Intern.az tələbə inkişaf platformasının vizual önizləməsi">
+            <div className="portfolio-hero-art reveal-up reveal-delay-3 relative mx-auto h-[31rem] w-full max-w-[34rem] lg:h-[34rem]" aria-label="Intern.az tələbə inkişaf platformasının vizual önizləməsi">
               <div className="portfolio-orbit portfolio-orbit-one" aria-hidden="true" />
               <div className="portfolio-orbit portfolio-orbit-two" aria-hidden="true" />
               <div className="portfolio-main-card">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-300 text-slate-950 shadow-[0_0_30px_rgba(110,231,183,0.35)]">
                       <GraduationCap className="h-5 w-5" aria-hidden="true" />
@@ -125,16 +125,16 @@ export default function HomePage() {
                   </div>
                   <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-1 text-[10px] font-bold text-emerald-200">ACTIVE</span>
                 </div>
-                <div className="mt-12">
+                <div className="mt-9">
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Current focus</p>
                   <h2 className="mt-3 max-w-xs text-4xl font-black tracking-[-0.05em] text-white">Build. Learn. Show it.</h2>
                 </div>
-                <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                   <div className="mb-4 flex items-center justify-between text-xs text-slate-400"><span>Weekly progress</span><span className="font-bold text-emerald-200">72%</span></div>
                   <div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[72%] rounded-full bg-gradient-to-r from-emerald-400 to-cyan-300" /></div>
                   <div className="mt-4 flex items-center gap-2 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-emerald-300" /> 3 tasks completed this week</div>
                 </div>
-                <div className="mt-6 grid grid-cols-3 gap-2">
+                <div className="mt-5 grid grid-cols-3 gap-2">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Layers3 className="h-4 w-4 text-violet-300" /><p className="mt-3 text-lg font-black text-white">04</p><p className="text-[10px] text-slate-500">Projects</p></div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Users className="h-4 w-4 text-emerald-300" /><p className="mt-3 text-lg font-black text-white">1:1</p><p className="text-[10px] text-slate-500">Mentoring</p></div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><Award className="h-4 w-4 text-orange-300" /><p className="mt-3 text-lg font-black text-white">01</p><p className="text-[10px] text-slate-500">Credential</p></div>
@@ -162,9 +162,9 @@ export default function HomePage() {
               const Icon = track.icon;
               return <Link href="/internships" key={track.number} className={`portfolio-track-card portfolio-track-${track.tone}`}>
                 <div className="flex items-start justify-between"><span className="text-xs font-bold tracking-[0.18em] text-slate-500">{track.number}</span><span className="portfolio-track-icon"><Icon className="h-5 w-5" aria-hidden="true" /></span></div>
-                <h3 className="mt-16 text-2xl font-black tracking-[-0.04em] text-white">{isAz ? track.azTitle : track.enTitle}</h3>
+                <h3 className="mt-12 text-2xl font-black tracking-[-0.04em] text-white">{isAz ? track.azTitle : track.enTitle}</h3>
                 <p className="mt-4 min-h-14 text-sm leading-6 text-slate-400">{isAz ? track.azText : track.enText}</p>
-                <span className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-white">{isAz ? 'İstiqaməti aç' : 'Open track'} <ArrowUpRight className="h-4 w-4" /></span>
+                <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-bold text-white">{isAz ? 'İstiqaməti aç' : 'Open track'} <ArrowUpRight className="h-4 w-4" /></span>
               </Link>;
             })}
           </div>

@@ -733,6 +733,23 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
   color: #ffffff !important;
 }
 
+/* Auth split-screen geometry.
+ * `.auth-login-page` is given a DEFINITE height (h-[100dvh]) on desktop, so
+ * percentage/h-full children (the brand panel) actually resolve. With only
+ * min-h the brand panel collapsed to its content height, the columns ended at
+ * different points, and the page background showed through as a dead black
+ * band under the form. The form column owns the scrolling instead of the
+ * document, which keeps the top bar and the copyright pinned. */
+.auth-login-page .auth-login-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.auth-login-page .auth-login-brand {
+  height: 100%;
+}
+
 .auth-login-brand .text-emerald-50,
 .auth-login-mobile-brand .text-emerald-50 {
   color: rgba(236, 253, 245, 0.92) !important;
@@ -798,21 +815,62 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 .portfolio-primary-button:hover { background: #a7f3d0 !important; }
 .portfolio-outline-button { border-color: rgba(255,255,255,.2) !important; background: rgba(255,255,255,.04) !important; color: #e2e8f0 !important; }
 .portfolio-outline-button:hover { background: rgba(255,255,255,.1) !important; }
-.portfolio-hero-art { perspective: 1200px; }
-.portfolio-main-card { position: absolute; inset: 2.5rem 1rem 2.5rem 2rem; transform: rotateY(-8deg) rotateX(3deg) rotateZ(2deg); border: 1px solid rgba(110,231,183,.27); border-radius: 2rem; padding: 2rem; background: linear-gradient(145deg, rgba(25,38,44,.95), rgba(7,12,17,.96)); box-shadow: 30px 35px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.1), 0 0 90px rgba(16,185,129,.12); transition: transform 450ms var(--ease-out); }
-.portfolio-hero-art:hover .portfolio-main-card { transform: rotateY(-2deg) rotateX(1deg) rotateZ(0deg) translateY(-6px); }
+/* Hero art.
+ * The stage is a fixed-ratio box; the 3D card lives INSIDE it with enough
+ * padding that its rotation can never spill outside the column (it used to be
+ * clipped by the section's overflow-hidden) and the two floating tags hang off
+ * the card corners instead of covering the card's own stat row. */
+.portfolio-hero-art {
+  perspective: 1200px;
+  padding: 1.5rem 2.75rem 2.75rem 1.5rem;
+}
+@keyframes portfolio-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+/* The stage itself must not get an `animation` — it also carries
+ * `.reveal-up`, whose entrance keyframes set opacity from 0 to 1. Overriding
+ * `animation` here left the whole card invisible. The float therefore lives on
+ * the card and uses the standalone `translate` property, so it composes with
+ * the tilt `transform` instead of replacing it. */
+.portfolio-main-card {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(-9deg) rotateX(3.5deg) rotateZ(1.4deg);
+  transform-origin: 62% 45%;
+  overflow: hidden;
+  animation: portfolio-float 9s ease-in-out infinite;
+  border: 1px solid rgba(110,231,183,.27);
+  border-radius: 2rem;
+  padding: 1.75rem;
+  background: linear-gradient(145deg, rgba(25,38,44,.95), rgba(7,12,17,.96));
+  box-shadow: 30px 35px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.1), 0 0 90px rgba(16,185,129,.12);
+  transition: transform 450ms var(--ease-out);
+}
+/* Specular sheen that sells the tilt without a WebGL dependency. */
+.portfolio-main-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 34%, rgba(255, 255, 255, 0.07) 48%, transparent 62%);
+}
+.portfolio-hero-art:hover .portfolio-main-card { transform: rotateY(-3deg) rotateX(1.5deg) rotateZ(0deg) translateY(-6px); }
 .portfolio-orbit { position: absolute; border: 1px solid rgba(110,231,183,.14); border-radius: 999px; transform: rotate(-24deg); pointer-events: none; }
-.portfolio-orbit-one { inset: 1rem -1rem 3rem 0; }
-.portfolio-orbit-two { inset: 4rem 1rem 0 -2rem; border-color: rgba(124,58,237,.16); transform: rotate(32deg); }
-.portfolio-floating-tag { position: absolute; display: inline-flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; padding: .65rem .8rem; background: rgba(9,15,20,.86); color: #dbeafe; font-size: .7rem; font-weight: 700; box-shadow: 0 15px 40px rgba(0,0,0,.3); backdrop-filter: blur(12px); }
-.portfolio-floating-tag-top { right: -0.4rem; top: 4rem; }
-.portfolio-floating-tag-bottom { bottom: 2rem; left: -0.5rem; }
+.portfolio-orbit-one { inset: 0 0 2rem 0; }
+.portfolio-orbit-two { inset: 2.5rem 1.5rem 0 -1.5rem; border-color: rgba(124,58,237,.16); transform: rotate(32deg); }
+.portfolio-floating-tag { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; padding: .65rem .8rem; background: rgba(9,15,20,.86); color: #dbeafe; font-size: .7rem; font-weight: 700; box-shadow: 0 15px 40px rgba(0,0,0,.3); backdrop-filter: blur(12px); }
+/* Both tags sit on the OUTER right edge of the stage, above and below the
+ * card's content band, so they never cover the "ACTIVE" pill or the stat row. */
+.portfolio-floating-tag-top { right: 0; top: 30%; }
+.portfolio-floating-tag-bottom { right: 1.5rem; bottom: 0; }
 .portfolio-marquee { overflow: hidden; }
 .portfolio-kicker { color: #6ee7b7; font-size: .7rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
 .portfolio-heading { margin-top: .8rem; max-width: 32rem; color: #f8fafc; font-size: clamp(2.4rem, 5vw, 4.7rem); font-weight: 900; letter-spacing: -.065em; line-height: .96; }
 .portfolio-text-link { display: inline-flex; align-items: center; gap: .4rem; color: #a7f3d0; font-size: .85rem; font-weight: 800; transition: gap 200ms ease; }
 .portfolio-text-link:hover { gap: .7rem; }
-.portfolio-track-card { display: flex; min-height: 27rem; flex-direction: column; border: 1px solid rgba(255,255,255,.11); border-radius: 1.5rem; padding: 1.6rem; background: linear-gradient(145deg, rgba(22,31,39,.9), rgba(9,13,19,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); transition: transform 300ms var(--ease-out), border-color 300ms ease, box-shadow 300ms ease; }
+.portfolio-track-card { display: flex; min-height: 21rem; flex-direction: column; border: 1px solid rgba(255,255,255,.11); border-radius: 1.5rem; padding: 1.6rem; background: linear-gradient(145deg, rgba(22,31,39,.9), rgba(9,13,19,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); transition: transform 300ms var(--ease-out), border-color 300ms ease, box-shadow 300ms ease; }
 .portfolio-track-card:hover { transform: translateY(-8px); border-color: rgba(167,243,208,.45); box-shadow: 0 25px 70px rgba(0,0,0,.35); }
 .portfolio-track-violet:hover { border-color: rgba(196,181,253,.55); }
 .portfolio-track-orange:hover { border-color: rgba(253,186,116,.55); }
@@ -911,9 +969,16 @@ html.light .portfolio-hero .bg-gradient-to-r.from-emerald-400.to-cyan-300 {
  * dark in light mode for visual rhythm (alternating bands). */
 
 @media (max-width: 640px) {
-  .portfolio-main-card { inset: 2rem .3rem 2rem 1rem; padding: 1.4rem; }
-  .portfolio-floating-tag-top { right: -.4rem; top: 2.2rem; }
-  .portfolio-floating-tag-bottom { left: -.2rem; bottom: 1.2rem; }
+  /* Extra bottom padding reserves clear space for the "Mentor feedback" tag so
+     it never lands on the stat row, and the card's type steps down so the whole
+     3D card fits a short stage instead of being clipped. */
+  .portfolio-hero-art { padding: 1rem 1.5rem 3.25rem .75rem; }
+  .portfolio-main-card { padding: 1.15rem; border-radius: 1.4rem; }
+  .portfolio-main-card h2 { font-size: 1.9rem; letter-spacing: -.03em; }
+  .portfolio-main-card p.text-lg { font-size: 1.05rem; }
+  .portfolio-floating-tag { font-size: .64rem; padding: .5rem .65rem; }
+  .portfolio-floating-tag-top { right: 0; top: 22%; }
+  .portfolio-floating-tag-bottom { right: .75rem; bottom: 0; }
 }
 
 /* =============================================================================

@@ -34,7 +34,7 @@ import {
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
   return (
-    <div className="relative hidden overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:self-stretch lg:p-12 xl:p-16">
+    <div className="auth-login-brand relative hidden overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-emerald-300/40 blur-3xl"
@@ -63,10 +63,9 @@ function BrandPanel() {
         </div>
         <h2 className="text-4xl font-black leading-[1.05] tracking-tight xl:text-5xl">
           İlk addımı{' '}
-          <span className="bg-gradient-to-r from-amber-200 via-white to-cyan-200 bg-clip-text text-transparent">
-            bu gün
-          </span>{' '}
-          at.
+          <span className="whitespace-nowrap bg-gradient-to-r from-amber-200 via-white to-cyan-200 bg-clip-text text-transparent">
+            bu gün at.
+          </span>
         </h2>
         <p className="text-base leading-relaxed text-emerald-50/90">
           Hesab yarat, universitetini göstər — biz sənə uyğun layihələri və
@@ -120,7 +119,7 @@ function BrandPanel() {
 
       <div
         aria-hidden="true"
-        className="absolute bottom-44 right-6 hidden -rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-emerald-900/30 backdrop-blur-md 2xl:block"
+        className="pointer-events-none absolute bottom-60 right-6 hidden -rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 opacity-95 shadow-2xl shadow-emerald-900/30 backdrop-blur-md 2xl:block"
       >
         <div className="flex items-center gap-1 text-amber-500">
           {[...Array(5)].map((_, i) => (
@@ -163,7 +162,7 @@ function MobileBrand() {
         </div>
       </Link>
       <h2 className="relative z-10 mt-5 text-2xl font-black leading-tight">
-        İlk addımı bu gün at.
+        İlk addımı <span className="whitespace-nowrap">bu gün at.</span>
       </h2>
     </div>
   );
@@ -305,12 +304,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="auth-login-page flex min-h-screen w-full flex-col bg-white lg:flex-row">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:h-[100dvh] lg:flex-row lg:overflow-hidden">
       <BrandPanel />
-      <div className="auth-login-panel flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+      <div className="auth-login-panel flex w-full flex-col lg:h-full lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
         <MobileBrand />
 
-        <div className="relative flex w-full flex-col bg-white">
+        <div className="relative flex w-full flex-1 flex-col bg-white">
           {/* Top bar */}
           <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 sm:px-10">
             <Link
@@ -330,8 +329,9 @@ export default function RegisterPage() {
             </Link>
           </div>
 
-          {/* Form */}
-          <div className="flex-1 px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
+          {/* Form — the only scrolling region on desktop, so the brand panel,
+              the top bar and the copyright stay put on short screens. */}
+          <div className="auth-login-scroll flex flex-1 items-start px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
             <div className="mx-auto w-full max-w-md">
               <div className="space-y-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">

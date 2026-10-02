@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
@@ -23,10 +23,41 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { SOLE_ADMIN_EMAIL } from '@/lib/auth/admin';
+// SOLE_ADMIN_EMAIL is intentionally never rendered: printing the administrator
+// address in the markup (placeholder, aria-label, or any DOM text) hands every
+// visitor the one account worth attacking. It is only used for the local
+// allow-list comparison below.
+
+/* Failed-attempt throttle.
+ * Per-browser, session-scoped: 5 failures -> 5 minutes of no auth calls.
+ * sessionStorage is intentionally used so a lockout never follows the user to
+ * another tab/browser, and it dies when the tab closes. */
+const ATTEMPT_KEY = 'intern-az-admin-login-attempts';
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 5 * 60 * 1000;
+
+type AttemptState = { count: number; firstAt: number; lockedUntil: number };
+
+function readAttempts(): AttemptState {
+  if (typeof window === 'undefined') return { count: 0, firstAt: 0, lockedUntil: 0 };
+  try {
+    const raw = window.sessionStorage.getItem(ATTEMPT_KEY);
+    if (!raw) return { count: 0, firstAt: 0, lockedUntil: 0 };
+    const parsed = JSON.parse(raw) as AttemptState;
+    if (typeof parsed?.count !== 'number') return { count: 0, firstAt: 0, lockedUntil: 0 };
+    if (Date.now() > parsed.lockedUntil + LOCKOUT_MS) {
+      window.sessionStorage.removeItem(ATTEMPT_KEY);
+      return { count: 0, firstAt: 0, lockedUntil: 0 };
+    }
+    return parsed;
+  } catch {
+    return { count: 0, firstAt: 0, lockedUntil: 0 };
+  }
+}
 
 function BrandPanel() {
   return (
-    <div className="relative hidden h-full overflow-hidden bg-gradient-to-br from-amber-500 via-amber-600 to-orange-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+    <div className="auth-login-brand relative hidden overflow-hidden bg-gradient-to-br from-amber-500 via-amber-600 to-orange-700 text-white lg:flex lg:flex-col lg:justify-between lg:gap-8 lg:p-12 xl:p-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-amber-300/40 blur-3xl"
@@ -69,35 +100,35 @@ function BrandPanel() {
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
               <Check className="h-3 w-3" aria-hidden="true" />
             </span>
-            Bütün admin əməliyyatlar jurnallanır
+            Giriş yalnız təsdiqlənmiş admin hesabı üçün mümkündür
           </li>
           <li className="flex items-center gap-2.5">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
               <Check className="h-3 w-3" aria-hidden="true" />
             </span>
-            2-ci faktorlu identifikasiya tələb olunur
+            Hər admin səhifəsi server tərəfdə yenidən yoxlanılır
           </li>
           <li className="flex items-center gap-2.5">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
               <Check className="h-3 w-3" aria-hidden="true" />
             </span>
-            Uğursuz cəhdlər avtomatik bloklanır
+            Uğursuz cəhdlərdən sonra müvəqqəti bloklama tətbiq olunur
           </li>
         </ul>
-      </div>
 
-      <div
-        aria-hidden="true"
-        className="absolute right-8 top-1/2 hidden -translate-y-1/2 rotate-3 rounded-2xl border border-white/20 bg-white/95 p-4 text-slate-900 shadow-2xl shadow-amber-900/30 backdrop-blur-md xl:block"
-      >
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+        {/* Session policy chip — in normal flow, so it can never overlap the
+            headline or the copyright on short screens. */}
+        <div className="flex items-center gap-2.5 rounded-2xl border border-white/20 bg-white/10 p-3 backdrop-blur-md">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
             <ShieldCheck className="h-4 w-4" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500">SON GİRİŞ</p>
-            <p className="text-xs font-bold leading-tight">2 saat əvvəl</p>
-            <p className="text-[9px] text-slate-400">Bakı, AZ · IP maskelanmış</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-50/80">
+              Sessiya siyasəti
+            </p>
+            <p className="text-xs font-bold leading-tight">
+              Cəhdlər jurnalın yazılır · IP maskalanır
+            </p>
           </div>
         </div>
       </div>
@@ -136,7 +167,7 @@ function MobileBrand() {
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, signOut } = useAuth();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -147,6 +178,37 @@ export default function AdminLoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  // Read the lockout state lazily during the first render instead of in an
+  // effect: sessionStorage is an external store read once, not a subscription,
+  // and a synchronous setState in an effect causes a cascading render.
+  const [lockedUntil, setLockedUntil] = useState(() => readAttempts().lockedUntil);
+
+  const registerFailedAttempt = useCallback(() => {
+    try {
+      const now = Date.now();
+      const prev = readAttempts();
+      const base = now - prev.firstAt > LOCKOUT_MS ? { count: 0, firstAt: now } : prev;
+      const next: AttemptState = {
+        firstAt: base.firstAt,
+        count: base.count + 1,
+        lockedUntil:
+          base.count + 1 >= MAX_ATTEMPTS ? now + LOCKOUT_MS : prev.lockedUntil,
+      };
+      window.sessionStorage.setItem(ATTEMPT_KEY, JSON.stringify(next));
+      setLockedUntil(next.lockedUntil);
+    } catch {
+      /* sessionStorage unavailable — throttle is best-effort */
+    }
+  }, []);
+
+  const clearFailedAttempts = useCallback(() => {
+    try {
+      window.sessionStorage.removeItem(ATTEMPT_KEY);
+    } catch {
+      /* non-fatal */
+    }
+    setLockedUntil(0);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -166,6 +228,19 @@ export default function AdminLoginPage() {
     setServerError(null);
     setErrors({});
 
+    // Cheap local throttle: repeated failures from this browser stop being
+    // forwarded to the auth provider. The real gate is server-side (middleware
+    // re-verifies the session on every /admin request) — this only raises the
+    // cost of online guessing.
+    if (lockedUntil > Date.now()) {
+      setServerError(
+        `Çox sayda uğursuz cəhd. ${Math.ceil(
+          (lockedUntil - Date.now()) / 60000
+        )} dəqiqə sonra yenidən yoxlayın.`
+      );
+      return;
+    }
+
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -177,49 +252,59 @@ export default function AdminLoginPage() {
       return;
     }
 
+    const email = result.data.email.trim().toLowerCase();
+
+    // Do not reveal that a specific address is the administrator account, and
+    // do not spend an auth round-trip on a non-admin address.
+    if (email !== SOLE_ADMIN_EMAIL.toLowerCase()) {
+      setErrors({
+        email: 'Bu ünvan administrator hesabına aid deyil.',
+      });
+      registerFailedAttempt();
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const res = await signIn({
-        email: result.data.email,
-        password: result.data.password,
-      });
+      const res = await signIn({ email, password: result.data.password });
 
       if (!res.success) {
-        setServerError(res.error || 'Invalid administrator credentials.');
+        registerFailedAttempt();
+        setServerError(
+          'Giriş rədd edildi. E-poçt və ya şifrə yanlışdır.'
+        );
         setIsSubmitting(false);
         return;
       }
 
       if (res.role !== 'admin') {
         setServerError(
-          'Giriş rədd edildi. Yalnız səlahiyyətli administrator hesabı bu səhifəyə daxil ola bilər.'
+          'Giriş rədd edildi. Bu hesab üçün administrator səlahiyyəti yoxdur.'
         );
         setIsSubmitting(false);
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1500);
+        // Drop the student session so it cannot linger in this browser.
+        void signOut();
+        router.push('/dashboard');
         return;
       }
 
-      router.push('/admin');
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : 'An unexpected error occurred during admin authentication';
-      setServerError(msg);
+      clearFailedAttempts();
+      router.replace('/admin');
+    } catch {
+      registerFailedAttempt();
+      setServerError('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white lg:flex-row">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:h-[100dvh] lg:flex-row lg:overflow-hidden">
       <BrandPanel />
-      <div className="flex w-full flex-col lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+      <div className="auth-login-panel flex w-full flex-col lg:h-full lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
         <MobileBrand />
 
-        <div className="relative flex w-full flex-col bg-white">
+        <div className="relative flex w-full flex-1 flex-col bg-white">
           {/* Top bar */}
           <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 sm:px-10">
             <Link
@@ -240,8 +325,8 @@ export default function AdminLoginPage() {
             </Link>
           </div>
 
-          {/* Form */}
-          <div className="flex-1 px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
+          {/* Form — the only scrolling region on desktop */}
+          <div className="auth-login-scroll flex flex-1 items-center px-6 py-8 sm:px-10 sm:py-10 lg:px-14 xl:px-20">
             <div className="mx-auto w-full max-w-md">
               <div className="space-y-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-700">
@@ -286,7 +371,7 @@ export default function AdminLoginPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder={SOLE_ADMIN_EMAIL}
+                      placeholder="admin hesabının e-poçt ünvanı"
                       value={formData.email}
                       onChange={handleChange}
                       disabled={isSubmitting}
