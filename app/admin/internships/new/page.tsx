@@ -241,6 +241,11 @@ export default function AdminNewInternshipPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
               >
+                <option value="Frontend">Frontend</option>
+                <option value="Backend">Backend</option>
+                <option value="Data">Data</option>
+                <option value="AI">AI</option>
+                <option value="Automation">Automation</option>
                 <option value="Proqramlaşdırma və Veb">Proqramlaşdırma və Veb</option>
                 <option value="Məlumat Analitikası">Məlumat Analitikası</option>
                 <option value="Məhsul İdarəetməsi">Məhsul İdarəetməsi</option>

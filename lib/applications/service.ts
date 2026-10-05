@@ -59,7 +59,6 @@ export async function submitApplication({
         internship_id: internshipId,
         student_id: studentProfile.id,
         motivation: data.motivation,
-        experience: data.experience || null,
         portfolio_url: data.portfolio_url || null,
         github_url: data.github_url || null,
         linkedin_url: data.linkedin_url || null,
