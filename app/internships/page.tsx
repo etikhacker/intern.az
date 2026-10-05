@@ -39,7 +39,7 @@ export default function InternshipsPage() {
     let isMounted = true;
     async function load() {
       try {
-        const data = await getPublishedInternships();
+        const data = await fetch('/api/internships/public', { cache: 'no-store' }).then((response) => response.json() as Promise<Internship[]>);
         if (isMounted) {
           setInternships(data);
           setCurrentTimestamp(Date.now());
