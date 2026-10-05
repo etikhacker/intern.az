@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient, createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const supabase = (await createAdminClient()) ?? (await createServerClient());
+  const supabase = await createServerClient();
 
   if (!supabase) {
     return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 });
