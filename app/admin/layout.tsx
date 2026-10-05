@@ -61,10 +61,15 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row bg-slate-950 text-slate-100 min-h-[calc(100vh-36px)]">
+    /* The shell owns exactly one viewport (h-[100dvh]) with the main column as
+     * the single scroll container. The previous `min-h-[calc(100vh-36px)]` plus
+     * an `h-screen` sidebar made the sidebar 36px taller than its container, so
+     * a dead band of page background showed under the console and the sidebar
+     * pushed the page into a second, meaningless scroll. */
+    <div className="flex flex-1 flex-col overflow-x-clip bg-slate-950 text-slate-100 md:h-[100dvh] md:flex-row md:overflow-hidden">
       <AdminSidebar />
-      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
+      <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-6xl">
           {children}
         </div>
       </main>

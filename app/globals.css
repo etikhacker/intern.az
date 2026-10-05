@@ -734,25 +734,68 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 }
 
 /* Auth split-screen geometry.
- * `.auth-login-page` is given a DEFINITE height (h-[100dvh]) on desktop, so
- * percentage/h-full children (the brand panel) actually resolve. With only
- * min-h the brand panel collapsed to its content height, the columns ended at
- * different points, and the page background showed through as a dead black
- * band under the form. The form column owns the scrolling instead of the
- * document, which keeps the top bar and the copyright pinned. */
+ *
+ * The old markup used a flex row with `flex-[0_0_50%]` + `max-w-xl/max-w-2xl`
+ * on the form column and auto width on the brand panel. Three bugs came out of
+ * that:
+ *   1. a flex item's `min-width: auto` resolves to its min-content, so the
+ *      form column could push itself past 50% and scroll the page sideways,
+ *      clipping the brand panel;
+ *   2. the columns were never 50/50 — the brand was max-content wide, so the
+ *      split drifted between 45% and 55% depending on the copy;
+ *   3. on wide screens the two fixed/max columns stopped at ~1250px and left a
+ *      large empty band on the right, which is what made the page look
+ *      "yarımçıq".
+ *
+ * Grid with `minmax(0, 1fr)` tracks fixes all three at the root: tracks are
+ * always exactly half the viewport, `minmax(0, …)` allows them to shrink below
+ * content, and `min-width: 0` on the children stops min-content from
+ * re-inflating them. The form keeps its own inner max-width for readability. */
+.auth-login-page {
+  /* Belt and braces: even if a future child introduces min-content wider than
+     the viewport, the page itself must never scroll sideways. */
+  overflow-x: clip;
+}
 .auth-login-page .auth-login-scroll {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-.auth-login-page .auth-login-brand {
-  height: 100%;
+@media (min-width: 1024px) {
+  .auth-login-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .auth-login-page > * {
+    min-width: 0;
+    max-width: none;
+    width: auto;
+    height: 100%;
+  }
 }
 
 .auth-login-brand .text-emerald-50,
 .auth-login-mobile-brand .text-emerald-50 {
   color: rgba(236, 253, 245, 0.92) !important;
+}
+
+/* Native form controls.
+ * A bare <select> renders its option list with the browser/OS default (white
+ * background, grey text, blue selection) even when the page is dark, because
+ * the popup follows the element's own color-scheme. Inheriting the document
+ * scheme and painting the options from the theme tokens keeps the popup on
+ * theme; the shared <Select> component handles the rest of the control. */
+select {
+  color-scheme: inherit;
+}
+select option,
+select optgroup {
+  background-color: var(--surface);
+  color: var(--ink);
 }
 
 @media (max-width: 380px) {

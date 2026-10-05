@@ -172,8 +172,9 @@ export function AdminSidebar() {
         </button>
       </div>
 
-      {/* Desktop static sidebar */}
-      <aside className="hidden md:block w-64 shrink-0 h-screen sticky top-0">
+      {/* Desktop static sidebar — matches the shell's dvh box exactly so the
+          two columns can never disagree on height. */}
+      <aside className="hidden md:block w-64 shrink-0 h-[100dvh] sticky top-0">
         {sidebarContent}
       </aside>
 

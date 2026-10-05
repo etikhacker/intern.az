@@ -167,8 +167,8 @@ export function StudentSidebar() {
         </button>
       </div>
 
-      {/* Desktop static sidebar */}
-      <aside className="hidden md:block w-64 shrink-0 h-screen sticky top-0">
+      {/* Desktop static sidebar — dvh so it matches the layout shell exactly. */}
+      <aside className="hidden md:block w-64 shrink-0 h-[100dvh] sticky top-0">
         {sidebarContent}
       </aside>
 

@@ -7,3 +7,6 @@ coverage/
 !.env.example
 tsconfig.tsbuildinfo
 package-lock.json
+
+# Local browser-inspection artifacts (screenshots/console logs from layout checks)
+.playwright-cli/

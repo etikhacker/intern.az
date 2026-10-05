@@ -123,10 +123,29 @@ export default function AdminContactMessagesPage() {
           <RefreshCw className="w-7 h-7 text-amber-400 animate-spin" />
         </div>
       ) : messages.length === 0 ? (
-        <Card className="bg-slate-900 border-slate-800">
-          <CardContent className="p-12 text-center text-xs text-slate-500">
-            <Mail className="w-10 h-10 mx-auto mb-3 text-slate-600" />
-            Hələ heç bir əlaqə mesajı yoxdur.
+        <Card className="border-dashed border-slate-700 bg-slate-900/60">
+          <CardContent className="flex flex-col items-center gap-4 px-6 py-14 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700 bg-slate-800/80">
+              <Mail className="h-6 w-6 text-slate-400" aria-hidden="true" />
+            </div>
+            <div className="max-w-md space-y-1.5">
+              <h2 className="text-sm font-semibold text-white">
+                Hələ heç bir mesaj yoxdur
+              </h2>
+              <p className="text-xs leading-relaxed text-slate-400">
+                Əlaqə formundan gönderilən hər mesaj burada görünəcək.
+                Yeni mesaj gəldikdə yuxarıdakı göstərici yenilənir.
+              </p>
+            </div>
+            <a
+              href="/contact"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-amber-400/50 hover:text-white"
+            >
+              Əlaqə səhifəsini yoxla
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
           </CardContent>
         </Card>
       ) : (

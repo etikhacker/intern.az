@@ -6,6 +6,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getPublishedInternships } from '@/lib/internships/service';
@@ -148,18 +149,18 @@ export default function InternshipsPage() {
 
               {/* Difficulty Dropdown / Filter */}
               <div className="flex items-center gap-2">
-                <select
+                <Select
                   id="difficulty-filter"
                   aria-label={t('allDifficulties')}
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="h-11 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="h-11 text-xs sm:text-sm"
                 >
                   <option value="all">{t('allDifficulties')}</option>
                   <option value="beginner">{t('difficultyBeginner')}</option>
                   <option value="intermediate">{t('difficultyIntermediate')}</option>
                   <option value="advanced">{t('difficultyAdvanced')}</option>
-                </select>
+                </Select>
               </div>
             </div>
 

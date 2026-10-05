@@ -299,9 +299,9 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:h-[100dvh] lg:flex-row lg:overflow-hidden">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col overflow-x-clip bg-white">
       <BrandPanel />
-      <div className="auth-login-panel flex w-full flex-col lg:h-full lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+      <div className="auth-login-panel flex w-full min-w-0 flex-col">
         <MobileBrand />
 
         <div className="relative flex w-full flex-1 flex-col bg-white">

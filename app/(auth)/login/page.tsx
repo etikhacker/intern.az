@@ -508,7 +508,7 @@ function LoginForm() {
  * ------------------------------------------------------------------------ */
 export default function LoginPage() {
   return (
-    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col bg-white lg:h-[100dvh] lg:flex-row lg:overflow-hidden">
+    <div className="auth-login-page flex min-h-[100dvh] w-full flex-col overflow-x-clip bg-white">
       <Suspense
         fallback={
           <div className="flex min-h-[60vh] w-full items-center justify-center text-sm text-slate-500">
@@ -521,7 +521,7 @@ export default function LoginPage() {
         }
       >
         <BrandPanel />
-        <div className="auth-login-panel flex w-full flex-col lg:h-full lg:max-w-xl lg:flex-[0_0_50%] xl:max-w-2xl">
+        <div className="auth-login-panel flex w-full min-w-0 flex-col">
           <MobileBrand />
           <LoginForm />
         </div>

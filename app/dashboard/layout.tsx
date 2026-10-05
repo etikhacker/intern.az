@@ -36,10 +36,12 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row bg-slate-50">
+    /* Same single-viewport shell as the admin console, so the student sidebar
+       (h-[100dvh]) and the content column can never leave a dead band. */
+    <div className="flex flex-1 flex-col overflow-x-clip bg-slate-50 md:h-[100dvh] md:flex-row md:overflow-hidden">
       <StudentSidebar />
-      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
+      <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-6xl">
           {children}
         </div>
       </main>
