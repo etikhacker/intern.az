@@ -271,7 +271,7 @@ export default function AdminEditInternshipPage({ params }: Props) {
               <Input
                 type="number"
                 min="1"
-                max="52"
+                max="8"
                 value={durationWeeks}
                 onChange={(e) => setDurationWeeks(Number(e.target.value))}
                 className="bg-slate-950 border-slate-800 text-white text-xs"

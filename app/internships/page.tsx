@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/lib/i18n/language-context';
-import { getPublishedInternships } from '@/lib/internships/service';
 import { Internship } from '@/types/database';
 import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import {
@@ -39,7 +38,11 @@ export default function InternshipsPage() {
     let isMounted = true;
     async function load() {
       try {
-        const data = await fetch('/api/internships/public', { cache: 'no-store' }).then((response) => response.json() as Promise<Internship[]>);
+        const response = await fetch('/api/internships/public', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Failed to load internships (${response.status})`);
+        }
+        const data = (await response.json()) as Internship[];
         if (isMounted) {
           setInternships(data);
           setCurrentTimestamp(Date.now());

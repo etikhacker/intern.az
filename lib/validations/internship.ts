@@ -31,7 +31,7 @@ export const internshipSchema = z.object({
     .number()
     .int()
     .min(1, { message: 'Müddət ən azı 1 həftə olmalıdır' })
-    .max(52, { message: 'Müddət 52 həftədən çox ola bilməz' }),
+    .max(8, { message: 'Müddət 8 həftədən çox ola bilməz' }),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced'], {
     message: 'Çətinlik səviyyəsi seçilməlidir',
   }),

@@ -1,0 +1,2 @@
+-- Superseded by 20261005000002_apply_expand_compact.sql.
+-- Kept as a no-op migration so the repository history remains ordered and safe.

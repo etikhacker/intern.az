@@ -371,7 +371,7 @@ export default function AdminCertificateSettingsPage() {
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
                     required
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono focus:border-amber-400 focus:outline-hidden"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-600 text-amber-100 caret-amber-300 font-mono [color-scheme:dark] focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40 focus:outline-hidden"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -382,7 +382,7 @@ export default function AdminCertificateSettingsPage() {
                     onChange={(e) => setCurrency(e.target.value.toUpperCase())}
                     maxLength={4}
                     required
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono text-center focus:border-amber-400 focus:outline-hidden uppercase"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-600 text-amber-100 caret-amber-300 font-mono text-center [color-scheme:dark] focus:border-amber-400 focus:ring-1 focus:ring-amber-400/40 focus:outline-hidden uppercase"
                   />
                 </div>
               </div>
