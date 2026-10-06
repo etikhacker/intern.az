@@ -37,8 +37,14 @@ export default function DashboardLayout({
 
   return (
     /* Same single-viewport shell as the admin console, so the student sidebar
-       (h-[100dvh]) and the content column can never leave a dead band. */
-    <div className="flex flex-1 flex-col overflow-x-clip bg-slate-50 md:h-[100dvh] md:flex-row md:overflow-hidden">
+       (h-[100dvh]) and the content column can never leave a dead band.
+
+       `flex-1` is deliberately absent from the shell: body is a column flex
+       container, and `flex: 1 1 0%` sets flex-basis, which wins over `height`
+       — the shell then grew to the content height, the document scrolled and
+       the sidebar was cut into a half-height ("yarımqıq") bar. The shell sizes
+       itself with `md:h-[100dvh]`, `main` is the only scroll container. */
+    <div className="flex flex-col overflow-x-clip bg-slate-50 md:h-[100dvh] md:flex-row md:overflow-hidden">
       <StudentSidebar />
       <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="mx-auto max-w-6xl">

@@ -354,6 +354,48 @@ html.light {
 .bg-red-950\/40 { background-color: color-mix(in srgb, var(--c-red-950) 40%, transparent) !important; }
 
 /* =============================================================================
+ * TRANSLUCENT SURFACE VARIANTS — the fix for "yarımqıq / boz" panels
+ *
+ * Tailwind's own `bg-slate-50/50`, `bg-emerald-50/20`, … classes resolve to a
+ * LIGHT literal (e.g. rgba(248,250,252,.5)). Because the site flips its palette
+ * through the `--c-*` tokens below (`:root/html.dark` vs `html.light`), an
+ * un-remapped translucent utility keeps its light value and renders as a stray
+ * light-grey box on the dark theme — that is exactly the "boz rəng" defect.
+ *
+ * Every translucent variant of a *theme-token* surface must therefore be
+ * derived from its token with `color-mix`, so it flips together with the theme.
+ *
+ * Deliberately NOT remapped:
+ *   - `bg-white/*`, `bg-black/*` used as decorative overlays on dark panels
+ *     (auth brand panel, hero art) — they must stay light on dark by design.
+ *   - `*-300/*` glow orbs (emerald/amber/cyan/orange) — same reason.
+ *   - the `orange` / `cyan` families, which have no token set at all and are
+ *     only used for light-on-dark decoration.
+ *
+ * `scripts/security-regression.mjs` enforces this rule, so a new translucent
+ * surface class cannot silently reintroduce a light box on the dark theme.
+ * ============================================================================= */
+
+.bg-slate-50\/50 { background-color: color-mix(in srgb, var(--c-slate-50) 50%, transparent) !important; }
+.bg-slate-100\/60 { background-color: color-mix(in srgb, var(--c-slate-100) 60%, transparent) !important; }
+
+.bg-emerald-50\/20 { background-color: color-mix(in srgb, var(--c-emerald-50) 20%, transparent) !important; }
+.bg-emerald-50\/30 { background-color: color-mix(in srgb, var(--c-emerald-50) 30%, transparent) !important; }
+.bg-emerald-100\/70 { background-color: color-mix(in srgb, var(--c-emerald-100) 70%, transparent) !important; }
+
+.bg-blue-50\/30 { background-color: color-mix(in srgb, var(--c-blue-50) 30%, transparent) !important; }
+.bg-purple-50\/30 { background-color: color-mix(in srgb, var(--c-purple-50) 30%, transparent) !important; }
+.bg-amber-50\/20 { background-color: color-mix(in srgb, var(--c-amber-50) 20%, transparent) !important; }
+.bg-amber-50\/60 { background-color: color-mix(in srgb, var(--c-amber-50) 60%, transparent) !important; }
+.bg-red-50\/40 { background-color: color-mix(in srgb, var(--c-red-50) 40%, transparent) !important; }
+.bg-rose-50\/40 { background-color: color-mix(in srgb, var(--c-rose-50) 40%, transparent) !important; }
+
+/* Borders of the same translucent surfaces */
+.border-emerald-100\/70 { border-color: color-mix(in srgb, var(--c-emerald-100) 70%, transparent) !important; }
+.border-amber-100\/80 { border-color: color-mix(in srgb, var(--c-amber-100) 80%, transparent) !important; }
+.border-amber-200\/60 { border-color: color-mix(in srgb, var(--c-amber-200) 60%, transparent) !important; }
+
+/* =============================================================================
  * Text — primary text inverts (slate-500..900), light shades stay literal
  * (slate-50..400 are used as light text on dark surfaces and must not flip)
  * ============================================================================= */

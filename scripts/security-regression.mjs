@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
+import { join, isAbsolute } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+const root = new URL('../', import.meta.url);
+const read = (path) => readFile(new URL(path, root), 'utf8');
 
 const [config, middleware, adminLayout, adminLogin, admin, students, migration, certificates, submissions, tasks, loginPage, registerPage, adminLoginLayout, dashboardLayout, adminSidebar, studentSidebar, globals, internshipsPage, selectComponent] = await Promise.all([
   read('lib/supabase/config.ts'),
@@ -135,5 +139,79 @@ assert.match(selectComponent, /colorScheme: 'inherit'/);
 assert.match(globals, /select option,\s*\n?select optgroup \{/);
 assert.match(globals, /select \{\s*\n?\s*color-scheme: inherit;/);
 
+/* ---------------------------------------------------------------------------
+ * Translucent-surface theme coverage.
+ *
+ * The palette flips through the `--c-*` tokens, but Tailwind's own
+ * `bg-slate-50/50` / `bg-emerald-50/20` utilities resolve to a LIGHT literal.
+ * Without a remap they keep that value and render as a stray grey/white box in
+ * the middle of the dark theme — the "boz rəng" panels on /dashboard/profile and
+ * /dashboard/certificate. Any translucent surface utility of a tokenised family
+ * must therefore be derived from its token in globals.css.
+ *
+ * `white`/`black`/`cyan`/`orange` and the `*-300/*` glow orbs are intentionally
+ * literal: they are decorative overlays that must stay light on dark panels.
+ * ------------------------------------------------------------------------ */
+const sourceFiles = (dir, acc = []) => {
+  const abs = isAbsolute(dir) ? dir : join(fileURLToPath(root), dir);
+  for (const entry of readdirSync(abs, { withFileTypes: true })) {
+    const p = join(abs, entry.name);
+    if (entry.isDirectory()) sourceFiles(p, acc);
+    else if (/\.(tsx|ts)$/.test(entry.name)) acc.push(p);
+  }
+  return acc;
+};
+
+const unmapped = [];
+for (const file of [...sourceFiles('app'), ...sourceFiles('components')]) {
+  const src = await readFile(file, 'utf8');
+  for (const m of src.matchAll(
+    /\b(bg|border)-((?:slate|emerald|blue|purple|amber|red|rose)-(?:50|100|200))\/(\d{1,3})\b/g
+  )) {
+    const rule = new RegExp(`\\.${m[1]}-${m[2]}\\\\/${m[3]}\\s*\\{`);
+    if (!rule.test(globals)) unmapped.push(`${m[1]}-${m[2]}/${m[3]} (${file})`);
+  }
+}
+assert.equal(
+  unmapped.length,
+  0,
+  `translucent surface utility without a theme remap (renders light on the dark theme): ${[
+    ...new Set(unmapped),
+  ].join(', ')}`
+);
+
+// The theme remap block must stay in globals.css (single source of truth).
+assert.match(globals, /TRANSLUCENT SURFACE VARIANTS/);
+assert.match(globals, /\.bg-slate-50\\\/50 \{ background-color: color-mix/);
+
+/* ---------------------------------------------------------------------------
+ * The dashboard/admin shell must not let the *page* scroll: the sidebar is one
+ * viewport tall and sticky, and `main` is the only scroll container. When the
+ * document itself scrolled, the sidebar travelled with it and left a half-height
+ * ("yarımqıq") bar behind.
+ * ------------------------------------------------------------------------ */
+for (const [name, shell] of [
+  ['admin', code(adminLoginLayout)],
+  ['dashboard', code(dashboardLayout)],
+]) {
+  assert.match(shell, /md:overflow-hidden/, `${name}: shell must clip, not scroll`);
+  assert.match(shell, /<main[^>]*overflow-y-auto/, `${name}: main is not the scroll container`);
+  // `flex-1` on the shell would set flex-basis, which beats `height` inside the
+  // column-flex <body>: the shell grew to the content height, the document
+  // scrolled and the sidebar was left as a half-height bar.
+  assert.doesNotMatch(
+    shell,
+    /className="flex flex-1 flex-col/,
+    `${name}: flex-1 on the shell overrides the 100dvh height`
+  );
+}
+for (const [name, sidebar] of [
+  ['admin', code(adminSidebar)],
+  ['student', code(studentSidebar)],
+]) {
+  assert.match(sidebar, /sticky top-0/, `${name} sidebar: not pinned inside the shell`);
+}
+
 console.log('security regression checks: passed');
 console.log('layout regression checks: passed');
+console.log('theme regression checks: passed');

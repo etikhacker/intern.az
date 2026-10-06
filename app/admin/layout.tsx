@@ -65,8 +65,13 @@ export default function AdminLayout({
      * the single scroll container. The previous `min-h-[calc(100vh-36px)]` plus
      * an `h-screen` sidebar made the sidebar 36px taller than its container, so
      * a dead band of page background showed under the console and the sidebar
-     * pushed the page into a second, meaningless scroll. */
-    <div className="flex flex-1 flex-col overflow-x-clip bg-slate-950 text-slate-100 md:h-[100dvh] md:flex-row md:overflow-hidden">
+     * pushed the page into a second, meaningless scroll.
+     *
+     * `flex-1` must stay off the shell: body is a column flex container and
+     * `flex: 1 1 0%` (flex-basis) overrides `height`, which let the shell grow
+     * to the content height — the document scrolled and the sidebar turned into
+     * a half-height ("yarımqıq") bar. */
+    <div className="flex flex-col overflow-x-clip bg-slate-950 text-slate-100 md:h-[100dvh] md:flex-row md:overflow-hidden">
       <AdminSidebar />
       <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="mx-auto max-w-6xl">
