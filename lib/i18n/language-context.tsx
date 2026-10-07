@@ -169,6 +169,13 @@ export interface Translations {
   notifApplicationStatus: string;
   notifApplicationStatusDesc: string;
   saveBtn: string;
+  settingsSaving: string;
+  settingsErrorViewAuth: string;
+  settingsErrorNoDb: string;
+  settingsErrorLoadFailed: string;
+  settingsErrorSession: string;
+  settingsErrorSaveAuth: string;
+  settingsErrorSaveGeneric: string;
 
   // Auth — shared
   authBackHome: string;
@@ -382,18 +389,25 @@ const translations: Record<Language, Translations> = {
     // Student Settings (AZ)
     settingsTitle: 'Parametrlər',
     settingsSubtitle: 'Hesab və bildiriş tənzimləmələri',
-    settingsSaved: 'Parametrlər yadda saxlanıldı.',
+    settingsSaved: 'Bildiriş parametrləri yadda saxlanıldı.',
     interfaceLanguage: 'İnterfeys Dili',
     interfaceLanguageDesc: 'Platformada istifadə etmək istədiyiniz dili seçin',
     languageAzLabel: 'Azərbaycan dili (AZ)',
     languageEnLabel: 'English (EN)',
     notificationSettings: 'Bildiriş Tənzimləmələri',
-    notificationSettingsDesc: 'E-poçt bildirişlərinin idarə edilməsi',
+    notificationSettingsDesc: 'E-poçt bildirişləri üçün seçimlərinizi idarə edin',
     notifNewInternships: 'Yeni təcrübə elanları',
-    notifNewInternshipsDesc: 'Yeni təcrübə proqramı açıldıqda dərhal e-poçt göndərilsin',
+    notifNewInternshipsDesc: 'Yeni təcrübə proqramı açıldıqda e-poçt bildirişi almaq',
     notifApplicationStatus: 'Müraciət statusu dəyişiklikləri',
-    notifApplicationStatusDesc: 'Müraciətiniz qəbul olunduqda və ya rəy verildikdə bildiriş göndərilsin',
+    notifApplicationStatusDesc: 'Müraciətinizin statusu dəyişdikdə e-poçt bildirişi almaq',
     saveBtn: 'Yadda saxla',
+    settingsSaving: 'Saxlanılır...',
+    settingsErrorViewAuth: 'Bildiriş parametrlərini görmək üçün hesabınıza daxil olun.',
+    settingsErrorNoDb: 'Verilənlər bazası ilə əlaqə qurulmadı.',
+    settingsErrorLoadFailed: 'Bildiriş parametrləri yüklənmədi.',
+    settingsErrorSession: 'İstifadəçi sessiyası tapılmadı.',
+    settingsErrorSaveAuth: 'Parametrləri saxlamaq üçün hesabınıza daxil olun.',
+    settingsErrorSaveGeneric: 'Parametrlər saxlanarkən xəta baş verdi.',
 
     // Auth shared (AZ)
     authBackHome: 'Ana səhifə',
@@ -605,18 +619,25 @@ const translations: Record<Language, Translations> = {
     // Student Settings (EN)
     settingsTitle: 'Settings',
     settingsSubtitle: 'Account and notification preferences',
-    settingsSaved: 'Settings saved.',
+    settingsSaved: 'Notification preferences saved.',
     interfaceLanguage: 'Interface Language',
     interfaceLanguageDesc: 'Choose the language you want to use on the platform',
     languageAzLabel: 'Azərbaycan dili (AZ)',
     languageEnLabel: 'English (EN)',
     notificationSettings: 'Notification Preferences',
-    notificationSettingsDesc: 'Manage your email notifications',
+    notificationSettingsDesc: 'Manage your email notification preferences',
     notifNewInternships: 'New internship postings',
-    notifNewInternshipsDesc: 'Get an email as soon as a new internship program opens',
+    notifNewInternshipsDesc: 'Get an email when a new internship program opens',
     notifApplicationStatus: 'Application status changes',
-    notifApplicationStatusDesc: 'Get notified when your application is accepted or reviewed',
+    notifApplicationStatusDesc: 'Get an email when your application status changes',
     saveBtn: 'Save Changes',
+    settingsSaving: 'Saving...',
+    settingsErrorViewAuth: 'Sign in to your account to view your notification preferences.',
+    settingsErrorNoDb: 'Could not connect to the database.',
+    settingsErrorLoadFailed: 'Notification preferences could not be loaded.',
+    settingsErrorSession: 'No user session was found.',
+    settingsErrorSaveAuth: 'Sign in to your account to save these preferences.',
+    settingsErrorSaveGeneric: 'An error occurred while saving your preferences.',
 
     // Auth shared (EN)
     authBackHome: 'Home',
