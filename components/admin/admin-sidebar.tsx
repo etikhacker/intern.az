@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useLanguage, type Translations } from '@/lib/i18n/language-context';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -28,29 +29,32 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 interface AdminNavItem {
-  name: string;
+  key: keyof Translations;
   href: string;
   icon: React.ElementType;
 }
 
+/* Labels are resolved through `t()` inside the component, so the admin menu
+   follows the active interface language instead of staying fixed to Azerbaijani. */
 const adminNavItems: AdminNavItem[] = [
-  { name: 'Ümumi baxış', href: '/admin', icon: LayoutDashboard },
-  { name: 'Təcrübə proqramları', href: '/admin/internships', icon: Briefcase },
-  { name: 'Müraciətlər', href: '/admin/applications', icon: FileCheck2 },
-  { name: 'Tələbələr', href: '/admin/students', icon: Users },
-  { name: 'Tapşırıqlar', href: '/admin/tasks', icon: ListTodo },
-  { name: 'Təqdimatlar', href: '/admin/submissions', icon: CheckCircle },
-  { name: 'Tamamlanmış təcrübələr', href: '/admin/completed', icon: FileBadge },
-  { name: 'Sertifikat sifarişləri', href: '/admin/certificate-orders', icon: CreditCard },
-  { name: 'Sertifikatlar', href: '/admin/certificates', icon: Award },
-  { name: 'Sertifikat parametrləri', href: '/admin/certificate-settings', icon: Settings },
-  { name: 'Bildirişlər', href: '/admin/notifications', icon: Bell },
-  { name: 'Əlaqə mesajları', href: '/admin/contact-messages', icon: Mail },
+  { key: 'sideAdminOverview', href: '/admin', icon: LayoutDashboard },
+  { key: 'sideAdminInternships', href: '/admin/internships', icon: Briefcase },
+  { key: 'sideAdminApplications', href: '/admin/applications', icon: FileCheck2 },
+  { key: 'sideAdminStudents', href: '/admin/students', icon: Users },
+  { key: 'sideTasks', href: '/admin/tasks', icon: ListTodo },
+  { key: 'sideSubmissions', href: '/admin/submissions', icon: CheckCircle },
+  { key: 'sideAdminCompleted', href: '/admin/completed', icon: FileBadge },
+  { key: 'sideAdminCertOrders', href: '/admin/certificate-orders', icon: CreditCard },
+  { key: 'sideAdminCertificates', href: '/admin/certificates', icon: Award },
+  { key: 'sideAdminCertSettings', href: '/admin/certificate-settings', icon: Settings },
+  { key: 'sideNotifications', href: '/admin/notifications', icon: Bell },
+  { key: 'sideAdminContact', href: '/admin/contact-messages', icon: Mail },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const { profile, signOut } = useAuth();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebarContent = (
@@ -66,7 +70,7 @@ export function AdminSidebar() {
               Intern<span className="text-amber-400">.az</span>
             </span>
             <span className="text-[10px] text-amber-400 font-medium tracking-wide uppercase">
-              İnzibatçı Paneli
+              {t('sideAdminPanel')}
             </span>
           </div>
         </Link>
@@ -89,14 +93,14 @@ export function AdminSidebar() {
           />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white truncate">
-              {profile?.full_name || 'İnzibatçı'}
+              {profile?.full_name || t('sideAdminFallback')}
             </p>
             <p className="text-[10px] text-slate-400 truncate">
               {profile?.email || 'admin@intern.az'}
             </p>
             <div className="mt-1">
               <Badge variant="admin" className="text-[9px] py-0 px-1.5 bg-amber-400/20 text-amber-300 border-amber-400/40">
-                Administrator
+                {t('sideAdminBadge')}
               </Badge>
             </div>
           </div>
@@ -106,14 +110,14 @@ export function AdminSidebar() {
       {/* Navigation List */}
       <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          İdarəetmə
+          {t('sideAdminMenu')}
         </div>
         {adminNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={cn(
@@ -132,7 +136,7 @@ export function AdminSidebar() {
                       : 'text-slate-400 group-hover:text-slate-200'
                   )}
                 />
-                <span>{item.name}</span>
+                <span>{t(item.key)}</span>
               </div>
               {isActive && <ChevronRight className="w-3.5 h-3.5 text-slate-950" />}
             </Link>
@@ -147,7 +151,7 @@ export function AdminSidebar() {
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-400 hover:bg-red-950/40 transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          <span>Çıxış</span>
+          <span>{t('sideAdminSignOut')}</span>
         </button>
       </div>
     </div>
@@ -161,7 +165,7 @@ export function AdminSidebar() {
           <div className="w-7 h-7 rounded-lg bg-amber-400 flex items-center justify-center text-slate-950">
             <ShieldCheck className="w-4 h-4" />
           </div>
-          <span className="font-bold text-white text-sm">Intern.az İnzibatçı</span>
+          <span className="font-bold text-white text-sm">{t('sideAdminMobile')}</span>
         </div>
         <button
           onClick={() => setMobileOpen(true)}

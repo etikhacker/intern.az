@@ -240,6 +240,40 @@ export interface Translations {
   authQuote: string;
   authQuoteAuthor: string;
   authQuoteMeta: string;
+
+  // Student sidebar
+  sideStudentPortal: string;
+  sideStudentFallback: string;
+  sideStudentBadge: string;
+  sideStudentMenu: string;
+  sideStudentSignOut: string;
+  sideDashboard: string;
+  sideInternships: string;
+  sideMyApplications: string;
+  sideMyInternship: string;
+  sideTasks: string;
+  sideSubmissions: string;
+  sideCertificate: string;
+  sideNotifications: string;
+  sideProfile: string;
+  sideSettings: string;
+
+  // Admin sidebar
+  sideAdminPanel: string;
+  sideAdminFallback: string;
+  sideAdminBadge: string;
+  sideAdminMenu: string;
+  sideAdminSignOut: string;
+  sideAdminMobile: string;
+  sideAdminOverview: string;
+  sideAdminInternships: string;
+  sideAdminApplications: string;
+  sideAdminStudents: string;
+  sideAdminCompleted: string;
+  sideAdminCertOrders: string;
+  sideAdminCertificates: string;
+  sideAdminCertSettings: string;
+  sideAdminContact: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -472,6 +506,40 @@ const translations: Record<Language, Translations> = {
     authQuote: 'Mentor mənə həftəlik fokus verdi — 8 həftə sonra ilk işimi tapdım.',
     authQuoteAuthor: 'Rauf A.',
     authQuoteMeta: 'Backend, 2025',
+
+    // Student sidebar (AZ)
+    sideStudentPortal: 'Tələbə Portalı',
+    sideStudentFallback: 'Tələbə',
+    sideStudentBadge: 'Tələbə',
+    sideStudentMenu: 'Tələbə Menyu',
+    sideStudentSignOut: 'Hesabdan çıx',
+    sideDashboard: 'Dashboard',
+    sideInternships: 'Təcrübələr',
+    sideMyApplications: 'Müraciətlərim',
+    sideMyInternship: 'Mənim təcrübəm',
+    sideTasks: 'Tapşırıqlar',
+    sideSubmissions: 'Təqdimatlar',
+    sideCertificate: 'Sertifikat',
+    sideNotifications: 'Bildirişlər',
+    sideProfile: 'Profil',
+    sideSettings: 'Parametrlər',
+
+    // Admin sidebar (AZ)
+    sideAdminPanel: 'İnzibatçı Paneli',
+    sideAdminFallback: 'İnzibatçı',
+    sideAdminBadge: 'Administrator',
+    sideAdminMenu: 'İdarəetmə',
+    sideAdminSignOut: 'Çıxış',
+    sideAdminMobile: 'Intern.az İnzibatçı',
+    sideAdminOverview: 'Ümumi baxış',
+    sideAdminInternships: 'Təcrübə proqramları',
+    sideAdminApplications: 'Müraciətlər',
+    sideAdminStudents: 'Tələbələr',
+    sideAdminCompleted: 'Tamamlanmış təcrübələr',
+    sideAdminCertOrders: 'Sertifikat sifarişləri',
+    sideAdminCertificates: 'Sertifikatlar',
+    sideAdminCertSettings: 'Sertifikat parametrləri',
+    sideAdminContact: 'Əlaqə mesajları',
   },
   en: {
     navHome: 'Home',
@@ -702,6 +770,40 @@ const translations: Record<Language, Translations> = {
     authQuote: 'My mentor gave me a weekly focus — eight weeks later I landed my first job.',
     authQuoteAuthor: 'Rauf A.',
     authQuoteMeta: 'Backend, 2025',
+
+    // Student sidebar (EN)
+    sideStudentPortal: 'Student Portal',
+    sideStudentFallback: 'Student',
+    sideStudentBadge: 'Student',
+    sideStudentMenu: 'Student Menu',
+    sideStudentSignOut: 'Sign Out',
+    sideDashboard: 'Dashboard',
+    sideInternships: 'Internships',
+    sideMyApplications: 'My Applications',
+    sideMyInternship: 'My Internship',
+    sideTasks: 'Assignments',
+    sideSubmissions: 'Submissions',
+    sideCertificate: 'Certificate',
+    sideNotifications: 'Notifications',
+    sideProfile: 'Profile',
+    sideSettings: 'Settings',
+
+    // Admin sidebar (EN)
+    sideAdminPanel: 'Admin Panel',
+    sideAdminFallback: 'Administrator',
+    sideAdminBadge: 'Administrator',
+    sideAdminMenu: 'Management',
+    sideAdminSignOut: 'Sign Out',
+    sideAdminMobile: 'Intern.az Admin',
+    sideAdminOverview: 'Overview',
+    sideAdminInternships: 'Internship Programs',
+    sideAdminApplications: 'Applications',
+    sideAdminStudents: 'Students',
+    sideAdminCompleted: 'Completed Internships',
+    sideAdminCertOrders: 'Certificate Orders',
+    sideAdminCertificates: 'Certificates',
+    sideAdminCertSettings: 'Certificate Settings',
+    sideAdminContact: 'Contact Messages',
   },
 };
 

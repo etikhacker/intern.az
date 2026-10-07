@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useLanguage, type Translations } from '@/lib/i18n/language-context';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -26,27 +27,30 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 interface NavItem {
-  name: string;
+  key: keyof Translations;
   href: string;
   icon: React.ElementType;
 }
 
+/* Labels are resolved through `t()` inside the component, so the menu follows
+   the active interface language instead of staying fixed to Azerbaijani. */
 const navItems: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Təcrübələr', href: '/dashboard/internships', icon: Search },
-  { name: 'Müraciətlərim', href: '/dashboard/applications', icon: FileText },
-  { name: 'Mənim təcrübəm', href: '/dashboard/internship', icon: Briefcase },
-  { name: 'Tapşırıqlar', href: '/dashboard/tasks', icon: CheckSquare },
-  { name: 'Təqdimatlar', href: '/dashboard/submissions', icon: UploadCloud },
-  { name: 'Sertifikat', href: '/dashboard/certificate', icon: Award },
-  { name: 'Bildirişlər', href: '/dashboard/notifications', icon: Bell },
-  { name: 'Profil', href: '/dashboard/profile', icon: User },
-  { name: 'Parametrlər', href: '/dashboard/settings', icon: Settings },
+  { key: 'sideDashboard', href: '/dashboard', icon: LayoutDashboard },
+  { key: 'sideInternships', href: '/dashboard/internships', icon: Search },
+  { key: 'sideMyApplications', href: '/dashboard/applications', icon: FileText },
+  { key: 'sideMyInternship', href: '/dashboard/internship', icon: Briefcase },
+  { key: 'sideTasks', href: '/dashboard/tasks', icon: CheckSquare },
+  { key: 'sideSubmissions', href: '/dashboard/submissions', icon: UploadCloud },
+  { key: 'sideCertificate', href: '/dashboard/certificate', icon: Award },
+  { key: 'sideNotifications', href: '/dashboard/notifications', icon: Bell },
+  { key: 'sideProfile', href: '/dashboard/profile', icon: User },
+  { key: 'sideSettings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function StudentSidebar() {
   const pathname = usePathname();
   const { profile, signOut } = useAuth();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebarContent = (
@@ -62,7 +66,7 @@ export function StudentSidebar() {
               Intern<span className="text-emerald-600">.az</span>
             </span>
             <span className="text-[10px] text-slate-500 font-medium">
-              Tələbə Portalı
+              {t('sideStudentPortal')}
             </span>
           </div>
         </Link>
@@ -84,14 +88,14 @@ export function StudentSidebar() {
           />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-slate-900 truncate">
-              {profile?.full_name || 'Tələbə'}
+              {profile?.full_name || t('sideStudentFallback')}
             </p>
             <p className="text-[11px] text-slate-500 truncate">
               {profile?.university || 'Universitet'}
             </p>
             <div className="mt-1 flex items-center gap-1.5">
               <Badge variant="default" className="text-[9px] py-0 px-1.5">
-                Tələbə
+                {t('sideStudentBadge')}
               </Badge>
             </div>
           </div>
@@ -101,7 +105,7 @@ export function StudentSidebar() {
       {/* Navigation List */}
       <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-          Tələbə Menyu
+          {t('sideStudentMenu')}
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -127,7 +131,7 @@ export function StudentSidebar() {
                       : 'text-slate-400 group-hover:text-slate-600'
                   )}
                 />
-                <span>{item.name}</span>
+                <span>{t(item.key)}</span>
               </div>
               {isActive && <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />}
             </Link>
@@ -142,7 +146,7 @@ export function StudentSidebar() {
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          <span>Hesabdan çıx</span>
+          <span>{t('sideStudentSignOut')}</span>
         </button>
       </div>
     </div>
