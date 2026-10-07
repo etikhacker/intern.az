@@ -153,6 +153,86 @@ export interface Translations {
   uploadPdfCertificate: string;
   revokeCertificate: string;
   revokeConfirm: string;
+
+  // Student Settings
+  settingsTitle: string;
+  settingsSubtitle: string;
+  settingsSaved: string;
+  interfaceLanguage: string;
+  interfaceLanguageDesc: string;
+  languageAzLabel: string;
+  languageEnLabel: string;
+  notificationSettings: string;
+  notificationSettingsDesc: string;
+  notifNewInternships: string;
+  notifNewInternshipsDesc: string;
+  notifApplicationStatus: string;
+  notifApplicationStatusDesc: string;
+  saveBtn: string;
+
+  // Auth — shared
+  authBackHome: string;
+  authPortalSubtitle: string;
+  authStatStudents: string;
+  authStatCompanies: string;
+  authStatSatisfaction: string;
+  authEmail: string;
+  authPassword: string;
+  authPasswordMin: string;
+  authShowPassword: string;
+  authHidePassword: string;
+  authFooter: string;
+  authLoadingLogin: string;
+  authLangLabel: string;
+
+  // Auth — login
+  authLoginBadge: string;
+  authLoginHeadline: string;
+  authLoginSubline: string;
+  authLoginBullet1: string;
+  authLoginBullet2: string;
+  authLoginBullet3: string;
+  authLoginTitle: string;
+  authLoginSubtitle: string;
+  authForgotPassword: string;
+  authRememberMe: string;
+  authSignIn: string;
+  authSigningIn: string;
+  authNoAccount: string;
+  authFreeRegister: string;
+  authNoticeAdmin: string;
+  authNoticeSetup: string;
+  authNoticeUnavailable: string;
+  authNoticeRedirect: string;
+  authErrorCredentials: string;
+
+  // Auth — register
+  authRegisterBadge: string;
+  authRegisterHeadline: string;
+  authRegisterSubline: string;
+  authRegisterBullet1: string;
+  authRegisterBullet2: string;
+  authRegisterBullet3: string;
+  authRegisterFormBadge: string;
+  authRegisterTitle: string;
+  authRegisterSubtitle: string;
+  authFullName: string;
+  authFullNamePlaceholder: string;
+  authUniversity: string;
+  authUniversityPlaceholder: string;
+  authTerms: string;
+  authPrivacy: string;
+  authAgreeSuffix: string;
+  authRegisterSuccess: string;
+  authErrorAgree: string;
+  authErrorRegister: string;
+  authCreateAccount: string;
+  authCreating: string;
+  authHaveAccount: string;
+  authSecurityNote: string;
+  authQuote: string;
+  authQuoteAuthor: string;
+  authQuoteMeta: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -298,6 +378,86 @@ const translations: Record<Language, Translations> = {
     uploadPdfCertificate: 'Sertifikat PDF Yüklə',
     revokeCertificate: 'Sertifikatı ləğv et',
     revokeConfirm: 'Bu sertifikatı ləğv etmək istədiyinizə əminsiniz? Ləğv edildikdən sonra ictimai verifikasiyada etibarsız görünəcək.',
+
+    // Student Settings (AZ)
+    settingsTitle: 'Parametrlər',
+    settingsSubtitle: 'Hesab və bildiriş tənzimləmələri',
+    settingsSaved: 'Parametrlər yadda saxlanıldı.',
+    interfaceLanguage: 'İnterfeys Dili',
+    interfaceLanguageDesc: 'Platformada istifadə etmək istədiyiniz dili seçin',
+    languageAzLabel: 'Azərbaycan dili (AZ)',
+    languageEnLabel: 'English (EN)',
+    notificationSettings: 'Bildiriş Tənzimləmələri',
+    notificationSettingsDesc: 'E-poçt bildirişlərinin idarə edilməsi',
+    notifNewInternships: 'Yeni təcrübə elanları',
+    notifNewInternshipsDesc: 'Yeni təcrübə proqramı açıldıqda dərhal e-poçt göndərilsin',
+    notifApplicationStatus: 'Müraciət statusu dəyişiklikləri',
+    notifApplicationStatusDesc: 'Müraciətiniz qəbul olunduqda və ya rəy verildikdə bildiriş göndərilsin',
+    saveBtn: 'Yadda saxla',
+
+    // Auth shared (AZ)
+    authBackHome: 'Ana səhifə',
+    authPortalSubtitle: 'Təcrübə Portalı',
+    authStatStudents: 'Tələbə',
+    authStatCompanies: 'Şirkət',
+    authStatSatisfaction: 'Məmnuniyyət',
+    authEmail: 'E-poçt ünvanı',
+    authPassword: 'Şifrə',
+    authPasswordMin: 'Şifrə (minimum 6 simvol)',
+    authShowPassword: 'Şifrəni göstər',
+    authHidePassword: 'Şifrəni gizlət',
+    authFooter: 'Tələbələr üçün təcrübə portalı',
+    authLoadingLogin: 'Giriş səhifəsi yüklənir...',
+    authLangLabel: 'Dil',
+
+    // Auth login (AZ)
+    authLoginBadge: 'Tələbələr üçün',
+    authLoginHeadline: 'Öyrəndiklərini portfelə çevir.',
+    authLoginSubline: 'Hesabına daxil ol, real layihələri tap, mentor rəyini al və karyeranda görünən nəticələr qazan.',
+    authLoginBullet1: 'Real şirkət layihələri üzərində iş',
+    authLoginBullet2: 'Fərdi mentor dəstəyi və rəy',
+    authLoginBullet3: 'Verifikasiya olunan sertifikat',
+    authLoginTitle: 'Xoş gəldin geri.',
+    authLoginSubtitle: 'Hesabına daxil ol, təcrübə müraciətlərinə və tapşırıqlarına bax.',
+    authForgotPassword: 'Şifrəni unutdum?',
+    authRememberMe: 'Məni xatırla',
+    authSignIn: 'Daxil ol',
+    authSigningIn: 'Daxil olunur...',
+    authNoAccount: 'Hesabın yoxdur?',
+    authFreeRegister: 'Pulsuz qeydiyyatdan keç',
+    authNoticeAdmin: 'Bu sahifə yalnız administrator hesabı üçün əlçatandır. Tələbə hesabı ilə davam edin.',
+    authNoticeSetup: 'Sistemin təhlükəsizlik parametrləri qurulmayıb. Giriş müvəqqəti olaraq əlçatan deyil.',
+    authNoticeUnavailable: 'Giriş xidməti ilə əlaqə kurulmadı. Bir az sonra yenidən yoxlayın.',
+    authNoticeRedirect: 'Davam etmək üçün hesabınıza daxil olun.',
+    authErrorCredentials: 'E-poçt və ya şifrə yanlışdır. Əgər hesabınız yoxdursa, qeydiyyatdan keçin.',
+
+    // Auth register (AZ)
+    authRegisterBadge: 'Pulsuz qeydiyyat',
+    authRegisterHeadline: 'İlk addımı bu gün at.',
+    authRegisterSubline: 'Hesab yarat, universitetini göstər — biz sənə uyğun layihələri və mentor proqramlarını tövsiyə edək.',
+    authRegisterBullet1: '60 saniyəyə profil yarat',
+    authRegisterBullet2: 'Mentor tərəfindən şəxsi rəy',
+    authRegisterBullet3: 'Bitirdikdə yoxlanıla bilən sertifikat',
+    authRegisterFormBadge: 'Yeni hesab',
+    authRegisterTitle: 'Profilini yarat.',
+    authRegisterSubtitle: 'Bir neçə dəqiqəyə hazır ol — real layihələrə qoşulmağın başlanğıcı.',
+    authFullName: 'Ad və soyad',
+    authFullNamePlaceholder: 'məs. Leyla Məmmədova',
+    authUniversity: 'Universitet',
+    authUniversityPlaceholder: 'məs. universitetinizin tam adı',
+    authTerms: 'İstifadə şərtləri',
+    authPrivacy: 'məxfilik siyasəti',
+    authAgreeSuffix: 'ilə razıyam.',
+    authRegisterSuccess: 'Qeydiyyat uğurla tamamlandı! Tələbə kabinetinə yönləndirilirsiniz...',
+    authErrorAgree: 'Qeydiyyatdan keçmək üçün şərtləri qəbul etməlisiniz.',
+    authErrorRegister: 'Qeydiyyat zamanı xəta baş verdi. Yenidən cəhd edin.',
+    authCreateAccount: 'Hesab yarat',
+    authCreating: 'Hesab yaradılır...',
+    authHaveAccount: 'Artıq hesabın var?',
+    authSecurityNote: 'Məlumatların Supabase ilə şifrələnmiş şəkildə saxlanılır. Heç kim — hətta komanda üzvləri — şifrəni görə bilməz.',
+    authQuote: 'Mentor mənə həftəlik fokus verdi — 8 həftə sonra ilk işimi tapdım.',
+    authQuoteAuthor: 'Rauf A.',
+    authQuoteMeta: 'Backend, 2025',
   },
   en: {
     navHome: 'Home',
@@ -441,6 +601,86 @@ const translations: Record<Language, Translations> = {
     uploadPdfCertificate: 'Upload Certificate PDF',
     revokeCertificate: 'Revoke Certificate',
     revokeConfirm: 'Are you sure you want to revoke this certificate? Once revoked, it will no longer verify on public verification pages.',
+
+    // Student Settings (EN)
+    settingsTitle: 'Settings',
+    settingsSubtitle: 'Account and notification preferences',
+    settingsSaved: 'Settings saved.',
+    interfaceLanguage: 'Interface Language',
+    interfaceLanguageDesc: 'Choose the language you want to use on the platform',
+    languageAzLabel: 'Azərbaycan dili (AZ)',
+    languageEnLabel: 'English (EN)',
+    notificationSettings: 'Notification Preferences',
+    notificationSettingsDesc: 'Manage your email notifications',
+    notifNewInternships: 'New internship postings',
+    notifNewInternshipsDesc: 'Get an email as soon as a new internship program opens',
+    notifApplicationStatus: 'Application status changes',
+    notifApplicationStatusDesc: 'Get notified when your application is accepted or reviewed',
+    saveBtn: 'Save Changes',
+
+    // Auth shared (EN)
+    authBackHome: 'Home',
+    authPortalSubtitle: 'Internship Portal',
+    authStatStudents: 'Students',
+    authStatCompanies: 'Companies',
+    authStatSatisfaction: 'Satisfaction',
+    authEmail: 'Email address',
+    authPassword: 'Password',
+    authPasswordMin: 'Password (min. 6 characters)',
+    authShowPassword: 'Show password',
+    authHidePassword: 'Hide password',
+    authFooter: 'Internship portal for students',
+    authLoadingLogin: 'Loading sign-in page...',
+    authLangLabel: 'Language',
+
+    // Auth login (EN)
+    authLoginBadge: 'For students',
+    authLoginHeadline: 'Turn what you learn into a portfolio.',
+    authLoginSubline: 'Sign in, find real projects, get mentor feedback and build results that stand out in your career.',
+    authLoginBullet1: 'Work on real company projects',
+    authLoginBullet2: 'Personal mentor support and feedback',
+    authLoginBullet3: 'Verifiable certificate',
+    authLoginTitle: 'Welcome back.',
+    authLoginSubtitle: 'Sign in to track your internship applications and assignments.',
+    authForgotPassword: 'Forgot password?',
+    authRememberMe: 'Remember me',
+    authSignIn: 'Sign In',
+    authSigningIn: 'Signing in...',
+    authNoAccount: "Don't have an account?",
+    authFreeRegister: 'Register for free',
+    authNoticeAdmin: 'This page is only available to administrator accounts. Continue with your student account.',
+    authNoticeSetup: 'The system security settings are not configured. Sign-in is temporarily unavailable.',
+    authNoticeUnavailable: 'Could not reach the sign-in service. Please try again shortly.',
+    authNoticeRedirect: 'Sign in to your account to continue.',
+    authErrorCredentials: 'Incorrect email or password. If you do not have an account, please register.',
+
+    // Auth register (EN)
+    authRegisterBadge: 'Free registration',
+    authRegisterHeadline: 'Take the first step today.',
+    authRegisterSubline: 'Create an account, add your university — we will recommend the projects and mentor programs that fit you.',
+    authRegisterBullet1: 'Create your profile in 60 seconds',
+    authRegisterBullet2: 'Personal feedback from mentors',
+    authRegisterBullet3: 'Verifiable certificate on completion',
+    authRegisterFormBadge: 'New account',
+    authRegisterTitle: 'Create your profile.',
+    authRegisterSubtitle: 'Be ready in minutes — the start of joining real projects.',
+    authFullName: 'Full name',
+    authFullNamePlaceholder: 'e.g. Leyla Mammadova',
+    authUniversity: 'University',
+    authUniversityPlaceholder: 'e.g. your university full name',
+    authTerms: 'Terms of Service',
+    authPrivacy: 'Privacy Policy',
+    authAgreeSuffix: 'and I agree.',
+    authRegisterSuccess: 'Registration completed successfully! Redirecting to your student dashboard...',
+    authErrorAgree: 'You must accept the terms to register.',
+    authErrorRegister: 'An error occurred during registration. Please try again.',
+    authCreateAccount: 'Create Account',
+    authCreating: 'Creating account...',
+    authHaveAccount: 'Already have an account?',
+    authSecurityNote: 'Your data is stored encrypted by Supabase. No one — not even team members — can see your password.',
+    authQuote: 'My mentor gave me a weekly focus — eight weeks later I landed my first job.',
+    authQuoteAuthor: 'Rauf A.',
+    authQuoteMeta: 'Backend, 2025',
   },
 };
 

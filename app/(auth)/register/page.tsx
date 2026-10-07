@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { registerSchema, RegisterFormData } from '@/lib/validations/auth';
+import { useLanguage } from '@/lib/i18n/language-context';
+import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +35,8 @@ import {
  * Brand panel — same gradient identity as login.
  * ------------------------------------------------------------------------ */
 function BrandPanel() {
+  const { t } = useLanguage();
+
   return (
     <div className="auth-login-brand relative hidden overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
       <div
@@ -44,14 +48,14 @@ function BrandPanel() {
         className="pointer-events-none absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
       />
 
-      <Link href="/" className="relative z-10 inline-flex items-center gap-3">
+      <Link href="/" className="relative z-10 flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-700 shadow-lg shadow-emerald-900/20">
           <GraduationCap className="h-6 w-6" aria-hidden="true" />
         </div>
         <div>
           <p className="text-lg font-bold tracking-tight">Intern.az</p>
           <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-50/80">
-            Təcrübə Portalı
+            {t('authPortalSubtitle')}
           </p>
         </div>
       </Link>
@@ -59,37 +63,27 @@ function BrandPanel() {
       <div className="relative z-10 max-w-md space-y-6">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] backdrop-blur-md">
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-          Pulsuz qeydiyyat
+          {t('authRegisterBadge')}
         </div>
         <h2 className="text-4xl font-black leading-[1.05] tracking-tight xl:text-5xl">
-          İlk addımı{' '}
-          <span className="whitespace-nowrap bg-gradient-to-r from-amber-200 via-white to-cyan-200 bg-clip-text text-transparent">
-            bu gün at.
-          </span>
+          {t('authRegisterHeadline')}
         </h2>
         <p className="text-base leading-relaxed text-emerald-50/90">
-          Hesab yarat, universitetini göstər — biz sənə uyğun layihələri və
-          mentor proqramlarını tövsiyə edək.
+          {t('authRegisterSubline')}
         </p>
         <ul className="space-y-2.5 pt-2 text-sm text-emerald-50/90">
-          <li className="flex items-center gap-2.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
-              <Check className="h-3 w-3" aria-hidden="true" />
-            </span>
-            60 saniyəyə profil yarat
-          </li>
-          <li className="flex items-center gap-2.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
-              <Check className="h-3 w-3" aria-hidden="true" />
-            </span>
-            Mentor tərəfindən şəxsi rəy
-          </li>
-          <li className="flex items-center gap-2.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
-              <Check className="h-3 w-3" aria-hidden="true" />
-            </span>
-            Bitirdikdə yoxlanıla bilən sertifikat
-          </li>
+          {[
+            t('authRegisterBullet1'),
+            t('authRegisterBullet2'),
+            t('authRegisterBullet3'),
+          ].map((bullet) => (
+            <li key={bullet} className="flex items-center gap-2.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/15">
+                <Check className="h-3 w-3" aria-hidden="true" />
+              </span>
+              {bullet}
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -98,21 +92,21 @@ function BrandPanel() {
           <Users className="h-4 w-4 text-emerald-50" aria-hidden="true" />
           <p className="mt-3 text-2xl font-black tracking-tight">2.4K+</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            Tələbə
+            {t('authStatStudents')}
           </p>
         </div>
         <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
           <Briefcase className="h-4 w-4 text-amber-200" aria-hidden="true" />
           <p className="mt-3 text-2xl font-black tracking-tight">180+</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            Şirkət
+            {t('authStatCompanies')}
           </p>
         </div>
         <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
           <Award className="h-4 w-4 text-cyan-200" aria-hidden="true" />
           <p className="mt-3 text-2xl font-black tracking-tight">96%</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            Məmnuniyyət
+            {t('authStatSatisfaction')}
           </p>
         </div>
       </div>
@@ -127,15 +121,15 @@ function BrandPanel() {
           ))}
         </div>
         <p className="mt-2 max-w-[13rem] text-xs font-medium leading-snug">
-          &ldquo;Mentor mənə həftəlik fokus verdi — 8 həftə sonra ilk işimi tapdım.&rdquo;
+          &ldquo;{t('authQuote')}&rdquo;
         </p>
         <div className="mt-3 flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
             RA
           </div>
           <div>
-            <p className="text-[11px] font-bold">Rauf A.</p>
-            <p className="text-[9px] text-slate-500">Backend, 2025</p>
+            <p className="text-[11px] font-bold">{t('authQuoteAuthor')}</p>
+            <p className="text-[9px] text-slate-500">{t('authQuoteMeta')}</p>
           </div>
         </div>
       </div>
@@ -144,6 +138,8 @@ function BrandPanel() {
 }
 
 function MobileBrand() {
+  const { t } = useLanguage();
+
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 px-6 py-7 text-white lg:hidden">
       <div
@@ -157,12 +153,12 @@ function MobileBrand() {
         <div>
           <p className="text-lg font-bold tracking-tight">Intern.az</p>
           <p className="text-[9px] uppercase tracking-[0.18em] text-emerald-50/80">
-            Təcrübə Portalı
+            {t('authPortalSubtitle')}
           </p>
         </div>
       </Link>
       <h2 className="relative z-10 mt-5 text-2xl font-black leading-tight">
-        İlk addımı <span className="whitespace-nowrap">bu gün at.</span>
+        {t('authRegisterHeadline')}
       </h2>
     </div>
   );
@@ -226,6 +222,7 @@ function Field({
 export default function RegisterPage() {
   const router = useRouter();
   const { signUp } = useAuth();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState<RegisterFormData>({
     fullName: '',
@@ -260,7 +257,7 @@ export default function RegisterPage() {
     setErrors({});
 
     if (!agree) {
-      setServerError('Qeydiyyatdan keçmək üçün şərtləri qəbul etməlisiniz.');
+      setServerError(t('authErrorAgree'));
       return;
     }
 
@@ -286,9 +283,7 @@ export default function RegisterPage() {
       });
 
       if (!res.success) {
-        setServerError(
-          res.error || 'Qeydiyyat zamanı xəta baş verdi. Yenidən cəhd edin.'
-        );
+        setServerError(res.error || t('authErrorRegister'));
         setIsSubmitting(false);
         return;
       }
@@ -298,7 +293,7 @@ export default function RegisterPage() {
         router.push('/dashboard');
       }, 1000);
     } catch {
-      setServerError('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+      setServerError(t('generalError'));
       setIsSubmitting(false);
     }
   };
@@ -311,7 +306,7 @@ export default function RegisterPage() {
 
         <div className="relative flex w-full flex-1 flex-col bg-white">
           {/* Top bar */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 sm:px-10">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 sm:px-10">
             <Link
               href="/"
               className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-600"
@@ -319,14 +314,17 @@ export default function RegisterPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-all group-hover:-translate-x-0.5 group-hover:border-emerald-300 group-hover:text-emerald-600">
                 <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               </span>
-              <span>Ana səhifə</span>
+              <span>{t('authBackHome')}</span>
             </Link>
-            <Link
-              href="/login"
-              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
-            >
-              Daxil ol
-            </Link>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <Link
+                href="/login"
+                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
+              >
+                {t('authSignIn')}
+              </Link>
+            </div>
           </div>
 
           {/* Form — the only scrolling region on desktop, so the brand panel,
@@ -336,14 +334,13 @@ export default function RegisterPage() {
               <div className="space-y-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Yeni hesab
+                  {t('authRegisterFormBadge')}
                 </span>
                 <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-                  Profilini yarat.
+                  {t('authRegisterTitle')}
                 </h1>
                 <p className="text-sm leading-relaxed text-slate-500">
-                  Bir neçə dəqiqəyə hazır ol — real layihələrə qoşulmağın
-                  başlanğıcı.
+                  {t('authRegisterSubtitle')}
                 </p>
               </div>
 
@@ -355,10 +352,7 @@ export default function RegisterPage() {
 
               {success && (
                 <Alert className="mt-6 border-emerald-200 bg-emerald-50 text-xs text-emerald-700">
-                  <AlertDescription>
-                    Qeydiyyat uğurla tamamlandı! Tələbə kabinetinə
-                    yönləndirilirsiniz...
-                  </AlertDescription>
+                  <AlertDescription>{t('authRegisterSuccess')}</AlertDescription>
                 </Alert>
               )}
 
@@ -370,9 +364,9 @@ export default function RegisterPage() {
                 <Field
                   id="fullName"
                   name="fullName"
-                  label="Ad və soyad"
+                  label={t('authFullName')}
                   type="text"
-                  placeholder="məs. Leyla Məmmədova"
+                  placeholder={t('authFullNamePlaceholder')}
                   icon={User}
                   value={formData.fullName}
                   onChange={handleChange}
@@ -383,9 +377,9 @@ export default function RegisterPage() {
                 <Field
                   id="university"
                   name="university"
-                  label="Universitet"
+                  label={t('authUniversity')}
                   type="text"
-                  placeholder="məs. universitetinizin tam adı"
+                  placeholder={t('authUniversityPlaceholder')}
                   icon={University}
                   value={formData.university}
                   onChange={handleChange}
@@ -396,7 +390,7 @@ export default function RegisterPage() {
                 <Field
                   id="email"
                   name="email"
-                  label="E-poçt ünvanı"
+                  label={t('authEmail')}
                   type="email"
                   placeholder="ad.soyad@universitet.edu.az"
                   icon={Mail}
@@ -409,7 +403,7 @@ export default function RegisterPage() {
                 <Field
                   id="password"
                   name="password"
-                  label="Şifrə (minimum 6 simvol)"
+                  label={t('authPasswordMin')}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   icon={Lock}
@@ -423,7 +417,7 @@ export default function RegisterPage() {
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-400 transition-colors hover:text-slate-700"
                       aria-label={
-                        showPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'
+                        showPassword ? t('authHidePassword') : t('authShowPassword')
                       }
                     >
                       {showPassword ? (
@@ -461,16 +455,16 @@ export default function RegisterPage() {
                       href="/contact"
                       className="font-semibold text-emerald-600 hover:underline"
                     >
-                      İstifadə şərtləri
+                      {t('authTerms')}
                     </Link>{' '}
-                    və{' '}
+                    <span className="sr-only">,</span>
                     <Link
                       href="/contact"
                       className="font-semibold text-emerald-600 hover:underline"
                     >
-                      məxfilik siyasəti
+                      {t('authPrivacy')}
                     </Link>{' '}
-                    ilə razıyam.
+                    {t('authAgreeSuffix')}
                   </span>
                 </label>
 
@@ -486,11 +480,11 @@ export default function RegisterPage() {
                         className="h-4 w-4 animate-spin"
                         aria-hidden="true"
                       />
-                      Hesab yaradılır...
+                      {t('authCreating')}
                     </>
                   ) : (
                     <>
-                      Hesab yarat
+                      {t('authCreateAccount')}
                       <ArrowRight
                         className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         aria-hidden="true"
@@ -501,12 +495,12 @@ export default function RegisterPage() {
               </form>
 
               <p className="mt-8 text-center text-xs text-slate-500">
-                Artıq hesabın var?{' '}
+                {t('authHaveAccount')}{' '}
                 <Link
                   href="/login"
                   className="font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
                 >
-                  Daxil ol
+                  {t('authSignIn')}
                 </Link>
               </p>
 
@@ -516,17 +510,13 @@ export default function RegisterPage() {
                   className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600"
                   aria-hidden="true"
                 />
-                <p className="leading-relaxed">
-                  Məlumatların Supabase ilə şifrələnmiş şəkildə saxlanılır.
-                  Heç kim — hətta komanda üzvləri — şifrəni görə bilməz.
-                </p>
+                <p className="leading-relaxed">{t('authSecurityNote')}</p>
               </div>
             </div>
           </div>
 
           <div className="border-t border-slate-100 bg-slate-50/50 px-6 py-4 text-center text-[11px] text-slate-400 sm:px-10">
-            © {new Date().getFullYear()} Intern.az · Tələbələr üçün təcrübə
-            portalı
+            © {new Date().getFullYear()} Intern.az · {t('authFooter')}
           </div>
         </div>
       </div>

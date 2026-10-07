@@ -564,6 +564,39 @@ html.light {
 
 .placeholder\:text-slate-400::placeholder { color: var(--c-slate-400-text) !important; }
 .placeholder\:text-slate-500::placeholder { color: var(--c-slate-500) !important; }
+.placeholder\:text-slate-600::placeholder { color: var(--c-slate-600) !important; }
+
+/* =============================================================================
+ * ADMIN CONSOLE — self-contained dark surface
+ *
+ * The admin console is dark by design: its shell and cards use the literal dark
+ * Tailwind shades (bg-slate-800/900/950, text-slate-300), which never flip.
+ * The semantic tokens used by the form-control rules below (`--ink`, `--muted`,
+ * `--surface-soft`, `--line`) DID flip, so on a light-themed browser the admin
+ * inputs inherited near-black ink on a near-black background:
+ *
+ *     placeholder → rgb(15, 23, 42) on rgb(2, 6, 23)   (measured)
+ *
+ * i.e. every hint, date field and select caption in /admin was unreadable. This
+ * scope re-declares the tokens to the dark set, so the console renders the same
+ * on light and dark browsers, and it is applied by `app/admin/layout.tsx` and
+ * `app/admin/login/page.tsx`.
+ * ============================================================================= */
+
+.admin-shell {
+  color-scheme: dark;
+
+  --ink: #f3f7f5;
+  --muted: #9aa8b6;
+  --surface-soft: #0a0f16;
+  --line: rgba(148, 163, 184, 0.16);
+  --page: #020617;
+
+  /* Text tokens that the `--c-*` remap reads, pinned to the dark values */
+  --c-slate-400-text: #94a3b8;
+  --c-slate-500: #94a3b8;
+  --c-slate-600: #c4d0cc;
+}
 
 /* =============================================================================
  * Hero section gradient — theme-aware, replaces inline gradient utility

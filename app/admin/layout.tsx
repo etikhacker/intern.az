@@ -40,7 +40,7 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex-1 min-h-screen bg-slate-900 flex items-center justify-center p-12">
+      <div className="admin-shell flex-1 min-h-screen bg-slate-900 flex items-center justify-center p-12">
         <div className="flex flex-col items-center gap-3 text-slate-400">
           <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
           <p className="text-xs font-medium">Verifying administrator permissions...</p>
@@ -52,7 +52,7 @@ export default function AdminLayout({
   // If user is not admin, do not render content while redirecting
   if (!user || !isAdmin) {
     return (
-      <div className="flex-1 min-h-screen bg-slate-900 flex items-center justify-center p-12">
+      <div className="admin-shell flex-1 min-h-screen bg-slate-900 flex items-center justify-center p-12">
         <div className="text-center text-slate-400 text-xs">
           Redirecting to authorized dashboard...
         </div>
@@ -71,7 +71,7 @@ export default function AdminLayout({
      * `flex: 1 1 0%` (flex-basis) overrides `height`, which let the shell grow
      * to the content height — the document scrolled and the sidebar turned into
      * a half-height ("yarımqıq") bar. */
-    <div className="flex flex-col overflow-x-clip bg-slate-950 text-slate-100 md:h-[100dvh] md:flex-row md:overflow-hidden">
+    <div className="admin-shell flex flex-col overflow-x-clip bg-slate-950 text-slate-100 md:h-[100dvh] md:flex-row md:overflow-hidden">
       <AdminSidebar />
       <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="mx-auto max-w-6xl">
