@@ -57,7 +57,6 @@ export default function ApplyInternshipPage({ params }: Props) {
 
   // Form fields
   const [motivation, setMotivation] = useState('');
-  const [experience, setExperience] = useState('');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
@@ -184,7 +183,6 @@ export default function ApplyInternshipPage({ params }: Props) {
 
     const formData: ApplicationFormData = {
       motivation,
-      experience: experience || undefined,
       portfolio_url: portfolioUrl || undefined,
       github_url: githubUrl || undefined,
       linkedin_url: linkedinUrl || undefined,
@@ -376,28 +374,6 @@ export default function ApplyInternshipPage({ params }: Props) {
                   </div>
                 </div>
 
-                {/* Experience */}
-                <div className="pt-4 border-t border-slate-100">
-                  <label htmlFor="app-experience" className="block text-sm font-bold text-slate-900 mb-1">
-                    {t('experienceLabel')}
-                  </label>
-                  <p className="text-xs text-slate-500 mb-2">
-                    {isAz
-                      ? 'Daha əvvəl həyata keçirdiyiniz fərdi və ya komanda layihələri, təhsil tapşırıqları barədə qısa məlumat.'
-                      : 'Summarize any hands-on coursework, personal projects or team workshops.'}
-                  </p>
-                  <Textarea
-                    id="app-experience"
-                    rows={4}
-                    placeholder={t('experiencePlaceholder')}
-                    value={experience}
-                    onChange={(e) => setExperience(e.target.value)}
-                    className="w-full"
-                  />
-                  {fieldErrors.experience && (
-                    <p className="text-xs text-rose-600 mt-1">{fieldErrors.experience}</p>
-                  )}
-                </div>
               </div>
 
               {/* External Links */}

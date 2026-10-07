@@ -6,12 +6,6 @@ export const applicationSchema = z.object({
     .trim()
     .min(50, { message: 'Motivasiya məktubu ən azı 50 simvoldan ibarət olmalıdır' })
     .max(3000, { message: 'Motivasiya məktubu 3000 simvoldan çox ola bilməz' }),
-  experience: z
-    .string()
-    .trim()
-    .max(2000, { message: 'Təcrübə təsviri 2000 simvoldan çox ola bilməz' })
-    .optional()
-    .or(z.literal('')),
   portfolio_url: z
     .string()
     .trim()

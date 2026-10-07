@@ -75,6 +75,11 @@ export default function AdminInternshipsPage() {
     try {
       const res = await updateInternship(internship.id, { status: nextStatus });
       if (res.success) {
+        if (res.notificationWarning) {
+          window.alert(isAz
+            ? `Proqramın statusu dəyişdi, amma e-poçt bildirişi göndərilmədi: ${res.notificationWarning}`
+            : `The program status changed, but its email notification failed: ${res.notificationWarning}`);
+        }
         await refreshList();
       } else {
         alert(res.error || t('generalError'));

@@ -4,6 +4,7 @@ import { Application, ApplicationStatus, Profile } from '@/types/database';
 import { ApplicationFormData } from '@/lib/validations/application';
 import { getInternshipById } from '@/lib/internships/service';
 import { createEnrollment, getInternshipActiveEnrollmentsCount } from '@/lib/enrollments/service';
+import { requestEmailNotification } from '@/lib/email/request-notification';
 
 // Submit Application
 export async function submitApplication({
@@ -59,7 +60,6 @@ export async function submitApplication({
         internship_id: internshipId,
         student_id: studentProfile.id,
         motivation: data.motivation,
-        experience: data.experience || null,
         portfolio_url: data.portfolio_url || null,
         github_url: data.github_url || null,
         linkedin_url: data.linkedin_url || null,
@@ -187,7 +187,7 @@ export async function reviewApplication({
   action: 'accept' | 'reject';
   adminNote?: string;
   adminProfile: Profile;
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<{ success: boolean; error?: string; emailWarning?: string }> {
   // 1. Fetch current application
   const app = await getApplicationById(applicationId);
   if (!app) {
@@ -253,7 +253,11 @@ export async function reviewApplication({
       }
     }
 
-    return { success: true };
+    const emailWarning = app.status !== newStatus
+      ? await requestEmailNotification('application-status', applicationId)
+      : undefined;
+
+    return { success: true, emailWarning };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Qərar tətbiq edilərkən xəta baş verdi.';
     return { success: false, error: message };

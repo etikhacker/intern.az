@@ -153,6 +153,11 @@ export default function AdminEditInternshipPage({ params }: Props) {
         return;
       }
 
+      if (res.notificationWarning) {
+        window.alert(isAz
+          ? `Proqram yeniləndi, amma e-poçt bildirişi göndərilmədi: ${res.notificationWarning}`
+          : `The program was updated, but its email notification failed: ${res.notificationWarning}`);
+      }
       router.push('/admin/internships');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('generalError');
@@ -271,7 +276,7 @@ export default function AdminEditInternshipPage({ params }: Props) {
               <Input
                 type="number"
                 min="1"
-                max="52"
+                max="8"
                 value={durationWeeks}
                 onChange={(e) => setDurationWeeks(Number(e.target.value))}
                 className="bg-slate-950 border-slate-800 text-white text-xs"

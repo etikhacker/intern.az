@@ -149,6 +149,11 @@ export default function AdminNewInternshipPage() {
         return;
       }
 
+      if (res.notificationWarning) {
+        window.alert(isAz
+          ? `Proqram yaradıldı, amma e-poçt bildirişi göndərilmədi: ${res.notificationWarning}`
+          : `The program was created, but its email notification failed: ${res.notificationWarning}`);
+      }
       router.push('/admin/internships');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('generalError');
@@ -241,6 +246,11 @@ export default function AdminNewInternshipPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
               >
+                <option value="Frontend">Frontend</option>
+                <option value="Backend">Backend</option>
+                <option value="Data">Data</option>
+                <option value="AI">AI</option>
+                <option value="Automation">Automation</option>
                 <option value="Proqramlaşdırma və Veb">Proqramlaşdırma və Veb</option>
                 <option value="Məlumat Analitikası">Məlumat Analitikası</option>
                 <option value="Məhsul İdarəetməsi">Məhsul İdarəetməsi</option>
@@ -266,7 +276,7 @@ export default function AdminNewInternshipPage() {
               <Input
                 type="number"
                 min="1"
-                max="52"
+                max="8"
                 value={durationWeeks}
                 onChange={(e) => setDurationWeeks(Number(e.target.value))}
                 className="bg-slate-950 border-slate-800 text-white text-xs"
