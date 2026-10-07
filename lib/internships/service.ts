@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { Internship, InternshipStatus } from '@/types/database';
 import { InternshipFormData } from '@/lib/validations/internship';
+import { requestEmailNotification } from '@/lib/email/request-notification';
 
 // Fetch published internships for public directory (status = 'published' only)
 export async function getPublishedInternships(): Promise<Internship[]> {
@@ -107,7 +108,7 @@ export async function getInternshipById(id: string): Promise<Internship | null> 
 export async function createInternship(
   data: InternshipFormData,
   userId?: string
-): Promise<{ success: boolean; error?: string; internship?: Internship }> {
+): Promise<{ success: boolean; error?: string; internship?: Internship; notificationWarning?: string }> {
   if (!isSupabaseConfigured()) {
     return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
   }
@@ -154,7 +155,12 @@ export async function createInternship(
       return { success: false, error: error.message };
     }
 
-    return { success: true, internship: inserted as Internship };
+    const internship = inserted as Internship;
+    const notificationWarning = internship.status === 'published'
+      ? await requestEmailNotification('new-internship', internship.id)
+      : undefined;
+
+    return { success: true, internship, notificationWarning };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Təcrübə proqramı yaradılarkən xəta baş verdi.';
     return { success: false, error: message };
@@ -165,7 +171,7 @@ export async function createInternship(
 export async function updateInternship(
   id: string,
   data: Partial<InternshipFormData>
-): Promise<{ success: boolean; error?: string; internship?: Internship }> {
+): Promise<{ success: boolean; error?: string; internship?: Internship; notificationWarning?: string }> {
   if (!isSupabaseConfigured()) {
     return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
   }
@@ -186,6 +192,18 @@ export async function updateInternship(
       if (existing) {
         return { success: false, error: 'Bu slug ilə başqa bir təcrübə proqramı artıq mövcuddur.' };
       }
+    }
+
+    let previousStatus: InternshipStatus | null = null;
+    if (data.status === 'published') {
+      const { data: current, error: currentError } = await supabase
+        .from('internships')
+        .select('status')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (currentError) return { success: false, error: currentError.message };
+      previousStatus = (current?.status as InternshipStatus | undefined) || null;
     }
 
     const payload: Record<string, unknown> = {
@@ -218,7 +236,12 @@ export async function updateInternship(
       return { success: false, error: error.message };
     }
 
-    return { success: true, internship: updated as Internship };
+    const internship = updated as Internship;
+    const notificationWarning = internship.status === 'published' && previousStatus !== 'published'
+      ? await requestEmailNotification('new-internship', internship.id)
+      : undefined;
+
+    return { success: true, internship, notificationWarning };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Təcrübə proqramı yenilənərkən xəta baş verdi.';
     return { success: false, error: message };

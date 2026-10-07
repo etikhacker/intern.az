@@ -149,6 +149,11 @@ export default function AdminNewInternshipPage() {
         return;
       }
 
+      if (res.notificationWarning) {
+        window.alert(isAz
+          ? `Proqram yaradıldı, amma e-poçt bildirişi göndərilmədi: ${res.notificationWarning}`
+          : `The program was created, but its email notification failed: ${res.notificationWarning}`);
+      }
       router.push('/admin/internships');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('generalError');

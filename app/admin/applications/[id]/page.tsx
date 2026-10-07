@@ -130,10 +130,13 @@ export default function AdminApplicationReviewPage({ params }: Props) {
         return;
       }
 
+      const successMessage = decision === 'accepted'
+        ? (isAz ? 'Müraciət qəbul edildi və tələbə proqrama qeydiyyata alındı!' : 'Application accepted and student enrolled successfully!')
+        : (isAz ? 'Müraciət rədd edildi.' : 'Application rejected.');
       setSuccessNotice(
-        decision === 'accepted'
-          ? (isAz ? 'Müraciət qəbul edildi və tələbə proqrama qeydiyyata alındı!' : 'Application accepted and student enrolled successfully!')
-          : (isAz ? 'Müraciət rədd edildi.' : 'Application rejected.')
+        res.emailWarning
+          ? `${successMessage} E-poçt bildirişi göndərilmədi: ${res.emailWarning}`
+          : successMessage
       );
       await refreshData();
     } catch (err: unknown) {
