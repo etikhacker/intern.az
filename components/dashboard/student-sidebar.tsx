@@ -91,7 +91,7 @@ export function StudentSidebar() {
               {profile?.full_name || t('sideStudentFallback')}
             </p>
             <p className="text-[11px] text-slate-500 truncate">
-              {profile?.university || 'Universitet'}
+              {profile?.university || t('sideStudentUniversityFallback')}
             </p>
             <div className="mt-1 flex items-center gap-1.5">
               <Badge variant="default" className="text-[9px] py-0 px-1.5">

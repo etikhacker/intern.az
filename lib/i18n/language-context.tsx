@@ -244,6 +244,7 @@ export interface Translations {
   // Student sidebar
   sideStudentPortal: string;
   sideStudentFallback: string;
+  sideStudentUniversityFallback: string;
   sideStudentBadge: string;
   sideStudentMenu: string;
   sideStudentSignOut: string;
@@ -510,6 +511,7 @@ const translations: Record<Language, Translations> = {
     // Student sidebar (AZ)
     sideStudentPortal: 'Tələbə Portalı',
     sideStudentFallback: 'Tələbə',
+    sideStudentUniversityFallback: 'Universitet',
     sideStudentBadge: 'Tələbə',
     sideStudentMenu: 'Tələbə Menyu',
     sideStudentSignOut: 'Hesabdan çıx',
@@ -774,6 +776,7 @@ const translations: Record<Language, Translations> = {
     // Student sidebar (EN)
     sideStudentPortal: 'Student Portal',
     sideStudentFallback: 'Student',
+    sideStudentUniversityFallback: 'University',
     sideStudentBadge: 'Student',
     sideStudentMenu: 'Student Menu',
     sideStudentSignOut: 'Sign Out',
