@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Calendar,
   MessageSquare,
+  Mail,
   Undo2,
 } from 'lucide-react';
 
@@ -141,6 +142,13 @@ export default function StudentApplicationsPage() {
           </Button>
         </Link>
       </div>
+
+      {!loading && applications.length > 0 && (
+        <div role="note" className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+          <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <p className="leading-relaxed">{t('emailSpamFolderNotice')}</p>
+        </div>
+      )}
 
       {loading ? (
         <div className="py-12 flex justify-center">

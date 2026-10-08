@@ -77,6 +77,7 @@ export interface Translations {
   submitting: string;
   applicationSuccess: string;
   applicationSuccessDesc: string;
+  emailSpamFolderNotice: string;
 
   // Student Applications & Status
   myApplicationsTitle: string;
@@ -347,6 +348,7 @@ const translations: Record<Language, Translations> = {
     submitting: 'Göndərilir...',
     applicationSuccess: 'Müraciətiniz uğurla göndərildi!',
     applicationSuccessDesc: 'Müraciətiniz inzibatçı tərəfindən nəzərdən keçiriləcək. Statusu şəxsi kabinetinizdən izləyə bilərsiniz.',
+    emailSpamFolderNotice: 'E-poçt bildirişləri aktivdirsə, Intern.az-dan gələn məktublar internaz.notification@gmail.com ünvanından göndərilir. Gələnlər qutusunda görünməsə, Spam qovluğunu yoxlayın və bu ünvanı kontaktlarınıza əlavə edin.',
 
     myApplicationsTitle: 'Müraciətlərim',
     myApplicationsSubtitle: 'Göndərdiyiniz təcrübə müraciətlərinin cari vəziyyəti və qərarlar.',
@@ -612,6 +614,7 @@ const translations: Record<Language, Translations> = {
     submitting: 'Submitting...',
     applicationSuccess: 'Your application has been submitted successfully!',
     applicationSuccessDesc: 'Your application will be carefully reviewed by the platform administrator. You can monitor its status from your dashboard.',
+    emailSpamFolderNotice: 'If email notifications are enabled, messages from Intern.az will come from internaz.notification@gmail.com. If a message is not in your inbox, check Spam and add this address to your contacts.',
 
     myApplicationsTitle: 'My Applications',
     myApplicationsSubtitle: 'Track your submitted internship applications and decisions.',

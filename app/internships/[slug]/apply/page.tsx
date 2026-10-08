@@ -343,6 +343,10 @@ export default function ApplyInternshipPage({ params }: Props) {
                     </span>
                   </div>
                 </div>
+                <div role="note" className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                  <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                  <p className="leading-relaxed">{t('emailSpamFolderNotice')}</p>
+                </div>
               </div>
 
               {/* Motivation */}
