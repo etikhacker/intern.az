@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TaskInstructions } from '@/components/tasks/task-instructions';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
@@ -350,8 +351,8 @@ export default function StudentTaskDetailPage({
             <FileText className="w-4 h-4 text-emerald-600" />
             <span>{isAz ? 'Ətraflı İcra Təlimatı və Tələblər' : 'Step-by-Step Instructions'}</span>
           </h3>
-          <div className="p-3 bg-white rounded-lg border border-slate-200 text-xs font-mono text-slate-700 leading-relaxed whitespace-pre-wrap">
-            {task.instructions}
+          <div className="p-4 bg-white rounded-lg border border-slate-200">
+            <TaskInstructions text={task.instructions} />
           </div>
         </div>
       </div>

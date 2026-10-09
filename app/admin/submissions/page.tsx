@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
+import { TaskInstructions } from '@/components/tasks/task-instructions';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { useAuth } from '@/lib/auth/auth-context';
 import {
@@ -464,8 +465,8 @@ export default function AdminSubmissionsPage() {
               <p className="text-xs text-slate-300 leading-relaxed">
                 {selectedSub.task?.description}
               </p>
-              <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-400 whitespace-pre-wrap border border-slate-800">
-                {selectedSub.task?.instructions}
+              <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <TaskInstructions text={selectedSub.task?.instructions ?? ''} variant="dark" />
               </div>
             </div>
 

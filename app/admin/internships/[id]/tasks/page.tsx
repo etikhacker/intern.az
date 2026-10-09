@@ -826,7 +826,7 @@ export default function AdminInternshipTasksPage({
                 </Label>
                 <textarea
                   id="instructions"
-                  rows={5}
+                  rows={14}
                   value={formData.instructions}
                   onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
                   placeholder={
