@@ -8,6 +8,7 @@ import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getAllTasksForInternship } from '@/lib/tasks/service';
 import { getStudentSubmissionsForEnrollment } from '@/lib/submissions/service';
 import { extractLocalizedTaskText } from '@/lib/tasks/content.mjs';
+import { getLocalizedTaskTitle } from '@/lib/tasks/localized-title.mjs';
 import { groupStudentTasks } from '@/lib/tasks/student-task-list.mjs';
 import type { Enrollment, InternshipTask, TaskSubmission, TaskDifficulty } from '@/types/database';
 import {
@@ -339,7 +340,7 @@ export default function StudentTasksPage() {
                                       {difficultyLabel(task.difficulty, isAz)}
                                     </span>
                                   </div>
-                                  <h4 className="text-sm font-bold text-slate-900">{task.title}</h4>
+                                  <h4 className="text-sm font-bold text-slate-900">{getLocalizedTaskTitle(task.title, isAz ? 'az' : 'en')}</h4>
                                   {summary ? <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-600">{summary}</p> : null}
                                   {submission?.admin_feedback && (status === 'revision_requested' || status === 'rejected') ? (
                                     <p className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-orange-800">
