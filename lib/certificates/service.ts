@@ -856,20 +856,23 @@ export async function getPublicCertificate(certificateId: string): Promise<{
   if (!supabase) return null;
 
   try {
-    const { data, error } = await supabase
-      .from('certificates')
-      .select('certificate_id, student_name, internship_title, issued_at, status')
-      .eq('certificate_id', cleanId)
-      .maybeSingle();
+    // The public verifier is intentionally backed by a narrowly-scoped RPC that
+    // returns only the fields safe to disclose for an issued certificate.
+    const { data, error } = await supabase.rpc('get_public_certificate', {
+      p_certificate_id: cleanId,
+    });
 
-    if (!error && data && (data.status === 'issued' || data.status === 'revoked')) {
-      return {
-        certificate_id: data.certificate_id,
-        student_name: data.student_name,
-        internship_title: data.internship_title,
-        issued_at: data.issued_at,
-        status: data.status as 'issued' | 'revoked',
-      };
+    if (!error && data) {
+      const row = Array.isArray(data) ? data[0] : data;
+      if (row && (row.status === 'issued' || row.status === 'revoked')) {
+        return {
+          certificate_id: row.certificate_id,
+          student_name: row.student_name,
+          internship_title: row.internship_title,
+          issued_at: row.issued_at,
+          status: row.status as 'issued' | 'revoked',
+        };
+      }
     }
     return null;
   } catch (err) {
