@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { groupStudentTasks } from '../lib/tasks/student-task-list.mjs';
+import { getLocalizedTaskTitle } from '../lib/tasks/localized-title.mjs';
 
 const tasks = [
   { id: 'metrics', week_number: 6, task_number: 9, title: 'Automation Metrics' },
@@ -16,4 +17,8 @@ assert.deepEqual(
   'final/capstone task should appear after the supporting tasks in the same week',
 );
 
-console.log('Task-order regression checks passed.');
+assert.equal(getLocalizedTaskTitle('Final Automation Case Study', 'az'), 'Yekun avtomatlaşdırma layihəsi');
+assert.equal(getLocalizedTaskTitle('Final Automation Case Study', 'en'), 'Final Automation Case Study');
+assert.equal(getLocalizedTaskTitle('Future New Task', 'az'), 'Future New Task');
+
+console.log('Task ordering and localized-title regression checks passed.');
