@@ -91,6 +91,10 @@ const deadlineProcessorMigration = await read('supabase/migrations/2026101000000
 assert.match(deadlineProcessorMigration, /REVOKE EXECUTE ON FUNCTION public\.process_internship_deadlines\(\) FROM anon, authenticated/);
 assert.match(deadlineProcessorMigration, /deadline_notifications_enrollment_id_idx/);
 assert.match(deadlineProcessorMigration, /deadline_notifications_task_id_idx/);
+const certificateIdMigration = await read('supabase/migrations/20261010000004_increase_certificate_id_entropy.sql');
+assert.match(certificateIdMigration, /ABCDEFGHJKLMNPQRSTUVWXYZ23456789/);
+assert.match(certificateIdMigration, /generate_series\(1, 4\)/);
+
 
 
 
