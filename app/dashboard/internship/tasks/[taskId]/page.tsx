@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { extractLocalizedTaskText } from '@/lib/tasks/content.mjs';
+import { getLocalizedTaskTitle } from '@/lib/tasks/localized-title.mjs';
 import { TaskInstructionArticle } from '@/components/tasks/instruction-article.mjs';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getTaskById } from '@/lib/tasks/service';
@@ -154,7 +155,7 @@ export default function StudentTaskDetailPage({
     }
 
     // Basic frontend checks based on submission_type
-    if (task.submission_type === 'github' && !githubUrl.trim()) {
+    if ((task.submission_type === 'github' || task.submission_type === 'multiple') && !githubUrl.trim()) {
       setFormError(isAz ? 'Zəhmət olmasa GitHub repozitoriya linkini daxil edin.' : 'Please provide GitHub repository link.');
       return;
     }
@@ -341,7 +342,7 @@ export default function StudentTaskDetailPage({
 
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            {task.title}
+            {getLocalizedTaskTitle(task.title, isAz ? 'az' : 'en')}
           </h1>
           <p className="text-[15px] sm:text-base text-slate-600 leading-7 mt-2 max-w-3xl whitespace-pre-wrap">
             {taskDescription}
@@ -595,11 +596,11 @@ export default function StudentTaskDetailPage({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* GitHub URL */}
-              {(task.submission_type === 'github' || task.submission_type === 'multiple') && (
+              {(task.submission_type === 'github' || task.submission_type === 'multiple' || task.submission_type === 'file') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="githubUrl" className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                     <Github className="w-3.5 h-3.5 text-purple-600" />
-                    <span>{isAz ? 'GitHub Repozitoriya URL-i *' : 'GitHub Repository URL *'}</span>
+                    <span>{isAz ? `GitHub Repozitoriya URL-i${task.submission_type === 'file' ? ' (istəyə bağlı)' : ' *'}` : `GitHub Repository URL${task.submission_type === 'file' ? ' (optional)' : ' *'}`}</span>
                   </Label>
                   <Input
                     id="githubUrl"
@@ -608,10 +609,10 @@ export default function StudentTaskDetailPage({
                     onChange={(e) => setGithubUrl(e.target.value)}
                     placeholder="https://github.com/username/project-repo"
                     className="text-xs h-9"
-                    required={task.submission_type === 'github'}
+                    required={task.submission_type === 'github' || task.submission_type === 'multiple'}
                   />
                   <p className="text-[11px] text-slate-400">
-                    {isAz ? 'Məs: https://github.com/tələbə/internship-task-1' : 'E.g. public GitHub link'}
+                    {isAz ? (task.submission_type === 'file' ? 'İşin davam etdiyi repozitoriyanın linkini əlavə edə bilərsiniz.' : 'Məs: https://github.com/username/internship-project') : (task.submission_type === 'file' ? 'Optionally add the repository where your work continues.' : 'E.g. https://github.com/username/internship-project')}
                   </p>
                 </div>
               )}
