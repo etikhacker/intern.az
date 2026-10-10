@@ -17,7 +17,7 @@ CREATE TEMP TABLE curriculum_refresh_patch (
 INSERT INTO pg_temp.curriculum_refresh_patch
   (slug, task_number, week_number, description, instructions)
 VALUES
-  ("applied-ai-engineering", 1, 1, $applied_ai_engineering_1_desc_1$[[AZ]]
+  ('applied-ai-engineering', 1, 1, $applied_ai_engineering_1_desc_1$[[AZ]]
 Təkrarlana bilən prompt şablonu qur və onun qeyri-müəyyən girişlərdə necə davranacağını yoxla.
 
 [[EN]]
@@ -98,7 +98,7 @@ Submit a GitHub repository link with a README and the results table.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_1_inst_1$),
-  ("applied-ai-engineering", 2, 2, $applied_ai_engineering_1_desc_2$[[AZ]]
+  ('applied-ai-engineering', 2, 2, $applied_ai_engineering_1_desc_2$[[AZ]]
 Sintetik daxili qaydalar toplusu üzrə mənbə göstərən sual-cavab prototipi qur.
 
 [[EN]]
@@ -179,7 +179,7 @@ Submit a GitHub repository link, README, and test table.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_1_inst_2$),
-  ("applied-ai-engineering", 5, 3, $applied_ai_engineering_1_desc_3$[[AZ]]
+  ('applied-ai-engineering', 5, 3, $applied_ai_engineering_1_desc_3$[[AZ]]
 Prompt-un hansı hallarda sıradan çıxdığını ölç və düzəlişləri riskə görə prioritetləşdir.
 
 [[EN]]
@@ -260,7 +260,7 @@ Submit a repository or report file containing both prompts and the test table.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_1_inst_3$),
-  ("applied-ai-engineering", 6, 4, $applied_ai_engineering_1_desc_4$[[AZ]]
+  ('applied-ai-engineering', 6, 4, $applied_ai_engineering_1_desc_4$[[AZ]]
 Alət çağırışını sxemlə məhdudlaşdır, girişləri yoxla və alət xətalarını idarə et.
 
 [[EN]]
@@ -341,7 +341,7 @@ Add the code and README to a GitHub repository.
 
 ## Estimated time
 5-7 hours.$applied_ai_engineering_1_inst_4$),
-  ("applied-ai-engineering", 3, 5, $applied_ai_engineering_2_desc_1$[[AZ]]
+  ('applied-ai-engineering', 3, 5, $applied_ai_engineering_2_desc_1$[[AZ]]
 Kiçik etalon dəstində AI cavab keyfiyyətini ölç və qərarını rəqəmlə əsaslandır.
 
 [[EN]]
@@ -422,7 +422,7 @@ Attach the table and report as PDF/Markdown or in a repository.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_2_inst_1$),
-  ("applied-ai-engineering", 7, 5, $applied_ai_engineering_2_desc_2$[[AZ]]
+  ('applied-ai-engineering', 7, 5, $applied_ai_engineering_2_desc_2$[[AZ]]
 Axtarış keyfiyyətini ölçərək RAG prototipində uyğun mənbələrin tapılmasını yaxşılaşdır.
 
 [[EN]]
@@ -503,7 +503,7 @@ Submit a repository or report file with the source-results table.
 
 ## Estimated time
 5-7 hours.$applied_ai_engineering_2_inst_2$),
-  ("applied-ai-engineering", 8, 5, $applied_ai_engineering_2_desc_3$[[AZ]]
+  ('applied-ai-engineering', 8, 5, $applied_ai_engineering_2_desc_3$[[AZ]]
 Prompt injection və həssas məlumat sızması risklərinə qarşı yoxlanıla bilən AI qoruyucuları qur.
 
 [[EN]]
@@ -584,7 +584,7 @@ Submit a GitHub repository, README, and test results; never use real secrets.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_2_inst_3$),
-  ("applied-ai-engineering", 9, 6, $applied_ai_engineering_2_desc_4$[[AZ]]
+  ('applied-ai-engineering', 9, 6, $applied_ai_engineering_2_desc_4$[[AZ]]
 Süni sorğu izində token xərci və cavab gecikməsini ölç, sonra optimallaşdırmanı sın.
 
 [[EN]]
@@ -665,7 +665,7 @@ Provide the table/script and report in a repository or file.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_2_inst_4$),
-  ("applied-ai-engineering", 10, 7, $applied_ai_engineering_3_desc_1$[[AZ]]
+  ('applied-ai-engineering', 10, 7, $applied_ai_engineering_3_desc_1$[[AZ]]
 AI prototipini başqa mühəndisin işə sala biləcəyi təhlükəsiz və ölçülə bilən handoff paketinə çevir.
 
 [[EN]]
@@ -746,7 +746,7 @@ Submit the GitHub repository and a short handoff video or report.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_3_inst_1$),
-  ("applied-ai-engineering", 4, 8, $applied_ai_engineering_3_desc_2$[[AZ]]
+  ('applied-ai-engineering', 4, 8, $applied_ai_engineering_3_desc_2$[[AZ]]
 Kiçik, istifadəçiyə yönəlmiş AI funksiyasını tələbdən ölçülən nəticəyə qədər tamamla.
 
 [[EN]]
@@ -827,7 +827,7 @@ Submit the repository and demo link, or a report with screenshots.
 
 ## Estimated time
 8-12 hours.$applied_ai_engineering_3_inst_2$),
-  ("automation-engineering", 1, 1, $automation_engineering_1_desc_1$[[AZ]]
+  ('automation-engineering', 1, 1, $automation_engineering_1_desc_1$[[AZ]]
 Əl ilə görülən təcrübə müraciəti prosesini xəritələ və avtomatlaşdırma sərhədlərini müəyyən et.
 
 [[EN]]
@@ -906,7 +906,7 @@ Submit the diagram as PDF/PNG or Mermaid/BPMN source in a repository.
 
 ## Estimated time
 3-5 hours.$automation_engineering_1_inst_1$),
-  ("automation-engineering", 2, 2, $automation_engineering_1_desc_2$[[AZ]]
+  ('automation-engineering', 2, 2, $automation_engineering_1_desc_2$[[AZ]]
 Webhook qəbul edib yoxlanılan məlumatı idarə olunan workflow-a ötür.
 
 [[EN]]
@@ -985,7 +985,7 @@ Submit a GitHub repository and workflow export, or a report with screenshots.
 
 ## Estimated time
 5-7 hours.$automation_engineering_1_inst_2$),
-  ("automation-engineering", 3, 4, $automation_engineering_1_desc_3$[[AZ]]
+  ('automation-engineering', 3, 4, $automation_engineering_1_desc_3$[[AZ]]
 Uğursuz addımları idempotent retry, gecikmə və monitorinq ilə bərpa et.
 
 [[EN]]
@@ -1064,7 +1064,7 @@ Submit the repository, test results, and runbook.
 
 ## Estimated time
 4-6 hours.$automation_engineering_1_inst_3$),
-  ("automation-engineering", 5, 3, $automation_engineering_1_desc_4$[[AZ]]
+  ('automation-engineering', 5, 3, $automation_engineering_1_desc_4$[[AZ]]
 Müxtəlif form girişlərini daxili vahid JSON modelinə çevir və keyfiyyət səhvlərini üzə çıxar.
 
 [[EN]]
@@ -1143,7 +1143,7 @@ Submit a workflow export or repository plus the results table.
 
 ## Estimated time
 4-6 hours.$automation_engineering_1_inst_4$),
-  ("automation-engineering", 6, 4, $automation_engineering_2_desc_1$[[AZ]]
+  ('automation-engineering', 6, 4, $automation_engineering_2_desc_1$[[AZ]]
 Xarici API ilə limit, timeout və auth davranışı nəzərə alınmış inteqrasiya workflow-u qur.
 
 [[EN]]
@@ -1222,7 +1222,7 @@ Submit a GitHub repository and integration-test table.
 
 ## Estimated time
 5-7 hours.$automation_engineering_2_inst_1$),
-  ("automation-engineering", 7, 5, $automation_engineering_2_desc_2$[[AZ]]
+  ('automation-engineering', 7, 5, $automation_engineering_2_desc_2$[[AZ]]
 Vaxt zonası, duplicate run və missed execution halları olan etibarlı schedule workflow qur.
 
 [[EN]]
@@ -1301,7 +1301,7 @@ Submit a workflow export/repository and test table.
 
 ## Estimated time
 4-6 hours.$automation_engineering_2_inst_2$),
-  ("automation-engineering", 8, 5, $automation_engineering_2_desc_3$[[AZ]]
+  ('automation-engineering', 8, 5, $automation_engineering_2_desc_3$[[AZ]]
 Bildiriş seçimlərini, template-ləri və uğursuz göndərişləri idarə edən notification flow qur.
 
 [[EN]]
@@ -1380,7 +1380,7 @@ Submit a GitHub repository, template preview, and test results.
 
 ## Estimated time
 5-7 hours.$automation_engineering_2_inst_3$),
-  ("automation-engineering", 4, 6, $automation_engineering_2_desc_4$[[AZ]]
+  ('automation-engineering', 4, 6, $automation_engineering_2_desc_4$[[AZ]]
 Avtomatlaşdırma üçün biznes axınını başdan sona qur, risk və human-in-the-loop nöqtələrini göstər.
 
 [[EN]]
@@ -1459,7 +1459,7 @@ Submit a repository/export, diagram, and short demo or report.
 
 ## Estimated time
 8-10 hours.$automation_engineering_2_inst_4$),
-  ("automation-engineering", 9, 6, $automation_engineering_3_desc_1$[[AZ]]
+  ('automation-engineering', 9, 6, $automation_engineering_3_desc_1$[[AZ]]
 Workflow-lar üçün əməliyyat KPI-ları müəyyən et və alert hədlərini əsaslandır.
 
 [[EN]]
@@ -1538,7 +1538,7 @@ Submit a dashboard demo and metric explanation in a repository or report.
 
 ## Estimated time
 4-6 hours.$automation_engineering_3_inst_1$),
-  ("automation-engineering", 10, 6, $automation_engineering_3_desc_2$[[AZ]]
+  ('automation-engineering', 10, 6, $automation_engineering_3_desc_2$[[AZ]]
 Workflow-u komanda üçün təhvil ver: quraşdırma, credential, monitorinq və bərpa addımlarını yaz.
 
 [[EN]]
@@ -1617,7 +1617,7 @@ Submit a GitHub repository/export and a short handoff report.
 
 ## Estimated time
 5-7 hours.$automation_engineering_3_inst_2$),
-  ("backend-engineering", 1, 1, $backend_engineering_1_desc_1$[[AZ]]
+  ('backend-engineering', 1, 1, $backend_engineering_1_desc_1$[[AZ]]
 Tələbə layihələri üçün resurs yönümlü REST API dizayn et və müqaviləsini nümunələrlə sənədləşdir.
 
 [[EN]]
@@ -1698,7 +1698,7 @@ Submit a GitHub repository link and the OpenAPI file.
 
 ## Estimated time
 4-6 hours.$backend_engineering_1_inst_1$),
-  ("backend-engineering", 2, 2, $backend_engineering_1_desc_2$[[AZ]]
+  ('backend-engineering', 2, 2, $backend_engineering_1_desc_2$[[AZ]]
 Layihə, üzv və tapşırıq məlumatları üçün normallaşdırılmış PostgreSQL modeli qur.
 
 [[EN]]
@@ -1779,7 +1779,7 @@ Submit a GitHub repository link with the migration and diagram.
 
 ## Estimated time
 5-7 hours.$backend_engineering_1_inst_2$),
-  ("backend-engineering", 3, 3, $backend_engineering_1_desc_3$[[AZ]]
+  ('backend-engineering', 3, 3, $backend_engineering_1_desc_3$[[AZ]]
 Giriş və qeydiyyat endpoint-lərini input validasiyası və təhlükəsiz xəta cavabları ilə qur.
 
 [[EN]]
@@ -1860,7 +1860,7 @@ Submit a GitHub repository and test results; never commit real secrets or passwo
 
 ## Estimated time
 5-7 hours.$backend_engineering_1_inst_3$),
-  ("backend-engineering", 5, 4, $backend_engineering_1_desc_4$[[AZ]]
+  ('backend-engineering', 5, 4, $backend_engineering_1_desc_4$[[AZ]]
 Böyük layihə siyahısını sabit pagination və yoxlanıla bilən filter-lərlə təqdim et.
 
 [[EN]]
@@ -1941,7 +1941,7 @@ Submit a GitHub repository, API examples, and test results.
 
 ## Estimated time
 5-7 hours.$backend_engineering_1_inst_4$),
-  ("backend-engineering", 6, 4, $backend_engineering_2_desc_1$[[AZ]]
+  ('backend-engineering', 6, 4, $backend_engineering_2_desc_1$[[AZ]]
 Bir neçə database yazısını vahid tranzaksiyada icra et və qismən uğursuzluğu önlə.
 
 [[EN]]
@@ -2022,7 +2022,7 @@ Submit a GitHub repository and test logs.
 
 ## Estimated time
 5-7 hours.$backend_engineering_2_inst_1$),
-  ("backend-engineering", 7, 5, $backend_engineering_2_desc_2$[[AZ]]
+  ('backend-engineering', 7, 5, $backend_engineering_2_desc_2$[[AZ]]
 API davranışını OpenAPI-də sənədləşdir və nümunələrdən schema-nın işlədiyini yoxla.
 
 [[EN]]
@@ -2103,7 +2103,7 @@ Submit the repository link and the OpenAPI file.
 
 ## Estimated time
 4-6 hours.$backend_engineering_2_inst_2$),
-  ("backend-engineering", 8, 5, $backend_engineering_2_desc_3$[[AZ]]
+  ('backend-engineering', 8, 5, $backend_engineering_2_desc_3$[[AZ]]
 Service qatında unit və integration testləri ilə əsas backend davranışını qoruma altına al.
 
 [[EN]]
@@ -2184,7 +2184,7 @@ Submit a GitHub repository and test command.
 
 ## Estimated time
 6-8 hours.$backend_engineering_2_inst_3$),
-  ("backend-engineering", 9, 6, $backend_engineering_2_desc_4$[[AZ]]
+  ('backend-engineering', 9, 6, $backend_engineering_2_desc_4$[[AZ]]
 Log və vahid xəta cavabları əlavə et ki, production problemi izlənə bilsin.
 
 [[EN]]
@@ -2265,7 +2265,7 @@ Submit a GitHub repository and redacted sample logs.
 
 ## Estimated time
 4-6 hours.$backend_engineering_2_inst_4$),
-  ("backend-engineering", 10, 7, $backend_engineering_3_desc_1$[[AZ]]
+  ('backend-engineering', 10, 7, $backend_engineering_3_desc_1$[[AZ]]
 Backend servisini CI, health check və konfiqurasiya yoxlamaları ilə deploy-a hazırla.
 
 [[EN]]
@@ -2346,7 +2346,7 @@ Submit a GitHub repository with CI results.
 
 ## Estimated time
 6-8 hours.$backend_engineering_3_inst_1$),
-  ("backend-engineering", 4, 8, $backend_engineering_3_desc_2$[[AZ]]
+  ('backend-engineering', 4, 8, $backend_engineering_3_desc_2$[[AZ]]
 Tələblər, API və təhlükəsizlik testləri ilə tamamlanmış backend service nümunəsi təqdim et.
 
 [[EN]]
@@ -2427,7 +2427,7 @@ Submit a GitHub repository and API demo, or a short report with screenshots.
 
 ## Estimated time
 8-12 hours.$backend_engineering_3_inst_2$),
-  ("cybersecurity", 1, 1, $cybersecurity_1_desc_1$[[AZ]]
+  ('cybersecurity', 1, 1, $cybersecurity_1_desc_1$[[AZ]]
 İzolyasiya olunmuş təhlükəsizlik laboratoriyası qur və onun əhatə dairəsi ilə təhlükəsiz istifadə qaydasını yaz.
 
 [[EN]]
@@ -2506,7 +2506,7 @@ Submit repository/config files and a screenshot showing the lab starts safely.
 
 ## Estimated time
 3-5 hours.$cybersecurity_1_inst_1$),
-  ("cybersecurity", 2, 2, $cybersecurity_1_desc_2$[[AZ]]
+  ('cybersecurity', 2, 2, $cybersecurity_1_desc_2$[[AZ]]
 Toy web tətbiqində HTTP başlıqlarını yoxla və təhlükəsiz konfiqurasiya təklif et.
 
 [[EN]]
@@ -2585,7 +2585,7 @@ Submit a GitHub repository, header evidence, and test results.
 
 ## Estimated time
 4-5 hours.$cybersecurity_1_inst_2$),
-  ("cybersecurity", 3, 3, $cybersecurity_1_desc_3$[[AZ]]
+  ('cybersecurity', 3, 3, $cybersecurity_1_desc_3$[[AZ]]
 Lokal nümunədə reflected/stored XSS riskini tanı və təhlükəsiz output encoding tətbiq et.
 
 [[EN]]
@@ -2664,7 +2664,7 @@ Submit the repository, test output, and a harmless code screenshot.
 
 ## Estimated time
 4-6 hours.$cybersecurity_1_inst_3$),
-  ("cybersecurity", 4, 4, $cybersecurity_1_desc_4$[[AZ]]
+  ('cybersecurity', 4, 4, $cybersecurity_1_desc_4$[[AZ]]
 Təlim verilənlər bazasında SQL injection səbəbini parameterized query ilə aradan qaldır.
 
 [[EN]]
@@ -2743,7 +2743,7 @@ Submit the repository, test log, and short remediation report.
 
 ## Estimated time
 4-5 hours.$cybersecurity_1_inst_4$),
-  ("cybersecurity", 5, 5, $cybersecurity_2_desc_1$[[AZ]]
+  ('cybersecurity', 5, 5, $cybersecurity_2_desc_1$[[AZ]]
 Test tətbiqdə obyekt səviyyəli authorization qaydalarını yoxla və IDOR riskini bağla.
 
 [[EN]]
@@ -2822,7 +2822,7 @@ Submit a repository and pass/fail test report.
 
 ## Estimated time
 5-7 hours.$cybersecurity_2_inst_1$),
-  ("cybersecurity", 6, 6, $cybersecurity_2_desc_2$[[AZ]]
+  ('cybersecurity', 6, 6, $cybersecurity_2_desc_2$[[AZ]]
 JWT qəbulunu yoxla: imza, issuer, audience, expiry və alg seçimi üzrə testlər əlavə et.
 
 [[EN]]
@@ -2901,7 +2901,7 @@ Submit a GitHub repository and test results; never commit tokens or keys.
 
 ## Estimated time
 4-6 hours.$cybersecurity_2_inst_2$),
-  ("cybersecurity", 7, 7, $cybersecurity_2_desc_3$[[AZ]]
+  ('cybersecurity', 7, 7, $cybersecurity_2_desc_3$[[AZ]]
 Kiçik REST API üçün endpoint, authz, data exposure və resource limit yoxlama checklist-i qur.
 
 [[EN]]
@@ -2980,7 +2980,7 @@ Submit the checklist, test evidence, and prioritized findings report.
 
 ## Estimated time
 4-6 hours.$cybersecurity_2_inst_3$),
-  ("cybersecurity", 8, 8, $cybersecurity_2_desc_4$[[AZ]]
+  ('cybersecurity', 8, 8, $cybersecurity_2_desc_4$[[AZ]]
 OWASP ZAP-ın passive scan rejimi ilə yalnız lokal toy tətbiqin response-larını yoxla.
 
 [[EN]]
@@ -3059,7 +3059,7 @@ Submit the ZAP summary, configuration screenshot, and fix repository.
 
 ## Estimated time
 4-5 hours.$cybersecurity_2_inst_4$),
-  ("cybersecurity", 9, 8, $cybersecurity_3_desc_1$[[AZ]]
+  ('cybersecurity', 9, 8, $cybersecurity_3_desc_1$[[AZ]]
 Tapılmış təhlükəsizlik qüsurunu kök səbəbdən düzəlt və regression test ilə bağlandığını təsdiqlə.
 
 [[EN]]
@@ -3138,7 +3138,7 @@ Submit the repository, redacted test output, and finding-closure note.
 
 ## Estimated time
 4-6 hours.$cybersecurity_3_inst_1$),
-  ("cybersecurity", 10, 8, $cybersecurity_3_desc_2$[[AZ]]
+  ('cybersecurity', 10, 8, $cybersecurity_3_desc_2$[[AZ]]
 Təhlükəsizlik laboratoriyasının nəticələrini sübutlu, risk üzrə sıralanmış yekun hesabatda birləşdir.
 
 [[EN]]
@@ -3217,7 +3217,7 @@ Submit a PDF report and redacted appendix files.
 
 ## Estimated time
 6-8 hours.$cybersecurity_3_inst_2$),
-  ("data-analytics", 1, 1, $data_analytics_1_desc_1$[[AZ]]
+  ('data-analytics', 1, 1, $data_analytics_1_desc_1$[[AZ]]
 Analiz üçün verilənlər dəstini təmizlə, çevrilmələri sənədləşdir və əvvəl/sonra keyfiyyəti ölç.
 
 [[EN]]
@@ -3296,7 +3296,7 @@ Submit the repository, notebook/script, CSV files, and short findings report.
 
 ## Estimated time
 4-6 hours.$data_analytics_1_inst_1$),
-  ("data-analytics", 2, 2, $data_analytics_1_desc_2$[[AZ]]
+  ('data-analytics', 2, 2, $data_analytics_1_desc_2$[[AZ]]
 SQL ilə təcrübə müraciətlərinin həftəlik funnel və əsas performans göstəricilərini hesabla.
 
 [[EN]]
@@ -3375,7 +3375,7 @@ Submit SQL files, test data, and result tables in a repository.
 
 ## Estimated time
 4-6 hours.$data_analytics_1_inst_2$),
-  ("data-analytics", 3, 4, $data_analytics_1_desc_3$[[AZ]]
+  ('data-analytics', 3, 4, $data_analytics_1_desc_3$[[AZ]]
 Qərar verən üçün müraciət funnel-ını göstərən interaktiv dashboard prototipi hazırla.
 
 [[EN]]
@@ -3454,7 +3454,7 @@ Submit the dashboard link/file, source, and three insights.
 
 ## Estimated time
 6-8 hours.$data_analytics_1_inst_3$),
-  ("data-analytics", 5, 4, $data_analytics_1_desc_4$[[AZ]]
+  ('data-analytics', 5, 4, $data_analytics_1_desc_4$[[AZ]]
 Mənbə datasetləri üçün schema və biznes qaydalarına əsaslanan data validation qur.
 
 [[EN]]
@@ -3533,7 +3533,7 @@ Submit the repository, test output, and validation results file.
 
 ## Estimated time
 4-6 hours.$data_analytics_1_inst_4$),
-  ("data-analytics", 6, 3, $data_analytics_2_desc_1$[[AZ]]
+  ('data-analytics', 6, 3, $data_analytics_2_desc_1$[[AZ]]
 Müraciət datasetində paylanma, kənar dəyər və istiqamətlərarası fərqləri araşdır.
 
 [[EN]]
@@ -3612,7 +3612,7 @@ Submit the notebook, data used, and short EDA report.
 
 ## Estimated time
 5-7 hours.$data_analytics_2_inst_1$),
-  ("data-analytics", 7, 5, $data_analytics_2_desc_2$[[AZ]]
+  ('data-analytics', 7, 5, $data_analytics_2_desc_2$[[AZ]]
 Qəbul cohort-larının zamanla aktiv qalma və tapşırıq tamamlama fərqini hesabla.
 
 [[EN]]
@@ -3691,7 +3691,7 @@ Submit the query/notebook, heatmap, and explanation in a repository.
 
 ## Estimated time
 5-7 hours.$data_analytics_2_inst_2$),
-  ("data-analytics", 8, 5, $data_analytics_2_desc_3$[[AZ]]
+  ('data-analytics', 8, 5, $data_analytics_2_desc_3$[[AZ]]
 Mövcud dashboard-u metrik, filtr, əlçatanlıq və səhv yozulma baxımından audit et.
 
 [[EN]]
@@ -3770,7 +3770,7 @@ Submit the audit report and redesign prototype.
 
 ## Estimated time
 4-6 hours.$data_analytics_2_inst_3$),
-  ("data-analytics", 4, 6, $data_analytics_2_desc_4$[[AZ]]
+  ('data-analytics', 4, 6, $data_analytics_2_desc_4$[[AZ]]
 Müraciət məlumatından koordinator üçün tövsiyə və məhdudiyyətləri olan tam data case study hazırla.
 
 [[EN]]
@@ -3849,7 +3849,7 @@ Submit the repository, report, and a five-minute demo or slide presentation.
 
 ## Estimated time
 8-10 hours.$data_analytics_2_inst_4$),
-  ("data-analytics", 9, 6, $data_analytics_3_desc_1$[[AZ]]
+  ('data-analytics', 9, 6, $data_analytics_3_desc_1$[[AZ]]
 Analiz nəticəsini qeyri-texniki auditoriyaya problem–sübut–tövsiyə hekayəsi ilə çatdır.
 
 [[EN]]
@@ -3928,7 +3928,7 @@ Submit PDF/PPT and source chart/data files.
 
 ## Estimated time
 3-5 hours.$data_analytics_3_inst_1$),
-  ("data-analytics", 10, 6, $data_analytics_3_desc_2$[[AZ]]
+  ('data-analytics', 10, 6, $data_analytics_3_desc_2$[[AZ]]
 Analiz layihəsini başqa analitikin yenidən icra edə biləcəyi şəkildə paketlə və məhdudiyyətləri sənədləşdir.
 
 [[EN]]
@@ -4007,7 +4007,7 @@ Submit the repository link and a fresh-environment reproduction result.
 
 ## Estimated time
 4-6 hours.$data_analytics_3_inst_2$),
-  ("frontend-engineering", 1, 1, $frontend_engineering_1_desc_1$[[AZ]]
+  ('frontend-engineering', 1, 1, $frontend_engineering_1_desc_1$[[AZ]]
 Mobil və desktop-da oxunaqlı, əlçatan və responsive məhsul landing page-i hazırla.
 
 [[EN]]
@@ -4086,7 +4086,7 @@ Submit a GitHub repository and working preview link.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_1$),
-  ("frontend-engineering", 2, 2, $frontend_engineering_1_desc_2$[[AZ]]
+  ('frontend-engineering', 2, 2, $frontend_engineering_1_desc_2$[[AZ]]
 Təkrar istifadə edilən form, badge və empty-state komponentləri ilə kiçik UI sistem qur.
 
 [[EN]]
@@ -4165,7 +4165,7 @@ Submit the repository, demo screenshot, and test results.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_2$),
-  ("frontend-engineering", 3, 3, $frontend_engineering_1_desc_3$[[AZ]]
+  ('frontend-engineering', 3, 3, $frontend_engineering_1_desc_3$[[AZ]]
 API məlumatı ilə yüklənmə, uğur, boş və xəta vəziyyətləri olan idarəetmə paneli qur.
 
 [[EN]]
@@ -4244,7 +4244,7 @@ Submit the repository and a public preview or local-demo instructions.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_3$),
-  ("frontend-engineering", 5, 4, $frontend_engineering_1_desc_4$[[AZ]]
+  ('frontend-engineering', 5, 4, $frontend_engineering_1_desc_4$[[AZ]]
 Müraciət formunu label, inline validation və aydın uğur/xəta axını ilə tamamla.
 
 [[EN]]
@@ -4323,7 +4323,7 @@ Submit the repository, demo, and test results.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_1_inst_4$),
-  ("frontend-engineering", 6, 4, $frontend_engineering_2_desc_1$[[AZ]]
+  ('frontend-engineering', 6, 4, $frontend_engineering_2_desc_1$[[AZ]]
 Dashboard filter və müraciət formu state-ini proqnozlaşdırılan, test edilən qaydada idarə et.
 
 [[EN]]
@@ -4402,7 +4402,7 @@ Submit the repository, state diagram, and test output.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_1$),
-  ("frontend-engineering", 7, 5, $frontend_engineering_2_desc_2$[[AZ]]
+  ('frontend-engineering', 7, 5, $frontend_engineering_2_desc_2$[[AZ]]
 Frontend yüklənməsini ölç, ən bahalı bottleneck-i müəyyən et və sübutla optimallaşdır.
 
 [[EN]]
@@ -4481,7 +4481,7 @@ Submit the repository and redacted performance report.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_2$),
-  ("frontend-engineering", 8, 5, $frontend_engineering_2_desc_3$[[AZ]]
+  ('frontend-engineering', 8, 5, $frontend_engineering_2_desc_3$[[AZ]]
 Component, user interaction və əsas error state-lər üçün etibarlı frontend testləri yaz.
 
 [[EN]]
@@ -4560,7 +4560,7 @@ Submit the repository and test output.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_3$),
-  ("frontend-engineering", 9, 6, $frontend_engineering_2_desc_4$[[AZ]]
+  ('frontend-engineering', 9, 6, $frontend_engineering_2_desc_4$[[AZ]]
 Code review tapıntılarını istifadəçi təsiri üzrə prioritetləşdir və təhlükəsiz düzəlişlə bağla.
 
 [[EN]]
@@ -4639,7 +4639,7 @@ Submit the GitHub repository and review notes.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_4$),
-  ("frontend-engineering", 10, 7, $frontend_engineering_3_desc_1$[[AZ]]
+  ('frontend-engineering', 10, 7, $frontend_engineering_3_desc_1$[[AZ]]
 Frontend xüsusiyyətini developer və dizaynerə təhvil ver: setup, component, test və məhdudiyyətləri yaz.
 
 [[EN]]
@@ -4718,7 +4718,7 @@ Submit the repository link, preview, and short handoff note.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_3_inst_1$),
-  ("frontend-engineering", 4, 8, $frontend_engineering_3_desc_2$[[AZ]]
+  ('frontend-engineering', 4, 8, $frontend_engineering_3_desc_2$[[AZ]]
 Müraciət idarəetməsi üçün polished frontend-i API, responsive design və testlərlə tamamla.
 
 [[EN]]
@@ -4799,7 +4799,7 @@ Submit the GitHub repository, preview link, and a five-minute demo or report.
 
 ## Estimated time
 8-12 hours.$frontend_engineering_3_inst_2$),
-  ("mobile-development", 1, 1, $mobile_development_1_desc_1$[[AZ]]
+  ('mobile-development', 1, 1, $mobile_development_1_desc_1$[[AZ]]
 Expo əsaslı mobil layihəni qur, cihazda işə sal və başlanğıc quraşdırmanı təkrarlana bilən et.
 
 [[EN]]
@@ -4878,7 +4878,7 @@ Submit a GitHub repository link and Android/iOS preview screenshot.
 
 ## Estimated time
 3-5 hours.$mobile_development_1_inst_1$),
-  ("mobile-development", 2, 2, $mobile_development_1_desc_2$[[AZ]]
+  ('mobile-development', 2, 2, $mobile_development_1_desc_2$[[AZ]]
 Təcrübə dashboard-unda əsas ekranlar arasında geri düyməsi və deep-link-i nəzərə alan navigation qur.
 
 [[EN]]
@@ -4957,7 +4957,7 @@ Submit the repository and a screen-flow demo video or screenshot sequence.
 
 ## Estimated time
 4-6 hours.$mobile_development_1_inst_2$),
-  ("mobile-development", 3, 3, $mobile_development_1_desc_3$[[AZ]]
+  ('mobile-development', 3, 3, $mobile_development_1_desc_3$[[AZ]]
 Task card, status badge və form sahələrini mobil ekranda təkrar istifadə edilən komponentlərə ayır.
 
 [[EN]]
@@ -5036,7 +5036,7 @@ Submit the GitHub repository, demo screenshot, and test result.
 
 ## Estimated time
 4-6 hours.$mobile_development_1_inst_3$),
-  ("mobile-development", 4, 4, $mobile_development_1_desc_4$[[AZ]]
+  ('mobile-development', 4, 4, $mobile_development_1_desc_4$[[AZ]]
 API-dən tapşırıqları çəkən mobil siyahıda loading, refresh, empty və network error vəziyyətlərini qur.
 
 [[EN]]
@@ -5115,7 +5115,7 @@ Submit the repository link, short screen video, and test output.
 
 ## Estimated time
 5-7 hours.$mobile_development_1_inst_4$),
-  ("mobile-development", 5, 5, $mobile_development_2_desc_1$[[AZ]]
+  ('mobile-development', 5, 5, $mobile_development_2_desc_1$[[AZ]]
 Tapşırıq siyahısına status filter-i və yerli axtarış əlavə et, filter dəyişməsini aydın göstər.
 
 [[EN]]
@@ -5194,7 +5194,7 @@ Submit the repository, demo screenshot, and test output.
 
 ## Estimated time
 3-5 hours.$mobile_development_2_inst_1$),
-  ("mobile-development", 6, 6, $mobile_development_2_desc_2$[[AZ]]
+  ('mobile-development', 6, 6, $mobile_development_2_desc_2$[[AZ]]
 İstifadəçi seçimini yalnız həssas olmayan məlumatlar üçün lokal storage-da saxla və migration qərarını yaz.
 
 [[EN]]
@@ -5273,7 +5273,7 @@ Submit the repository and a short screen video of storage behavior.
 
 ## Estimated time
 4-6 hours.$mobile_development_2_inst_2$),
-  ("mobile-development", 7, 7, $mobile_development_2_desc_3$[[AZ]]
+  ('mobile-development', 7, 7, $mobile_development_2_desc_3$[[AZ]]
 Müraciət formunda mobil klaviatura, field validation və submit zamanı səhv bərpasını həll et.
 
 [[EN]]
@@ -5352,7 +5352,7 @@ Submit the repository, screen evidence, and test output.
 
 ## Estimated time
 4-6 hours.$mobile_development_2_inst_3$),
-  ("mobile-development", 8, 8, $mobile_development_2_desc_4$[[AZ]]
+  ('mobile-development', 8, 8, $mobile_development_2_desc_4$[[AZ]]
 Şəbəkə itəndə cache edilmiş tapşırıqları oxunaqlı saxla və sync vəziyyətini dürüst göstər.
 
 [[EN]]
@@ -5431,7 +5431,7 @@ Submit the GitHub repository, test output, and screen notes.
 
 ## Estimated time
 5-7 hours.$mobile_development_2_inst_4$),
-  ("mobile-development", 9, 8, $mobile_development_3_desc_1$[[AZ]]
+  ('mobile-development', 9, 8, $mobile_development_3_desc_1$[[AZ]]
 Əsas mobil istifadə axınını real cihaz ölçüləri, əlçatanlıq və performans baxımından yoxla.
 
 [[EN]]
@@ -5510,7 +5510,7 @@ Submit the repository and test report.
 
 ## Estimated time
 4-6 hours.$mobile_development_3_inst_1$),
-  ("mobile-development", 10, 8, $mobile_development_3_desc_2$[[AZ]]
+  ('mobile-development', 10, 8, $mobile_development_3_desc_2$[[AZ]]
 Tapşırıqları idarə edən tamamlanmış mobil app-i API, offline davranış, test və handoff sənədi ilə təqdim et.
 
 [[EN]]
@@ -5591,7 +5591,7 @@ Submit the GitHub repository, emulator/device demo, and short handoff note.
 
 ## Estimated time
 8-12 hours.$mobile_development_3_inst_2$),
-  ("ui-ux-design", 1, 1, $ui_ux_design_1_desc_1$[[AZ]]
+  ('ui-ux-design', 1, 1, $ui_ux_design_1_desc_1$[[AZ]]
 İntern portalında tələbələrin tapşırıq axtarışı və təhvil vermə ehtiyacını öyrənmək üçün müsahibə planı hazırla.
 
 [[EN]]
@@ -5668,7 +5668,7 @@ Submit the guide and pilot summary as PDF or in a repository.
 
 ## Estimated time
 3-4 hours.$ui_ux_design_1_inst_1$),
-  ("ui-ux-design", 2, 2, $ui_ux_design_1_desc_2$[[AZ]]
+  ('ui-ux-design', 2, 2, $ui_ux_design_1_desc_2$[[AZ]]
 Müsahibə tapıntılarından tapşırıq tapma və təqdim etmə üçün əsas user flow və edge case-lər qur.
 
 [[EN]]
@@ -5745,7 +5745,7 @@ Submit the diagram link and short design rationale.
 
 ## Estimated time
 3-5 hours.$ui_ux_design_1_inst_2$),
-  ("ui-ux-design", 3, 3, $ui_ux_design_1_desc_3$[[AZ]]
+  ('ui-ux-design', 3, 3, $ui_ux_design_1_desc_3$[[AZ]]
 Dashboard, tapşırıq detalı və submit axını üçün low-fidelity wireframe və layout qərarları hazırla.
 
 [[EN]]
@@ -5822,7 +5822,7 @@ Submit a Figma/Penpot link or PDF export.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_1_inst_3$),
-  ("ui-ux-design", 4, 4, $ui_ux_design_1_desc_4$[[AZ]]
+  ('ui-ux-design', 4, 4, $ui_ux_design_1_desc_4$[[AZ]]
 Wireframe-i real məzmun, visual hierarchy və responsive variantları olan high-fidelity ekranlara çevir.
 
 [[EN]]
@@ -5899,7 +5899,7 @@ Submit the design-file link and screenshots.
 
 ## Estimated time
 5-7 hours.$ui_ux_design_1_inst_4$),
-  ("ui-ux-design", 5, 5, $ui_ux_design_2_desc_1$[[AZ]]
+  ('ui-ux-design', 5, 5, $ui_ux_design_2_desc_1$[[AZ]]
 Rəng, type, spacing və əsas component variantlarını token-larla ifadə edən kiçik design system qur.
 
 [[EN]]
@@ -5976,7 +5976,7 @@ Submit the Figma/Penpot library link and short design-system guide.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_1$),
-  ("ui-ux-design", 6, 6, $ui_ux_design_2_desc_2$[[AZ]]
+  ('ui-ux-design', 6, 6, $ui_ux_design_2_desc_2$[[AZ]]
 Tapşırıq oxuma, status dəyişməsi və submit interaction-larını clickable prototype-da sına.
 
 [[EN]]
@@ -6053,7 +6053,7 @@ Submit a shareable prototype link and test notes.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_2$),
-  ("ui-ux-design", 7, 7, $ui_ux_design_2_desc_3$[[AZ]]
+  ('ui-ux-design', 7, 7, $ui_ux_design_2_desc_3$[[AZ]]
 Task detail prototipində keyboard, screen reader, kontrast və mətn böyütmə baryerlərini audit et.
 
 [[EN]]
@@ -6130,7 +6130,7 @@ Submit the audit report and prototype link.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_3$),
-  ("ui-ux-design", 8, 8, $ui_ux_design_2_desc_4$[[AZ]]
+  ('ui-ux-design', 8, 8, $ui_ux_design_2_desc_4$[[AZ]]
 Eyni task axınını dar mobil, tablet və desktop enlərində yenidən yerləşdir və content prioritetini saxla.
 
 [[EN]]
@@ -6207,7 +6207,7 @@ Submit the design-file link and screenshots for all three viewports.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_4$),
-  ("ui-ux-design", 9, 8, $ui_ux_design_3_desc_1$[[AZ]]
+  ('ui-ux-design', 9, 8, $ui_ux_design_3_desc_1$[[AZ]]
 Prototipdə tapşırığı tapma və təqdim etmə usability testini apar, tapıntıları prioritetləşdir.
 
 [[EN]]
@@ -6284,7 +6284,7 @@ Submit a redacted test report and updated prototype link.
 
 ## Estimated time
 5-7 hours.$ui_ux_design_3_inst_1$),
-  ("ui-ux-design", 10, 8, $ui_ux_design_3_desc_2$[[AZ]]
+  ('ui-ux-design', 10, 8, $ui_ux_design_3_desc_2$[[AZ]]
 Araşdırma, axın, ekran və test nəticələrini qərara yönəlmiş UX case study-də birləşdir.
 
 [[EN]]
