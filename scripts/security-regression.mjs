@@ -70,10 +70,20 @@ assert.match(migration, /storage\.foldername\(name\)\)\[1\]/);
 assert.match(migration, /certificate-payments/);
 assert.match(migration, /task-submissions/);
 assert.match(migration, /certificates/);
-assert.match(certificates, /enrollmentData\.student_id !== studentId/);
-assert.match(certificates, /enrollmentData\.internship_id !== internshipId/);
+assert.match(certificates, /supabase\.rpc\('issue_certificate_secure'/);
+assert.match(certificates, /supabase\.rpc\('revoke_certificate_secure'/);
+assert.match(certificates, /supabase\.rpc\('get_public_certificate'/);
+assert.match(certificates, /Never fall back to direct table writes/);
 assert.match(submissions, /enrollment\.student_id !== studentId/);
 assert.match(submissions, /enrollment\.internship_id !== task\.internship_id/);
+// The current migration maps storage/table ownership through profiles.id and
+// keeps student writes from changing review or payment approval fields.
+const ownershipFixMigration = await read('supabase/migrations/20261010000001_fix_submission_and_certificate_flows.sql');
+assert.match(ownershipFixMigration, /p\.user_id = \(SELECT auth\.uid\(\)\)/);
+assert.match(ownershipFixMigration, /students cannot change submission review fields/);
+assert.match(ownershipFixMigration, /certificate payment amount\/currency does not match current settings/);
+assert.match(ownershipFixMigration, /SECURITY DEFINER[\s\S]{0,80}SET search_path = public[\s\S]{0,120}FROM public\.certificates/);
+
 assert.match(tasks, /\.eq\('internship_id', internshipId\)/);
 assert.match(tasks, /if \(error\)/);
 
