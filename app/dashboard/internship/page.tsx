@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getAllTasksForInternship } from '@/lib/tasks/service';
+import { extractLocalizedTaskText } from '@/lib/tasks/content.mjs';
 import { getStudentSubmissionsForEnrollment } from '@/lib/submissions/service';
 import { formatDate as formatDisplayDate } from '@/lib/utils/date';
 import { calculateInternshipProgress, ProgressResult } from '@/lib/tasks/progress';
@@ -399,7 +400,7 @@ export default function StudentMyInternshipPage() {
                                     </h4>
 
                                     <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                      {task.description}
+                                      {extractLocalizedTaskText(task.description, language)}
                                     </p>
 
                                     {/* Admin Feedback Callout if Revision Requested */}

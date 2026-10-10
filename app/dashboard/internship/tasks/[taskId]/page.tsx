@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TaskInstructions } from '@/components/tasks/task-instructions';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
+import { extractLocalizedTaskText } from '@/lib/tasks/content.mjs';
+import { TaskInstructionArticle } from '@/components/tasks/instruction-article.mjs';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getTaskById } from '@/lib/tasks/service';
 import {
@@ -291,6 +292,8 @@ export default function StudentTaskDetailPage({
     );
   }
 
+  const taskDescription = extractLocalizedTaskText(task.description, language);
+  const taskInstructions = extractLocalizedTaskText(task.instructions, language);
   const showForm = !submission || submission.status === 'revision_requested' || isEditing;
 
   return (
@@ -340,22 +343,34 @@ export default function StudentTaskDetailPage({
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             {task.title}
           </h1>
-          <p className="text-sm text-slate-600 leading-relaxed mt-2">
-            {task.description}
+          <p className="text-[15px] sm:text-base text-slate-600 leading-7 mt-2 max-w-3xl whitespace-pre-wrap">
+            {taskDescription}
           </p>
         </div>
+      </div>
 
-        {/* Step-by-step Instructions Box */}
-        <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 mt-4">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            <span>{isAz ? 'Ətraflı İcra Təlimatı və Tələblər' : 'Step-by-Step Instructions'}</span>
-          </h3>
-          <div className="p-4 bg-white rounded-lg border border-slate-200">
-            <TaskInstructions text={task.instructions} />
+      {/* Detailed, readable task brief */}
+      <section className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 shadow-2xs">
+        <div className="flex items-start gap-3 border-b border-slate-100 pb-4">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <FileText className="h-4.5 w-4.5" />
+          </span>
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-slate-900">
+              {isAz ? 'Tapşırığın ətraflı izahı' : 'Detailed task brief'}
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              {isAz
+                ? 'Məqsədi, icra addımlarını, təhvil veriləcək nəticələri və qiymətləndirmə meyarlarını izləyin.'
+                : 'Use the objective, steps, deliverables, and evaluation criteria to guide your work.'}
+            </p>
           </div>
         </div>
-      </div>
+
+        <div className="pt-5">
+          <TaskInstructionArticle content={taskInstructions} />
+        </div>
+      </section>
 
       {/* Submission Status Display (If Already Submitted) */}
       {submission && (
