@@ -238,7 +238,7 @@ for (const [name, sidebar] of [
 
 
 const authValidation = await read('lib/validations/auth.ts');
-assert.match(authValidation, /password:[\\s\\S]{0,100}\.min\(8/);
+assert.match(authValidation, /password:[\s\S]{0,100}\.min\(8/);
 
 const storageOverwriteMigration = await read('supabase/migrations/20261010105000_restrict_student_storage_overwrites.sql');
 assert.match(storageOverwriteMigration, /CREATE POLICY task_files_update[\s\S]*private\.is_admin\(\)/);
