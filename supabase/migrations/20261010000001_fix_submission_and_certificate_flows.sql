@@ -115,6 +115,19 @@ CREATE TRIGGER protect_submission_review_fields
 BEFORE UPDATE ON public.task_submissions
 FOR EACH ROW EXECUTE FUNCTION public.protect_submission_review_fields();
 
+-- Certificate table ownership uses profiles.id, not auth.users.id.
+DROP POLICY IF EXISTS certificates_student_select ON public.certificates;
+CREATE POLICY certificates_student_select ON public.certificates
+FOR SELECT TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.profiles p
+    WHERE p.id = certificates.student_id
+      AND p.user_id = (SELECT auth.uid())
+  )
+  OR (SELECT private.is_admin())
+);
+
 -- Certificate payments must belong to the authenticated profile, be tied to a
 -- completed enrollment, use enabled server-side pricing, and point to an
 -- uploaded receipt in the private bucket.
