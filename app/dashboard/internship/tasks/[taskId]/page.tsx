@@ -296,7 +296,7 @@ export default function StudentTaskDetailPage({
 
   const taskDescription = extractLocalizedTaskText(task.description, language);
   const taskInstructions = extractLocalizedTaskText(task.instructions, language);
-  const showForm = !submission || submission.status === 'revision_requested' || isEditing;
+  const showForm = !submission || submission.status === 'revision_requested' || submission.status === 'rejected' || isEditing;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -661,11 +661,11 @@ export default function StudentTaskDetailPage({
               )}
 
               {/* File Upload */}
-              {(task.submission_type === 'file' || task.submission_type === 'multiple') && (
+              {(task.submission_type === 'file' || task.submission_type === 'multiple' || task.submission_type === 'github' || task.submission_type === 'link' || task.submission_type === 'text') && (
                 <div className="space-y-1.5">
                   <Label htmlFor="file" className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                     <Upload className="w-3.5 h-3.5 text-amber-600" />
-                    <span>{isAz ? 'Fayl Yükləyin (ZIP, PDF, PNG və s.)' : 'Upload Solution File'}</span>
+                    <span>{isAz ? 'Fayl və ya ekran görüntüsü əlavə et (PDF, PNG, JPG, WEBP, DOCX, ZIP və s.)' : 'Attach a file or screenshot (PDF, PNG, JPG, WEBP, DOCX, ZIP, etc.)'}</span>
                   </Label>
                   <div
                     onDragOver={(e) => {
@@ -678,6 +678,10 @@ export default function StudentTaskDetailPage({
                       setIsDraggingFile(false);
                       const dropped = e.dataTransfer.files?.[0] || null;
                       if (!dropped) return;
+                      if (!/\.(pdf|png|jpe?g|webp|doc|docx|txt|csv|json|zip|md|xlsx|pptx)$/i.test(dropped.name)) {
+                        setFormError(isAz ? 'Bu fayl formatı dəstəklənmir. PDF, PNG, JPG, WEBP, DOCX, ZIP və ya uyğun sənəd seçin.' : 'Unsupported file type. Choose PDF, PNG, JPG, WEBP, DOCX, ZIP, or a supported document.');
+                        return;
+                      }
                       if (dropped.size > 10 * 1024 * 1024) {
                         setFormError(isAz ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
                         return;
@@ -690,8 +694,15 @@ export default function StudentTaskDetailPage({
                     <input
                       id="file"
                       type="file"
+                      accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt,.csv,.json,.zip,.md,.xlsx,.pptx"
                       onChange={(e) => {
                         const selected = e.target.files?.[0] || null;
+                        if (selected && !/\.(pdf|png|jpe?g|webp|doc|docx|txt|csv|json|zip|md|xlsx|pptx)$/i.test(selected.name)) {
+                          setFile(null);
+                          setFormError(isAz ? 'Bu fayl formatı dəstəklənmir. PDF, PNG, JPG, WEBP, DOCX, ZIP və ya uyğun sənəd seçin.' : 'Unsupported file type. Choose PDF, PNG, JPG, WEBP, DOCX, ZIP, or a supported document.');
+                          e.currentTarget.value = '';
+                          return;
+                        }
                         if (selected && selected.size > 10 * 1024 * 1024) {
                           setFile(null);
                           setFormError(isAz ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
