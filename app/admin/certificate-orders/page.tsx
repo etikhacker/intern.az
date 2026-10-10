@@ -96,6 +96,10 @@ export default function AdminCertificateOrdersPage() {
     if (!payment.receipt_path) return;
     try {
       const url = await getPaymentReceiptSignedUrl(payment.receipt_path);
+      if (!url || url === '#') {
+        alert('Qəbz faylı açıla bilmədi. Faylın mövcudluğunu və giriş icazələrini yoxlayın.');
+        return;
+      }
       setViewingReceipt({ payment, signedUrl: url });
     } catch (err) {
       console.error('Failed to load receipt signed url:', err);
@@ -409,7 +413,7 @@ export default function AdminCertificateOrdersPage() {
             </div>
 
             <div className="p-4 max-h-[70vh] overflow-y-auto flex items-center justify-center bg-slate-950/50">
-              {viewingReceipt.signedUrl.endsWith('.pdf') ? (
+              {viewingReceipt.payment.receipt_path.toLowerCase().endsWith('.pdf') ? (
                 <div className="text-center py-8 space-y-3">
                   <FileText className="w-16 h-16 text-amber-400 mx-auto" />
                   <p className="text-xs text-slate-300">PDF Qəbz Sənədi</p>
