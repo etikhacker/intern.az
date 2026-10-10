@@ -181,9 +181,9 @@ export interface Translations {
   // Auth — shared
   authBackHome: string;
   authPortalSubtitle: string;
-  authStatStudents: string;
-  authStatCompanies: string;
-  authStatSatisfaction: string;
+  authStatPrograms: string;
+  authStatTasks: string;
+  authStatWeeks: string;
   authEmail: string;
   authPassword: string;
   authPasswordMin: string;
@@ -232,6 +232,7 @@ export interface Translations {
   authPrivacy: string;
   authAgreeSuffix: string;
   authRegisterSuccess: string;
+  authRegisterConfirmEmail: string;
   authErrorAgree: string;
   authErrorRegister: string;
   authCreateAccount: string;
@@ -449,9 +450,9 @@ const translations: Record<Language, Translations> = {
     // Auth shared (AZ)
     authBackHome: 'Ana səhifə',
     authPortalSubtitle: 'Təcrübə Portalı',
-    authStatStudents: 'Tələbə',
-    authStatCompanies: 'Şirkət',
-    authStatSatisfaction: 'Məmnuniyyət',
+    authStatPrograms: 'Proqram',
+    authStatTasks: 'Tapşırıq',
+    authStatWeeks: 'Həftə',
     authEmail: 'E-poçt ünvanı',
     authPassword: 'Şifrə',
     authPasswordMin: 'Şifrə (minimum 6 simvol)',
@@ -500,6 +501,7 @@ const translations: Record<Language, Translations> = {
     authPrivacy: 'məxfilik siyasəti',
     authAgreeSuffix: 'ilə razıyam.',
     authRegisterSuccess: 'Qeydiyyat uğurla tamamlandı! Tələbə kabinetinə yönləndirilirsiniz...',
+    authRegisterConfirmEmail: 'Hesabınızı aktivləşdirmək üçün e-poçtunuza göndərilən təsdiq linkini açın. Sonra daxil olun.',
     authErrorAgree: 'Qeydiyyatdan keçmək üçün şərtləri qəbul etməlisiniz.',
     authErrorRegister: 'Qeydiyyat zamanı xəta baş verdi. Yenidən cəhd edin.',
     authCreateAccount: 'Hesab yarat',
@@ -715,9 +717,9 @@ const translations: Record<Language, Translations> = {
     // Auth shared (EN)
     authBackHome: 'Home',
     authPortalSubtitle: 'Internship Portal',
-    authStatStudents: 'Students',
-    authStatCompanies: 'Companies',
-    authStatSatisfaction: 'Satisfaction',
+    authStatPrograms: 'Programs',
+    authStatTasks: 'Tasks',
+    authStatWeeks: 'Weeks',
     authEmail: 'Email address',
     authPassword: 'Password',
     authPasswordMin: 'Password (min. 6 characters)',
@@ -766,6 +768,7 @@ const translations: Record<Language, Translations> = {
     authPrivacy: 'Privacy Policy',
     authAgreeSuffix: 'and I agree.',
     authRegisterSuccess: 'Registration completed successfully! Redirecting to your student dashboard...',
+    authRegisterConfirmEmail: 'Open the confirmation link sent to your email to activate your account, then sign in.',
     authErrorAgree: 'You must accept the terms to register.',
     authErrorRegister: 'An error occurred during registration. Please try again.',
     authCreateAccount: 'Create Account',
