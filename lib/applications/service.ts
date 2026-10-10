@@ -41,17 +41,54 @@ export async function submitApplication({
   if (!supabase) return { success: false, error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
 
   try {
-    // Check if student already submitted an active application
-    const { data: existingApp } = await supabase
+    // Keep one application record per student/program when the database has a
+    // unique constraint. Pending/accepted applications block duplicates, while
+    // rejected/withdrawn applications can be submitted again.
+    const { data: existingApps, error: existingError } = await supabase
       .from('applications')
       .select('id, status')
       .eq('internship_id', internshipId)
       .eq('student_id', studentProfile.id)
-      .in('status', ['pending', 'accepted'])
-      .maybeSingle();
+      .order('created_at', { ascending: false })
+      .limit(1);
 
-    if (existingApp) {
+    if (existingError) {
+      return { success: false, error: existingError.message };
+    }
+
+    const existingApp = existingApps?.[0];
+    if (existingApp && ['pending', 'accepted'].includes(existingApp.status)) {
       return { success: false, error: 'Bu proqrama artıq müraciət etmisiniz.' };
+    }
+    if (existingApp && existingApp.status === 'completed') {
+      return { success: false, error: 'Bu proqramı artıq tamamlamısınız.' };
+    }
+
+    // Reuse the rejected/withdrawn record instead of inserting a duplicate.
+    // This also works when applications(student_id, internship_id) is unique.
+    if (existingApp) {
+      const { data: updated, error: updateError } = await supabase
+        .from('applications')
+        .update({
+          motivation: data.motivation,
+          portfolio_url: data.portfolio_url || null,
+          github_url: data.github_url || null,
+          linkedin_url: data.linkedin_url || null,
+          status: 'pending',
+          admin_note: null,
+          reviewed_by: null,
+          reviewed_at: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingApp.id)
+        .eq('student_id', studentProfile.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        return { success: false, error: updateError.message };
+      }
+      return { success: true, application: updated as Application };
     }
 
     const { data: inserted, error: insertError } = await supabase
