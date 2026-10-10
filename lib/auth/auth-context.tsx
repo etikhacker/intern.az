@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { success: false, error: 'Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilmişdir.' };
         }
         if (signUpError.message.includes('Password should be')) {
-          return { success: false, error: 'Şifrə minimum 6 simvoldan ibarət olmalıdır.' };
+          return { success: false, error: 'Şifrə minimum 8 simvoldan ibarət olmalıdır.' };
         }
         return { success: false, error: signUpError.message };
       }
