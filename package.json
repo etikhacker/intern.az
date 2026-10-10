@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "test:security": "node scripts/security-regression.mjs",
+    "test:task-order": "node scripts/task-order-regression.mjs",
     "clean": "next clean"
   },
   "dependencies": {
