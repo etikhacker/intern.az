@@ -603,19 +603,31 @@ export async function getCertificateCandidates(): Promise<CertificateCandidate[]
   for (const p of payments) {
     const existingCert = certs.find((c) => c.enrollment_id === p.enrollment_id && c.status === 'issued');
     if (
-      !existingCert &&
-      p.enrollment?.status === 'completed' &&
-      p.internship &&
-      p.student
+      existingCert ||
+      p.enrollment?.status !== 'completed' ||
+      !p.internship ||
+      !p.student
     ) {
-      candidates.push({
-        enrollment: p.enrollment,
-        student: p.student,
-        internship: p.internship,
-        payment: p,
-        certificate: certs.find((c) => c.enrollment_id === p.enrollment_id) || null,
-      });
+      continue;
     }
+
+    // Do not offer issuance if an admin manually marked the enrollment completed
+    // before every published required task was approved.
+    const tasks = await getAllTasksForInternship(p.internship_id, false);
+    const requiredTasks = tasks.filter((task) => task.is_required && task.status === 'published');
+    const submissions = await getStudentSubmissionsForEnrollment(p.student_id, p.enrollment_id);
+    const allRequiredTasksApproved = requiredTasks.every((task) =>
+      submissions.some((submission) => submission.task_id === task.id && submission.status === 'approved')
+    );
+    if (!allRequiredTasksApproved) continue;
+
+    candidates.push({
+      enrollment: p.enrollment,
+      student: p.student,
+      internship: p.internship,
+      payment: p,
+      certificate: certs.find((c) => c.enrollment_id === p.enrollment_id) || null,
+    });
   }
 
   return candidates;
