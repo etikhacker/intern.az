@@ -13,7 +13,7 @@ export const registerSchema = z.object({
     .toLowerCase(),
   password: z
     .string()
-    .min(6, { message: 'Password must be at least 6 characters long' })
+    .min(8, { message: 'Password must be at least 8 characters long' })
     .max(72, { message: 'Password cannot exceed 72 characters' }),
   university: z
     .string()
