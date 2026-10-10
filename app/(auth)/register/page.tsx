@@ -90,23 +90,23 @@ function BrandPanel() {
       <div className="relative z-10 grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
           <Users className="h-4 w-4 text-emerald-50" aria-hidden="true" />
-          <p className="mt-3 text-2xl font-black tracking-tight">2.4K+</p>
+          <p className="mt-3 text-2xl font-black tracking-tight">8</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            {t('authStatStudents')}
+            {t('authStatPrograms')}
           </p>
         </div>
         <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
           <Briefcase className="h-4 w-4 text-amber-200" aria-hidden="true" />
-          <p className="mt-3 text-2xl font-black tracking-tight">180+</p>
+          <p className="mt-3 text-2xl font-black tracking-tight">80</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            {t('authStatCompanies')}
+            {t('authStatTasks')}
           </p>
         </div>
         <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
           <Award className="h-4 w-4 text-cyan-200" aria-hidden="true" />
-          <p className="mt-3 text-2xl font-black tracking-tight">96%</p>
+          <p className="mt-3 text-2xl font-black tracking-tight">8</p>
           <p className="text-[10px] uppercase tracking-wider text-emerald-50/80">
-            {t('authStatSatisfaction')}
+            {t('authStatWeeks')}
           </p>
         </div>
       </div>
@@ -235,6 +235,7 @@ export default function RegisterPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
 
@@ -289,6 +290,11 @@ export default function RegisterPage() {
       }
 
       setSuccess(true);
+      if (res.requiresEmailConfirmation) {
+        setNeedsEmailConfirmation(true);
+        setIsSubmitting(false);
+        return;
+      }
       setTimeout(() => {
         router.push('/dashboard');
       }, 1000);
@@ -352,7 +358,7 @@ export default function RegisterPage() {
 
               {success && (
                 <Alert className="mt-6 border-emerald-200 bg-emerald-50 text-xs text-emerald-700">
-                  <AlertDescription>{t('authRegisterSuccess')}</AlertDescription>
+                  <AlertDescription>{t(needsEmailConfirmation ? 'authRegisterConfirmEmail' : 'authRegisterSuccess')}</AlertDescription>
                 </Alert>
               )}
 
