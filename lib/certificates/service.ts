@@ -614,6 +614,7 @@ export async function getCertificateCandidates(): Promise<CertificateCandidate[]
     // Do not offer issuance if an admin manually marked the enrollment completed
     // before every published required task was approved.
     const tasks = await getAllTasksForInternship(p.internship_id, false);
+    if (tasks.length === 0) continue; // Fail closed if the task list could not be loaded.
     const requiredTasks = tasks.filter((task) => task.is_required && task.status === 'published');
     const submissions = await getStudentSubmissionsForEnrollment(p.student_id, p.enrollment_id);
     const allRequiredTasksApproved = requiredTasks.every((task) =>
