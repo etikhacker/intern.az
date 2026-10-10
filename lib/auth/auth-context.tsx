@@ -15,7 +15,7 @@ interface AuthContextType {
   isLoading: boolean;
   isConfigured: boolean;
   error: string | null;
-  signUp: (params: { fullName: string; email: string; password: string; university: string }) => Promise<{ success: boolean; error?: string }>;
+  signUp: (params: { fullName: string; email: string; password: string; university: string }) => Promise<{ success: boolean; error?: string; requiresEmailConfirmation?: boolean }>;
   signIn: (params: { email: string; password: string }) => Promise<{ success: boolean; error?: string; role?: UserRole }>;
   signOut: () => Promise<void>;
   updateProfile: (input: ProfileUpdateInput) => Promise<{ success: boolean; error?: string; profile?: Profile }>;
@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string;
     password: string;
     university: string;
-  }): Promise<{ success: boolean; error?: string }> => {
+  }): Promise<{ success: boolean; error?: string; requiresEmailConfirmation?: boolean }> => {
     setError(null);
 
     if (!isConfigured) {
@@ -186,6 +186,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user) {
+        // When email confirmation is enabled, Supabase creates the user but returns no session.
+        // Do not treat that user as signed in; let the UI ask them to confirm their email.
+        if (!data.session) {
+          return { success: true, requiresEmailConfirmation: true };
+        }
+
         // Fetch newly created profile (or create fallback if trigger delayed)
         let prof = await fetchSupabaseProfile(data.user.id);
         if (!prof) {
@@ -207,10 +213,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser({ id: data.user.id, email: cleanEmail });
         setProfile(prof);
-        return { success: true };
+        return { success: true, requiresEmailConfirmation: false };
       }
 
-      return { success: true };
+      return { success: true, requiresEmailConfirmation: !data.session };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Qeydiyyat zamanı gözlənilməz xəta baş verdi.';
       return { success: false, error: message };
