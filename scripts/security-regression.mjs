@@ -87,6 +87,11 @@ const certificateTaskGateMigration = await read('supabase/migrations/20261010000
 assert.match(certificateTaskGateMigration, /all required tasks must be approved before certificate payment/);
 assert.match(certificateTaskGateMigration, /all required tasks must be approved before certificate issuance/);
 assert.match(certificateTaskGateMigration, /submission file path must belong to the student/);
+const deadlineProcessorMigration = await read('supabase/migrations/20261010000003_restrict_deadline_processor.sql');
+assert.match(deadlineProcessorMigration, /REVOKE EXECUTE ON FUNCTION public\.process_internship_deadlines\(\) FROM anon, authenticated/);
+assert.match(deadlineProcessorMigration, /deadline_notifications_enrollment_id_idx/);
+assert.match(deadlineProcessorMigration, /deadline_notifications_task_id_idx/);
+
 
 
 assert.match(tasks, /\.eq\('internship_id', internshipId\)/);
