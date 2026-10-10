@@ -1171,3 +1171,25 @@ html.light .theme-toggle:hover {
   color: #059669 !important;
   border-color: #6ee7b7 !important;
 }
+
+/* Landing page light-theme contrast fixes for the interactive task preview and
+   dark process bands. Keep the layout theme-aware instead of mixing dark text
+   with white surfaces or white text with pale surfaces. */
+html.light .portfolio-preview-section {
+  background: #f1f6f3 !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
+}
+html.light .portfolio-preview-section .text-white { color: #0f172a !important; }
+html.light .portfolio-preview-section .text-slate-300,
+html.light .portfolio-preview-section .text-slate-400 { color: #475569 !important; }
+html.light .portfolio-preview-section .text-slate-500 { color: #64748b !important; }
+html.light .portfolio-preview-section .border-white\/10 { border-color: rgba(15, 23, 42, 0.12) !important; }
+html.light .portfolio-preview-section .bg-white\/\[0\.03\],
+html.light .portfolio-preview-section .bg-white\/\[0\.035\] { background-color: rgba(15, 23, 42, 0.035) !important; }
+html.light .portfolio-preview-section .bg-black\/20 { background-color: rgba(15, 23, 42, 0.04) !important; }
+html.light .portfolio-preview-section .text-emerald-200 { color: #047857 !important; }
+html.light .portfolio-preview-section .hover\\:text-white:hover { color: #0f172a !important; }
+html.light .portfolio-step-row h3 { color: #0f172a !important; }
+html.light .portfolio-step-row p { color: #475569 !important; }
+html.light .portfolio-step-row .text-emerald-300 { color: #047857 !important; }
+
