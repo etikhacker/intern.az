@@ -18,3 +18,5 @@ jobs:
           node-version: 20
       - name: Check task ordering and Azerbaijani titles
         run: node scripts/task-order-regression.mjs
+      - name: Check security, submission, and certificate regressions
+        run: node scripts/security-regression.mjs
