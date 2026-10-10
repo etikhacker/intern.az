@@ -81,7 +81,7 @@ export async function saveCertificateSettings({
   cardNumber: string;
   isEnabled: boolean;
 }): Promise<{ success: boolean; error?: string; settings?: CertificateSettings }> {
-  if (price < 0) {
+  if (!Number.isFinite(price) || price < 0) {
     return { success: false, error: 'Qiymət mənfi ola bilməz.' };
   }
   if (isEnabled && !cardNumber.trim()) {
@@ -178,7 +178,13 @@ export async function getStudentCertificateEligibility(studentId: string): Promi
   const primaryEnrollment = completed[0];
   const settings = await getCertificateSettings(primaryEnrollment.internship_id);
   const payments = await getStudentCertificatePayments(studentId, primaryEnrollment.id);
-  const currentPayment = payments.length > 0 ? payments[0] : null;
+  // Prefer an actionable pending payment, then an approved payment; a later rejected
+  // attempt must not hide an earlier approved payment from the student dashboard.
+  const currentPayment =
+    payments.find((payment) => payment.status === 'pending') ||
+    payments.find((payment) => payment.status === 'approved') ||
+    payments[0] ||
+    null;
   const certificate = await getCertificateForEnrollment(primaryEnrollment.id, studentId);
 
   return {
@@ -302,20 +308,16 @@ export async function submitCertificatePayment({
   receiptPath?: string;
   receiptName?: string;
 }): Promise<{ success: boolean; error?: string; payment?: CertificatePayment }> {
-  let finalAmount = amount;
-  let finalCurrency = currency;
-  try {
-    const settings = await getCertificateSettings(internshipId);
-    if (settings && typeof settings.price === 'number') {
-      finalAmount = settings.price;
-      finalCurrency = settings.currency || 'AZN';
-    }
-  } catch (settErr) {
-    console.warn('Could not derive price from settings, using provided:', settErr);
+  // Never trust a client-supplied amount. Payment is available only when the
+  // administrator has enabled certificate issuance for this internship.
+  const settings = await getCertificateSettings(internshipId);
+  if (!settings || !settings.is_enabled) {
+    return { success: false, error: 'Bu təcrübə proqramı üçün sertifikat ödənişi hazırda aktiv deyil.' };
   }
-
-  if (typeof finalAmount !== 'number' || finalAmount < 0) {
-    finalAmount = 0;
+  const finalAmount = Number(settings.price);
+  const finalCurrency = (settings.currency || 'AZN').trim();
+  if (!Number.isFinite(finalAmount) || finalAmount < 0 || !finalCurrency) {
+    return { success: false, error: 'Sertifikat ödəniş parametrləri düzgün deyil. Administratorla əlaqə saxlayın.' };
   }
 
   let finalReceiptPath = receiptPath || '';
@@ -360,6 +362,26 @@ export async function submitCertificatePayment({
     if (!finalReceiptPath) {
       return { success: false, error: 'Zəhmət olmasa ödəniş qəbzini yükləyin.' };
     }
+    if (!finalReceiptPath.startsWith(`${studentId}/`)) {
+      return { success: false, error: 'Qəbz faylının yolu bu tələbəyə aid deyil.' };
+    }
+
+    // An approved payment already satisfies the payment requirement; do not create
+    // duplicate payment requests after approval.
+    const { data: existingApproved, error: approvedLookupError } = await supabase
+      .from('certificate_payments')
+      .select('id')
+      .eq('student_id', studentId)
+      .eq('enrollment_id', enrollmentId)
+      .eq('status', 'approved')
+      .maybeSingle();
+
+    if (approvedLookupError) {
+      return { success: false, error: approvedLookupError.message };
+    }
+    if (existingApproved) {
+      return { success: false, error: 'Bu təcrübə üçün sertifikat ödənişi artıq təsdiqlənib.' };
+    }
 
     // Check existing pending payment
     const { data: existingPending } = await supabase
@@ -373,9 +395,9 @@ export async function submitCertificatePayment({
     if (existingPending) {
       const { data: updated, error: updateError } = await supabase
         .from('certificate_payments')
+        // Keep the original amount/currency for an already-pending request. Students
+        // may replace its receipt, but cannot alter the financial terms.
         .update({
-          amount: finalAmount,
-          currency: finalCurrency,
           receipt_path: finalReceiptPath,
           updated_at: new Date().toISOString(),
         })
@@ -580,7 +602,12 @@ export async function getCertificateCandidates(): Promise<CertificateCandidate[]
 
   for (const p of payments) {
     const existingCert = certs.find((c) => c.enrollment_id === p.enrollment_id && c.status === 'issued');
-    if (!existingCert && p.internship && p.student && p.enrollment) {
+    if (
+      !existingCert &&
+      p.enrollment?.status === 'completed' &&
+      p.internship &&
+      p.student
+    ) {
       candidates.push({
         enrollment: p.enrollment,
         student: p.student,
@@ -700,8 +727,14 @@ export async function issueCertificate({
   certificateFile?: File | null;
   certificateFilePath?: string;
 }): Promise<{ success: boolean; error?: string; certificate?: Certificate }> {
-  let finalPath = certificateFilePath || '';
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
+  }
+  if (!studentId || !internshipId || !enrollmentId || !studentName.trim() || !internshipTitle.trim()) {
+    return { success: false, error: 'Tələbə, təcrübə və sertifikat məlumatları tam doldurulmalıdır.' };
+  }
 
+  let finalPath = certificateFilePath || '';
   if (certificateFile) {
     const uploadRes = await uploadCertificatePdf(studentId, enrollmentId, certificateFile);
     if (!uploadRes.success) {
@@ -709,21 +742,20 @@ export async function issueCertificate({
     }
     finalPath = uploadRes.filePath || '';
   }
-
   if (!finalPath) {
     return { success: false, error: 'Zəhmət olmasa tərtib edilmiş sertifikat PDF faylını yükləyin.' };
   }
-
-  if (!isSupabaseConfigured()) {
-    return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
+  if (!finalPath.startsWith(`${studentId}/`)) {
+    return { success: false, error: 'Sertifikat faylının yolu tələbəyə uyğun deyil.' };
   }
 
   const supabase = createClient();
   if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
   try {
-    // 1. Primary: Invoke the atomic secure database RPC
-    const { data: rpcData, error: rpcError } = await supabase.rpc('issue_certificate_secure', {
+    // Certificate issuance must always go through the database-side authorization
+    // and payment/completion checks. Never fall back to direct table writes.
+    const { data, error } = await supabase.rpc('issue_certificate_secure', {
       p_enrollment_id: enrollmentId,
       p_student_id: studentId,
       p_internship_id: internshipId,
@@ -732,92 +764,21 @@ export async function issueCertificate({
       p_certificate_file_path: finalPath,
     });
 
-    if (!rpcError && rpcData) {
-      const certRecord = typeof rpcData === 'string' ? JSON.parse(rpcData) : rpcData;
-      return { success: true, certificate: certRecord as Certificate };
-    }
-
-    if (rpcError && rpcError.message && !rpcError.message.includes('function') && !rpcError.message.includes('not found')) {
-      return { success: false, error: rpcError.message };
-    }
-
-    // 2. Direct database query fallback
-    const { data: enrollmentData, error: enrollError } = await supabase
-      .from('enrollments')
-      .select('id, status, student_id, internship_id')
-      .eq('id', enrollmentId)
-      .single();
-
-    if (enrollError || !enrollmentData) {
-      return { success: false, error: 'Təcrübəçi qeydiyyatı tapılmadı.' };
-    }
-
-    if (enrollmentData.status !== 'completed') {
-      return { success: false, error: 'Sertifikat yalnız tamamlanmış təcrübə proqramı üçün verilə bilər.' };
-    }
-
-    const { data: approvedPayment } = await supabase
-      .from('certificate_payments')
-      .select('id, status')
-      .eq('enrollment_id', enrollmentId)
-      .eq('status', 'approved')
-      .maybeSingle();
-
-    if (!approvedPayment) {
-      return { success: false, error: 'Sertifikat yalnız təsdiqlənmiş ödənişdən sonra verilə bilər.' };
-    }
-
-    const { data: existing } = await supabase
-      .from('certificates')
-      .select('id, certificate_id')
-      .eq('enrollment_id', enrollmentId)
-      .maybeSingle();
-
-    if (existing) {
-      const { data: updated, error: updateErr } = await supabase
-        .from('certificates')
-        .update({
-          student_name: studentName.trim(),
-          internship_title: internshipTitle.trim(),
-          certificate_file_path: finalPath,
-          status: 'issued',
-          issued_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', existing.id)
-        .select('*, student:profiles!certificates_student_id_fkey(*), internship:internships(*)')
-        .single();
-
-      if (updateErr) {
-        return { success: false, error: updateErr.message };
-      }
-      return { success: true, certificate: updated as Certificate };
-    }
-
-    const generatedId = generateCertificateId();
-    const payload = {
-      certificate_id: generatedId,
-      student_id: studentId,
-      internship_id: internshipId,
-      enrollment_id: enrollmentId,
-      student_name: studentName.trim(),
-      internship_title: internshipTitle.trim(),
-      issued_at: new Date().toISOString(),
-      certificate_file_path: finalPath,
-      status: 'issued',
-    };
-
-    const { data, error } = await supabase
-      .from('certificates')
-      .insert(payload)
-      .select('*, student:profiles!certificates_student_id_fkey(*), internship:internships(*)')
-      .single();
-
     if (error) {
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error.message || 'Sertifikat verilməsi üçün təhlükəsiz yoxlama uğursuz oldu.',
+      };
+    }
+    if (!data) {
+      return { success: false, error: 'Verilənlər bazası sertifikat qeydi qaytarmadı.' };
     }
 
-    return { success: true, certificate: data as Certificate };
+    const certificate = (Array.isArray(data) ? data[0] : data) as Certificate;
+    if (!certificate?.certificate_id || certificate.status !== 'issued') {
+      return { success: false, error: 'Sertifikat qeydi yaradıldı, lakin cavabın statusu təsdiqlənmədi.' };
+    }
+    return { success: true, certificate };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Sertifikat tərtib edilərkən xəta baş verdi.';
     return { success: false, error: msg };
@@ -831,6 +792,9 @@ export async function revokeCertificate(
   idOrCertId: string,
   adminNote?: string
 ): Promise<{ success: boolean; error?: string }> {
+  if (!idOrCertId) {
+    return { success: false, error: 'Sertifikat ID-si qeyd edilməyib.' };
+  }
   if (!isSupabaseConfigured()) {
     return { success: false, error: 'Verilənlər bazası konfiqurasiya edilməyib.' };
   }
@@ -839,27 +803,13 @@ export async function revokeCertificate(
   if (!supabase) return { success: false, error: 'Verilənlər bazası əlçatan deyil.' };
 
   try {
-    const { data: rpcData, error: rpcErr } = await supabase.rpc('revoke_certificate_secure', {
+    // No direct-update fallback: revocation must pass the admin-only RPC.
+    const { data, error } = await supabase.rpc('revoke_certificate_secure', {
       p_certificate_id: idOrCertId,
       p_admin_note: adminNote || null,
     });
-
-    if (!rpcErr && rpcData) {
-      return { success: true };
-    }
-
-    const { error } = await supabase
-      .from('certificates')
-      .update({
-        status: 'revoked',
-        updated_at: new Date().toISOString(),
-      })
-      .or(`id.eq.${idOrCertId},certificate_id.eq.${idOrCertId}`);
-
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) return { success: false, error: error.message };
+    if (!data) return { success: false, error: 'Sertifikatın ləğvi təsdiqlənmədi.' };
     return { success: true };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Sertifikat ləğv edilərkən xəta baş verdi.';
