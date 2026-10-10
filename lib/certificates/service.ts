@@ -11,7 +11,7 @@ import { getStudentEnrollments } from '@/lib/enrollments/service';
 import { getAllTasksForInternship } from '@/lib/tasks/service';
 import { getStudentSubmissionsForEnrollment } from '@/lib/submissions/service';
 
-// Generate unique standardized certificate ID (e.g. AZ-INT-2026-7A9B)
+// Generate unique standardized certificate ID (e.g. AZ-INT-2026-7A9B-C3D5)
 export function generateCertificateId(): string {
   const year = new Date().getFullYear();
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
