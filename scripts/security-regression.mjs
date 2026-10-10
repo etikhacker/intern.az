@@ -83,6 +83,11 @@ assert.match(ownershipFixMigration, /p\.user_id = \(SELECT auth\.uid\(\)\)/);
 assert.match(ownershipFixMigration, /students cannot change submission review fields/);
 assert.match(ownershipFixMigration, /certificate payment amount\/currency does not match current settings/);
 assert.match(ownershipFixMigration, /SECURITY DEFINER[\s\S]{0,80}SET search_path = public[\s\S]{0,120}FROM public\.certificates/);
+const certificateTaskGateMigration = await read('supabase/migrations/20261010000002_require_approved_tasks_for_certificates.sql');
+assert.match(certificateTaskGateMigration, /all required tasks must be approved before certificate payment/);
+assert.match(certificateTaskGateMigration, /all required tasks must be approved before certificate issuance/);
+assert.match(certificateTaskGateMigration, /submission file path must belong to the student/);
+
 
 assert.match(tasks, /\.eq\('internship_id', internshipId\)/);
 assert.match(tasks, /if \(error\)/);
