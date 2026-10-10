@@ -240,12 +240,22 @@ export async function uploadReceiptFile(
   file: File
 ): Promise<{ success: boolean; error?: string; filePath?: string; fileName?: string }> {
   const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
-  const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  const ext = file.name.split('.').pop()?.toLowerCase() || '';
   if (!allowedExtensions.includes(ext)) {
     return {
       success: false,
       error: 'Yalnız JPG, JPEG, PNG, WEBP və PDF fayl formatları qəbul edilir.',
     };
+  }
+  const expectedMime: Record<string, string> = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    pdf: 'application/pdf',
+  };
+  if (file.type && file.type !== expectedMime[ext]) {
+    return { success: false, error: 'Faylın formatı ilə uzantısı uyğun gəlmir.' };
   }
 
   if (file.size > 10 * 1024 * 1024) {
@@ -348,6 +358,21 @@ export async function submitCertificatePayment({
 
     if (enrollmentData.student_id !== studentId || enrollmentData.internship_id !== internshipId) {
       return { success: false, error: 'Təcrübəçi qeydiyyatı ilə göndərilən tələbə/proqram məlumatları uyğun gəlmir.' };
+    }
+
+    // Verify the actual required-task approvals before uploading a receipt. This
+    // avoids orphaned uploads when a record was manually marked completed.
+    const tasks = await getAllTasksForInternship(internshipId, false);
+    if (tasks.length === 0) {
+      return { success: false, error: 'Tapşırıq siyahısı yoxlanıla bilmədi. Bir qədər sonra yenidən cəhd edin.' };
+    }
+    const requiredTasks = tasks.filter((task) => task.is_required && task.status === 'published');
+    const submissions = await getStudentSubmissionsForEnrollment(studentId, enrollmentId);
+    const allRequiredApproved = requiredTasks.every((task) =>
+      submissions.some((submission) => submission.task_id === task.id && submission.status === 'approved')
+    );
+    if (!allRequiredApproved) {
+      return { success: false, error: 'Sertifikat ödənişindən əvvəl bütün məcburi tapşırıqlar mentor tərəfindən təsdiqlənməlidir.' };
     }
 
     if (receiptFile) {
