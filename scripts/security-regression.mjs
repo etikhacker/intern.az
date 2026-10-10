@@ -236,6 +236,14 @@ for (const [name, sidebar] of [
   assert.match(sidebar, /sticky top-0/, `${name} sidebar: not pinned inside the shell`);
 }
 
+
+const storageOverwriteMigration = await read('supabase/migrations/20261010105000_restrict_student_storage_overwrites.sql');
+assert.match(storageOverwriteMigration, /CREATE POLICY task_files_update[\s\S]*private\.is_admin\(\)/);
+assert.match(storageOverwriteMigration, /CREATE POLICY certificate_payment_files_update[\s\S]*private\.is_admin\(\)/);
+assert.doesNotMatch(storageOverwriteMigration, /p\.user_id\s*=\s*\(?SELECT auth\.uid/);
+assert.match(submissions, /\.from\('task-submissions'\)[\s\S]{0,120}upsert: false/);
+assert.match(certificates, /\.from\('certificate-payments'\)[\s\S]{0,120}upsert: false/);
+
 console.log('security regression checks: passed');
 console.log('layout regression checks: passed');
 console.log('theme regression checks: passed');

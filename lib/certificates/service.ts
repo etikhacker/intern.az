@@ -280,7 +280,7 @@ export async function uploadReceiptFile(
       .from('certificate-payments')
       .upload(path, file, {
         cacheControl: '3600',
-        upsert: true,
+        upsert: false,
       });
 
     if (error) {
