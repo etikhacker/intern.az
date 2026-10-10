@@ -28,23 +28,17 @@ export default function AdminCompletedInternshipsPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const loadRows = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
+  const fetchRows = useCallback(async (): Promise<{
+    rows: CompletedEnrollment[];
+    error: string | null;
+  }> => {
     if (!isSupabaseConfigured()) {
-      setRows([]);
-      setError('Supabase konfiqurasiya edilməyib.');
-      setLoading(false);
-      return;
+      return { rows: [], error: 'Supabase konfiqurasiya edilməyib.' };
     }
 
     const supabase = createClient();
     if (!supabase) {
-      setRows([]);
-      setError('Verilənlər bazası ilə əlaqə qurulmadı.');
-      setLoading(false);
-      return;
+      return { rows: [], error: 'Verilənlər bazası ilə əlaqə qurulmadı.' };
     }
 
     const { data, error: queryError } = await supabase
@@ -54,17 +48,54 @@ export default function AdminCompletedInternshipsPage() {
       .order('completed_at', { ascending: false });
 
     if (queryError) {
-      setRows([]);
-      setError('Tamamlanmış təcrübələr yüklənmədi. İcazələri və verilənlər bazası bağlantısını yoxlayın.');
-    } else {
-      setRows((data || []) as unknown as CompletedEnrollment[]);
+      return {
+        rows: [],
+        error: 'Tamamlanmış təcrübələr yüklənmədi. İcazələri və verilənlər bazası bağlantısını yoxlayın.',
+      };
     }
-    setLoading(false);
+
+    return { rows: (data || []) as unknown as CompletedEnrollment[], error: null };
   }, []);
 
+  const loadRows = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetchRows();
+      setRows(result.rows);
+      setError(result.error);
+    } catch {
+      setRows([]);
+      setError('Məlumatlar yüklənərkən gözlənilməz xəta baş verdi.');
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchRows]);
+
   useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
+    let cancelled = false;
+
+    // fetchRows resolves asynchronously; state updates happen after the request completes.
+    void fetchRows()
+      .then((result) => {
+        if (cancelled) return;
+        setRows(result.rows);
+        setError(result.error);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setRows([]);
+        setError('Məlumatlar yüklənərkən gözlənilməz xəta baş verdi.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchRows]);
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLocaleLowerCase();
