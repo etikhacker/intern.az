@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { extractLocalizedTaskText } from '@/lib/tasks/content.mjs';
+import { getLocalizedTaskTitle } from '@/lib/tasks/localized-title.mjs';
 import { TaskInstructionArticle } from '@/components/tasks/instruction-article.mjs';
 import { getStudentActiveEnrollment } from '@/lib/enrollments/service';
 import { getTaskById } from '@/lib/tasks/service';
@@ -341,7 +342,7 @@ export default function StudentTaskDetailPage({
 
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            {task.title}
+            {getLocalizedTaskTitle(task.title, isAz ? 'az' : 'en')}
           </h1>
           <p className="text-[15px] sm:text-base text-slate-600 leading-7 mt-2 max-w-3xl whitespace-pre-wrap">
             {taskDescription}
