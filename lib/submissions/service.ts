@@ -141,13 +141,22 @@ export async function submitTaskSolution({
       resolvedFileName = uploadRes.fileName || null;
     }
 
-    // Check existing submission
-    const { data: existing } = await supabase
+    // Fetch the current row so a text-only resubmission does not erase its existing file.
+    const { data: existing, error: existingError } = await supabase
       .from('task_submissions')
-      .select('id')
+      .select('id, file_path, file_name')
       .eq('task_id', taskId)
       .eq('student_id', studentId)
       .maybeSingle();
+
+    if (existingError) {
+      return { success: false, error: existingError.message };
+    }
+
+    if (!file && !filePath && existing) {
+      resolvedFilePath = existing.file_path || null;
+      resolvedFileName = existing.file_name || null;
+    }
 
     const payload = {
       task_id: taskId,
@@ -341,9 +350,9 @@ export async function uploadSubmissionFile(
   taskId: string,
   file: File
 ): Promise<{ success: boolean; filePath?: string; fileName?: string; error?: string }> {
-  // Max size 15MB
-  if (file.size > 15 * 1024 * 1024) {
-    return { success: false, error: 'Faylın həcmi 15MB-dan çox ola bilməz.' };
+  // Keep the server-side limit aligned with the student form and storage bucket.
+  if (file.size > 10 * 1024 * 1024) {
+    return { success: false, error: 'Faylın həcmi 10MB-dan çox ola bilməz.' };
   }
 
   if (!isSupabaseConfigured()) {
