@@ -74,6 +74,7 @@ export default function StudentTaskDetailPage({
   const [textAnswer, setTextAnswer] = useState('');
   const [comment, setComment] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
@@ -666,11 +667,40 @@ export default function StudentTaskDetailPage({
                     <Upload className="w-3.5 h-3.5 text-amber-600" />
                     <span>{isAz ? 'Fayl Yükləyin (ZIP, PDF, PNG və s.)' : 'Upload Solution File'}</span>
                   </Label>
-                  <div className="p-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-center hover:bg-slate-100/60 transition-colors">
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDraggingFile(true);
+                    }}
+                    onDragLeave={() => setIsDraggingFile(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDraggingFile(false);
+                      const dropped = e.dataTransfer.files?.[0] || null;
+                      if (!dropped) return;
+                      if (dropped.size > 10 * 1024 * 1024) {
+                        setFormError(isAz ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
+                        return;
+                      }
+                      setFile(dropped);
+                      setFormError(null);
+                    }}
+                    className={`p-4 border-2 border-dashed rounded-xl text-center transition-colors ${isDraggingFile ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/60'}`}
+                  >
                     <input
                       id="file"
                       type="file"
-                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      onChange={(e) => {
+                        const selected = e.target.files?.[0] || null;
+                        if (selected && selected.size > 10 * 1024 * 1024) {
+                          setFile(null);
+                          setFormError(isAz ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
+                          e.currentTarget.value = '';
+                          return;
+                        }
+                        setFile(selected);
+                        setFormError(null);
+                      }}
                       className="hidden"
                     />
                     <label htmlFor="file" className="cursor-pointer block space-y-1.5">

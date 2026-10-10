@@ -188,7 +188,13 @@ export async function checkAndUpdateEnrollmentCompletion(
 
     if (!error && data) {
       const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-      return { completed: !!parsed.completed || !!parsed.already_completed };
+      const row = Array.isArray(parsed) ? parsed[0] : parsed;
+      return {
+        completed:
+          row?.status === 'completed' ||
+          !!row?.completed ||
+          !!row?.already_completed,
+      };
     }
     return { completed: false };
   } catch (err: unknown) {

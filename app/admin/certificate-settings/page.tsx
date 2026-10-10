@@ -41,7 +41,7 @@ export default function AdminCertificateSettingsPage() {
   const [editingInternship, setEditingInternship] = useState<Internship | null>(null);
   const [price, setPrice] = useState<number>(25);
   const [currency, setCurrency] = useState<string>('AZN');
-  const [cardNumber, setCardNumber] = useState<string>('4169 7388 9012 3456');
+  const [cardNumber, setCardNumber] = useState<string>('');
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -99,7 +99,7 @@ export default function AdminCertificateSettingsPage() {
     } else {
       setPrice(25);
       setCurrency('AZN');
-      setCardNumber('4169 7388 9012 3456');
+      setCardNumber('');
       setIsEnabled(true);
     }
     setErrorMsg(null);
@@ -154,7 +154,17 @@ export default function AdminCertificateSettingsPage() {
     const newEnabledState = currentSetting ? !currentSetting.is_enabled : true;
     const curPrice = currentSetting ? currentSetting.price : 25;
     const curCurr = currentSetting ? currentSetting.currency : 'AZN';
-    const curCard = currentSetting ? currentSetting.card_number : '4169 7388 9012 3456';
+    const curCard = currentSetting ? currentSetting.card_number : '';
+
+    if (newEnabledState && !curCard.trim()) {
+      setEditingInternship(internship);
+      setPrice(curPrice);
+      setCurrency(curCurr);
+      setCardNumber('');
+      setIsEnabled(true);
+      setErrorMsg('Sertifikat ödənişini aktiv etməzdən əvvəl real ödəniş kartı və ya köçürmə məlumatını daxil edin.');
+      return;
+    }
 
     try {
       await saveCertificateSettings({
