@@ -370,7 +370,7 @@ export async function uploadSubmissionFile(
       .from('task-submissions')
       .upload(path, file, {
         cacheControl: '3600',
-        upsert: true,
+        upsert: false,
       });
 
     if (error) {
