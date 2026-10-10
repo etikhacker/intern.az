@@ -127,7 +127,7 @@ export async function submitTaskSolution({
     if (
       enrollment.student_id !== studentId ||
       enrollment.internship_id !== task.internship_id ||
-      enrollment.status === 'cancelled'
+      enrollment.status !== 'active'
     ) {
       return { success: false, error: 'Bu tapşırıq üçün təqdimat göndərmək icazəniz yoxdur.' };
     }
