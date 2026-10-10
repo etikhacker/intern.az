@@ -1,15 +1,23 @@
--- Data-only curriculum refresh for intern.az.
--- Updates only description, instructions, and week_number on 80 existing published tasks.
--- Every block checks its exact source row count and checks target collisions against the production UNIQUE key.
+-- Idempotent data-only curriculum refresh for intern.az.
+-- Match tasks by internship slug + stable task_number; earlier migrations may
+-- already have changed week_number, so old week numbers must not be used as keys.
+-- Verifies all 80 published tasks and target positions before updating content.
 BEGIN;
 
-DO $curriculum_applied_ai_engineering_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_applied_ai_engineering_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_applied_ai_engineering_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('applied-ai-engineering', 1, 1, 1, $applied_ai_engineering_1_desc_1$[[AZ]]
+CREATE TEMP TABLE curriculum_refresh_patch (
+  slug TEXT NOT NULL,
+  task_number INTEGER NOT NULL,
+  week_number INTEGER NOT NULL,
+  description TEXT NOT NULL,
+  instructions TEXT NOT NULL,
+  PRIMARY KEY (slug, task_number),
+  UNIQUE (slug, week_number, task_number)
+) ON COMMIT DROP;
+
+INSERT INTO pg_temp.curriculum_refresh_patch
+  (slug, task_number, week_number, description, instructions)
+VALUES
+  ("applied-ai-engineering", 1, 1, $applied_ai_engineering_1_desc_1$[[AZ]]
 Təkrarlana bilən prompt şablonu qur və onun qeyri-müəyyən girişlərdə necə davranacağını yoxla.
 
 [[EN]]
@@ -90,7 +98,7 @@ Submit a GitHub repository link with a README and the results table.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_1_inst_1$),
-  ('applied-ai-engineering', 3, 2, 2, $applied_ai_engineering_1_desc_2$[[AZ]]
+  ("applied-ai-engineering", 2, 2, $applied_ai_engineering_1_desc_2$[[AZ]]
 Sintetik daxili qaydalar toplusu üzrə mənbə göstərən sual-cavab prototipi qur.
 
 [[EN]]
@@ -171,7 +179,7 @@ Submit a GitHub repository link, README, and test table.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_1_inst_2$),
-  ('applied-ai-engineering', 4, 5, 3, $applied_ai_engineering_1_desc_3$[[AZ]]
+  ("applied-ai-engineering", 5, 3, $applied_ai_engineering_1_desc_3$[[AZ]]
 Prompt-un hansı hallarda sıradan çıxdığını ölç və düzəlişləri riskə görə prioritetləşdir.
 
 [[EN]]
@@ -252,7 +260,7 @@ Submit a repository or report file containing both prompts and the test table.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_1_inst_3$),
-  ('applied-ai-engineering', 4, 6, 4, $applied_ai_engineering_1_desc_4$[[AZ]]
+  ("applied-ai-engineering", 6, 4, $applied_ai_engineering_1_desc_4$[[AZ]]
 Alət çağırışını sxemlə məhdudlaşdır, girişləri yoxla və alət xətalarını idarə et.
 
 [[EN]]
@@ -332,25 +340,8 @@ Schema 30, validation 25, error handling 25, tests and README 20 points.
 Add the code and README to a GitHub repository.
 
 ## Estimated time
-5-7 hours.$applied_ai_engineering_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_applied_ai_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'applied-ai-engineering batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_applied_ai_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'applied-ai-engineering batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_applied_ai_engineering_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'applied-ai-engineering batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_applied_ai_engineering_1;
-END
-$curriculum_applied_ai_engineering_1$;
-
-DO $curriculum_applied_ai_engineering_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_applied_ai_engineering_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_applied_ai_engineering_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('applied-ai-engineering', 5, 3, 5, $applied_ai_engineering_2_desc_1$[[AZ]]
+5-7 hours.$applied_ai_engineering_1_inst_4$),
+  ("applied-ai-engineering", 3, 5, $applied_ai_engineering_2_desc_1$[[AZ]]
 Kiçik etalon dəstində AI cavab keyfiyyətini ölç və qərarını rəqəmlə əsaslandır.
 
 [[EN]]
@@ -431,7 +422,7 @@ Attach the table and report as PDF/Markdown or in a repository.
 
 ## Estimated time
 4-6 hours.$applied_ai_engineering_2_inst_1$),
-  ('applied-ai-engineering', 5, 7, 5, $applied_ai_engineering_2_desc_2$[[AZ]]
+  ("applied-ai-engineering", 7, 5, $applied_ai_engineering_2_desc_2$[[AZ]]
 Axtarış keyfiyyətini ölçərək RAG prototipində uyğun mənbələrin tapılmasını yaxşılaşdır.
 
 [[EN]]
@@ -512,7 +503,7 @@ Submit a repository or report file with the source-results table.
 
 ## Estimated time
 5-7 hours.$applied_ai_engineering_2_inst_2$),
-  ('applied-ai-engineering', 5, 8, 5, $applied_ai_engineering_2_desc_3$[[AZ]]
+  ("applied-ai-engineering", 8, 5, $applied_ai_engineering_2_desc_3$[[AZ]]
 Prompt injection və həssas məlumat sızması risklərinə qarşı yoxlanıla bilən AI qoruyucuları qur.
 
 [[EN]]
@@ -593,7 +584,7 @@ Submit a GitHub repository, README, and test results; never use real secrets.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_2_inst_3$),
-  ('applied-ai-engineering', 6, 9, 6, $applied_ai_engineering_2_desc_4$[[AZ]]
+  ("applied-ai-engineering", 9, 6, $applied_ai_engineering_2_desc_4$[[AZ]]
 Süni sorğu izində token xərci və cavab gecikməsini ölç, sonra optimallaşdırmanı sın.
 
 [[EN]]
@@ -673,25 +664,8 @@ Measurement accuracy 35, fair comparison 25, quality control 25, recommendation 
 Provide the table/script and report in a repository or file.
 
 ## Estimated time
-4-6 hours.$applied_ai_engineering_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_applied_ai_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'applied-ai-engineering batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_applied_ai_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'applied-ai-engineering batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_applied_ai_engineering_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'applied-ai-engineering batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_applied_ai_engineering_2;
-END
-$curriculum_applied_ai_engineering_2$;
-
-DO $curriculum_applied_ai_engineering_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_applied_ai_engineering_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_applied_ai_engineering_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('applied-ai-engineering', 6, 10, 7, $applied_ai_engineering_3_desc_1$[[AZ]]
+4-6 hours.$applied_ai_engineering_2_inst_4$),
+  ("applied-ai-engineering", 10, 7, $applied_ai_engineering_3_desc_1$[[AZ]]
 AI prototipini başqa mühəndisin işə sala biləcəyi təhlükəsiz və ölçülə bilən handoff paketinə çevir.
 
 [[EN]]
@@ -772,7 +746,7 @@ Submit the GitHub repository and a short handoff video or report.
 
 ## Estimated time
 6-8 hours.$applied_ai_engineering_3_inst_1$),
-  ('applied-ai-engineering', 8, 4, 8, $applied_ai_engineering_3_desc_2$[[AZ]]
+  ("applied-ai-engineering", 4, 8, $applied_ai_engineering_3_desc_2$[[AZ]]
 Kiçik, istifadəçiyə yönəlmiş AI funksiyasını tələbdən ölçülən nəticəyə qədər tamamla.
 
 [[EN]]
@@ -852,25 +826,8 @@ User value 20, grounding 30, safety 25, tests and handoff 25 points.
 Submit the repository and demo link, or a report with screenshots.
 
 ## Estimated time
-8-12 hours.$applied_ai_engineering_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_applied_ai_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'applied-ai-engineering batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_applied_ai_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'applied-ai-engineering batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_applied_ai_engineering_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'applied-ai-engineering batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_applied_ai_engineering_3;
-END
-$curriculum_applied_ai_engineering_3$;
-
-DO $curriculum_automation_engineering_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_automation_engineering_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_automation_engineering_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('automation-engineering', 1, 1, 1, $automation_engineering_1_desc_1$[[AZ]]
+8-12 hours.$applied_ai_engineering_3_inst_2$),
+  ("automation-engineering", 1, 1, $automation_engineering_1_desc_1$[[AZ]]
 Əl ilə görülən təcrübə müraciəti prosesini xəritələ və avtomatlaşdırma sərhədlərini müəyyən et.
 
 [[EN]]
@@ -949,7 +906,7 @@ Submit the diagram as PDF/PNG or Mermaid/BPMN source in a repository.
 
 ## Estimated time
 3-5 hours.$automation_engineering_1_inst_1$),
-  ('automation-engineering', 2, 2, 2, $automation_engineering_1_desc_2$[[AZ]]
+  ("automation-engineering", 2, 2, $automation_engineering_1_desc_2$[[AZ]]
 Webhook qəbul edib yoxlanılan məlumatı idarə olunan workflow-a ötür.
 
 [[EN]]
@@ -1028,7 +985,7 @@ Submit a GitHub repository and workflow export, or a report with screenshots.
 
 ## Estimated time
 5-7 hours.$automation_engineering_1_inst_2$),
-  ('automation-engineering', 4, 3, 4, $automation_engineering_1_desc_3$[[AZ]]
+  ("automation-engineering", 3, 4, $automation_engineering_1_desc_3$[[AZ]]
 Uğursuz addımları idempotent retry, gecikmə və monitorinq ilə bərpa et.
 
 [[EN]]
@@ -1107,7 +1064,7 @@ Submit the repository, test results, and runbook.
 
 ## Estimated time
 4-6 hours.$automation_engineering_1_inst_3$),
-  ('automation-engineering', 4, 5, 3, $automation_engineering_1_desc_4$[[AZ]]
+  ("automation-engineering", 5, 3, $automation_engineering_1_desc_4$[[AZ]]
 Müxtəlif form girişlərini daxili vahid JSON modelinə çevir və keyfiyyət səhvlərini üzə çıxar.
 
 [[EN]]
@@ -1185,25 +1142,8 @@ Mapping 25, normalization 30, invalid-row handling 25, tests/audit 20 points.
 Submit a workflow export or repository plus the results table.
 
 ## Estimated time
-4-6 hours.$automation_engineering_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_automation_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'automation-engineering batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_automation_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'automation-engineering batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_automation_engineering_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'automation-engineering batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_automation_engineering_1;
-END
-$curriculum_automation_engineering_1$;
-
-DO $curriculum_automation_engineering_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_automation_engineering_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_automation_engineering_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('automation-engineering', 4, 6, 4, $automation_engineering_2_desc_1$[[AZ]]
+4-6 hours.$automation_engineering_1_inst_4$),
+  ("automation-engineering", 6, 4, $automation_engineering_2_desc_1$[[AZ]]
 Xarici API ilə limit, timeout və auth davranışı nəzərə alınmış inteqrasiya workflow-u qur.
 
 [[EN]]
@@ -1282,7 +1222,7 @@ Submit a GitHub repository and integration-test table.
 
 ## Estimated time
 5-7 hours.$automation_engineering_2_inst_1$),
-  ('automation-engineering', 5, 7, 5, $automation_engineering_2_desc_2$[[AZ]]
+  ("automation-engineering", 7, 5, $automation_engineering_2_desc_2$[[AZ]]
 Vaxt zonası, duplicate run və missed execution halları olan etibarlı schedule workflow qur.
 
 [[EN]]
@@ -1361,7 +1301,7 @@ Submit a workflow export/repository and test table.
 
 ## Estimated time
 4-6 hours.$automation_engineering_2_inst_2$),
-  ('automation-engineering', 5, 8, 5, $automation_engineering_2_desc_3$[[AZ]]
+  ("automation-engineering", 8, 5, $automation_engineering_2_desc_3$[[AZ]]
 Bildiriş seçimlərini, template-ləri və uğursuz göndərişləri idarə edən notification flow qur.
 
 [[EN]]
@@ -1440,7 +1380,7 @@ Submit a GitHub repository, template preview, and test results.
 
 ## Estimated time
 5-7 hours.$automation_engineering_2_inst_3$),
-  ('automation-engineering', 6, 4, 6, $automation_engineering_2_desc_4$[[AZ]]
+  ("automation-engineering", 4, 6, $automation_engineering_2_desc_4$[[AZ]]
 Avtomatlaşdırma üçün biznes axınını başdan sona qur, risk və human-in-the-loop nöqtələrini göstər.
 
 [[EN]]
@@ -1518,25 +1458,8 @@ Flow integrity 25, safe approval 30, exception recovery 25, case study 20 points
 Submit a repository/export, diagram, and short demo or report.
 
 ## Estimated time
-8-10 hours.$automation_engineering_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_automation_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'automation-engineering batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_automation_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'automation-engineering batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_automation_engineering_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'automation-engineering batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_automation_engineering_2;
-END
-$curriculum_automation_engineering_2$;
-
-DO $curriculum_automation_engineering_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_automation_engineering_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_automation_engineering_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('automation-engineering', 6, 9, 6, $automation_engineering_3_desc_1$[[AZ]]
+8-10 hours.$automation_engineering_2_inst_4$),
+  ("automation-engineering", 9, 6, $automation_engineering_3_desc_1$[[AZ]]
 Workflow-lar üçün əməliyyat KPI-ları müəyyən et və alert hədlərini əsaslandır.
 
 [[EN]]
@@ -1615,7 +1538,7 @@ Submit a dashboard demo and metric explanation in a repository or report.
 
 ## Estimated time
 4-6 hours.$automation_engineering_3_inst_1$),
-  ('automation-engineering', 6, 10, 6, $automation_engineering_3_desc_2$[[AZ]]
+  ("automation-engineering", 10, 6, $automation_engineering_3_desc_2$[[AZ]]
 Workflow-u komanda üçün təhvil ver: quraşdırma, credential, monitorinq və bərpa addımlarını yaz.
 
 [[EN]]
@@ -1693,25 +1616,8 @@ Reproducible setup 25, secret safety 25, operations runbook 30, risk list 20 poi
 Submit a GitHub repository/export and a short handoff report.
 
 ## Estimated time
-5-7 hours.$automation_engineering_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_automation_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'automation-engineering batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_automation_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'automation-engineering batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_automation_engineering_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'automation-engineering batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_automation_engineering_3;
-END
-$curriculum_automation_engineering_3$;
-
-DO $curriculum_backend_engineering_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_backend_engineering_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_backend_engineering_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('backend-engineering', 1, 1, 1, $backend_engineering_1_desc_1$[[AZ]]
+5-7 hours.$automation_engineering_3_inst_2$),
+  ("backend-engineering", 1, 1, $backend_engineering_1_desc_1$[[AZ]]
 Tələbə layihələri üçün resurs yönümlü REST API dizayn et və müqaviləsini nümunələrlə sənədləşdir.
 
 [[EN]]
@@ -1792,7 +1698,7 @@ Submit a GitHub repository link and the OpenAPI file.
 
 ## Estimated time
 4-6 hours.$backend_engineering_1_inst_1$),
-  ('backend-engineering', 2, 2, 2, $backend_engineering_1_desc_2$[[AZ]]
+  ("backend-engineering", 2, 2, $backend_engineering_1_desc_2$[[AZ]]
 Layihə, üzv və tapşırıq məlumatları üçün normallaşdırılmış PostgreSQL modeli qur.
 
 [[EN]]
@@ -1873,7 +1779,7 @@ Submit a GitHub repository link with the migration and diagram.
 
 ## Estimated time
 5-7 hours.$backend_engineering_1_inst_2$),
-  ('backend-engineering', 4, 3, 3, $backend_engineering_1_desc_3$[[AZ]]
+  ("backend-engineering", 3, 3, $backend_engineering_1_desc_3$[[AZ]]
 Giriş və qeydiyyat endpoint-lərini input validasiyası və təhlükəsiz xəta cavabları ilə qur.
 
 [[EN]]
@@ -1954,7 +1860,7 @@ Submit a GitHub repository and test results; never commit real secrets or passwo
 
 ## Estimated time
 5-7 hours.$backend_engineering_1_inst_3$),
-  ('backend-engineering', 4, 5, 4, $backend_engineering_1_desc_4$[[AZ]]
+  ("backend-engineering", 5, 4, $backend_engineering_1_desc_4$[[AZ]]
 Böyük layihə siyahısını sabit pagination və yoxlanıla bilən filter-lərlə təqdim et.
 
 [[EN]]
@@ -2034,25 +1940,8 @@ Pagination stability 30, filter validation 25, tests 25, query efficiency 20 poi
 Submit a GitHub repository, API examples, and test results.
 
 ## Estimated time
-5-7 hours.$backend_engineering_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_backend_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'backend-engineering batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_backend_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'backend-engineering batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_backend_engineering_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'backend-engineering batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_backend_engineering_1;
-END
-$curriculum_backend_engineering_1$;
-
-DO $curriculum_backend_engineering_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_backend_engineering_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_backend_engineering_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('backend-engineering', 4, 6, 4, $backend_engineering_2_desc_1$[[AZ]]
+5-7 hours.$backend_engineering_1_inst_4$),
+  ("backend-engineering", 6, 4, $backend_engineering_2_desc_1$[[AZ]]
 Bir neçə database yazısını vahid tranzaksiyada icra et və qismən uğursuzluğu önlə.
 
 [[EN]]
@@ -2133,7 +2022,7 @@ Submit a GitHub repository and test logs.
 
 ## Estimated time
 5-7 hours.$backend_engineering_2_inst_1$),
-  ('backend-engineering', 5, 7, 5, $backend_engineering_2_desc_2$[[AZ]]
+  ("backend-engineering", 7, 5, $backend_engineering_2_desc_2$[[AZ]]
 API davranışını OpenAPI-də sənədləşdir və nümunələrdən schema-nın işlədiyini yoxla.
 
 [[EN]]
@@ -2214,7 +2103,7 @@ Submit the repository link and the OpenAPI file.
 
 ## Estimated time
 4-6 hours.$backend_engineering_2_inst_2$),
-  ('backend-engineering', 5, 8, 5, $backend_engineering_2_desc_3$[[AZ]]
+  ("backend-engineering", 8, 5, $backend_engineering_2_desc_3$[[AZ]]
 Service qatında unit və integration testləri ilə əsas backend davranışını qoruma altına al.
 
 [[EN]]
@@ -2295,7 +2184,7 @@ Submit a GitHub repository and test command.
 
 ## Estimated time
 6-8 hours.$backend_engineering_2_inst_3$),
-  ('backend-engineering', 6, 9, 6, $backend_engineering_2_desc_4$[[AZ]]
+  ("backend-engineering", 9, 6, $backend_engineering_2_desc_4$[[AZ]]
 Log və vahid xəta cavabları əlavə et ki, production problemi izlənə bilsin.
 
 [[EN]]
@@ -2375,25 +2264,8 @@ Error model 30, log usefulness 30, data minimization 25, tests 15 points.
 Submit a GitHub repository and redacted sample logs.
 
 ## Estimated time
-4-6 hours.$backend_engineering_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_backend_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'backend-engineering batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_backend_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'backend-engineering batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_backend_engineering_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'backend-engineering batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_backend_engineering_2;
-END
-$curriculum_backend_engineering_2$;
-
-DO $curriculum_backend_engineering_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_backend_engineering_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_backend_engineering_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('backend-engineering', 6, 10, 7, $backend_engineering_3_desc_1$[[AZ]]
+4-6 hours.$backend_engineering_2_inst_4$),
+  ("backend-engineering", 10, 7, $backend_engineering_3_desc_1$[[AZ]]
 Backend servisini CI, health check və konfiqurasiya yoxlamaları ilə deploy-a hazırla.
 
 [[EN]]
@@ -2474,7 +2346,7 @@ Submit a GitHub repository with CI results.
 
 ## Estimated time
 6-8 hours.$backend_engineering_3_inst_1$),
-  ('backend-engineering', 8, 4, 8, $backend_engineering_3_desc_2$[[AZ]]
+  ("backend-engineering", 4, 8, $backend_engineering_3_desc_2$[[AZ]]
 Tələblər, API və təhlükəsizlik testləri ilə tamamlanmış backend service nümunəsi təqdim et.
 
 [[EN]]
@@ -2554,25 +2426,8 @@ Requirements and model 20, implementation 30, authorization/tests 30, handoff 20
 Submit a GitHub repository and API demo, or a short report with screenshots.
 
 ## Estimated time
-8-12 hours.$backend_engineering_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_backend_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'backend-engineering batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_backend_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'backend-engineering batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_backend_engineering_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'backend-engineering batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_backend_engineering_3;
-END
-$curriculum_backend_engineering_3$;
-
-DO $curriculum_cybersecurity_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_cybersecurity_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_cybersecurity_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('cybersecurity', 1, 1, 1, $cybersecurity_1_desc_1$[[AZ]]
+8-12 hours.$backend_engineering_3_inst_2$),
+  ("cybersecurity", 1, 1, $cybersecurity_1_desc_1$[[AZ]]
 İzolyasiya olunmuş təhlükəsizlik laboratoriyası qur və onun əhatə dairəsi ilə təhlükəsiz istifadə qaydasını yaz.
 
 [[EN]]
@@ -2651,7 +2506,7 @@ Submit repository/config files and a screenshot showing the lab starts safely.
 
 ## Estimated time
 3-5 hours.$cybersecurity_1_inst_1$),
-  ('cybersecurity', 2, 2, 2, $cybersecurity_1_desc_2$[[AZ]]
+  ("cybersecurity", 2, 2, $cybersecurity_1_desc_2$[[AZ]]
 Toy web tətbiqində HTTP başlıqlarını yoxla və təhlükəsiz konfiqurasiya təklif et.
 
 [[EN]]
@@ -2730,7 +2585,7 @@ Submit a GitHub repository, header evidence, and test results.
 
 ## Estimated time
 4-5 hours.$cybersecurity_1_inst_2$),
-  ('cybersecurity', 3, 3, 3, $cybersecurity_1_desc_3$[[AZ]]
+  ("cybersecurity", 3, 3, $cybersecurity_1_desc_3$[[AZ]]
 Lokal nümunədə reflected/stored XSS riskini tanı və təhlükəsiz output encoding tətbiq et.
 
 [[EN]]
@@ -2809,7 +2664,7 @@ Submit the repository, test output, and a harmless code screenshot.
 
 ## Estimated time
 4-6 hours.$cybersecurity_1_inst_3$),
-  ('cybersecurity', 4, 4, 4, $cybersecurity_1_desc_4$[[AZ]]
+  ("cybersecurity", 4, 4, $cybersecurity_1_desc_4$[[AZ]]
 Təlim verilənlər bazasında SQL injection səbəbini parameterized query ilə aradan qaldır.
 
 [[EN]]
@@ -2887,25 +2742,8 @@ Root cause 25, parameterized fix 35, tests 25, safe scope 15 points.
 Submit the repository, test log, and short remediation report.
 
 ## Estimated time
-4-5 hours.$cybersecurity_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_cybersecurity_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'cybersecurity batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_cybersecurity_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'cybersecurity batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_cybersecurity_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'cybersecurity batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_cybersecurity_1;
-END
-$curriculum_cybersecurity_1$;
-
-DO $curriculum_cybersecurity_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_cybersecurity_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_cybersecurity_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('cybersecurity', 5, 5, 5, $cybersecurity_2_desc_1$[[AZ]]
+4-5 hours.$cybersecurity_1_inst_4$),
+  ("cybersecurity", 5, 5, $cybersecurity_2_desc_1$[[AZ]]
 Test tətbiqdə obyekt səviyyəli authorization qaydalarını yoxla və IDOR riskini bağla.
 
 [[EN]]
@@ -2984,7 +2822,7 @@ Submit a repository and pass/fail test report.
 
 ## Estimated time
 5-7 hours.$cybersecurity_2_inst_1$),
-  ('cybersecurity', 6, 6, 6, $cybersecurity_2_desc_2$[[AZ]]
+  ("cybersecurity", 6, 6, $cybersecurity_2_desc_2$[[AZ]]
 JWT qəbulunu yoxla: imza, issuer, audience, expiry və alg seçimi üzrə testlər əlavə et.
 
 [[EN]]
@@ -3063,7 +2901,7 @@ Submit a GitHub repository and test results; never commit tokens or keys.
 
 ## Estimated time
 4-6 hours.$cybersecurity_2_inst_2$),
-  ('cybersecurity', 7, 7, 7, $cybersecurity_2_desc_3$[[AZ]]
+  ("cybersecurity", 7, 7, $cybersecurity_2_desc_3$[[AZ]]
 Kiçik REST API üçün endpoint, authz, data exposure və resource limit yoxlama checklist-i qur.
 
 [[EN]]
@@ -3142,7 +2980,7 @@ Submit the checklist, test evidence, and prioritized findings report.
 
 ## Estimated time
 4-6 hours.$cybersecurity_2_inst_3$),
-  ('cybersecurity', 8, 8, 8, $cybersecurity_2_desc_4$[[AZ]]
+  ("cybersecurity", 8, 8, $cybersecurity_2_desc_4$[[AZ]]
 OWASP ZAP-ın passive scan rejimi ilə yalnız lokal toy tətbiqin response-larını yoxla.
 
 [[EN]]
@@ -3220,25 +3058,8 @@ Scope/safety 30, triage 30, remediation 20, evidence 20 points.
 Submit the ZAP summary, configuration screenshot, and fix repository.
 
 ## Estimated time
-4-5 hours.$cybersecurity_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_cybersecurity_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'cybersecurity batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_cybersecurity_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'cybersecurity batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_cybersecurity_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'cybersecurity batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_cybersecurity_2;
-END
-$curriculum_cybersecurity_2$;
-
-DO $curriculum_cybersecurity_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_cybersecurity_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_cybersecurity_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('cybersecurity', 8, 9, 8, $cybersecurity_3_desc_1$[[AZ]]
+4-5 hours.$cybersecurity_2_inst_4$),
+  ("cybersecurity", 9, 8, $cybersecurity_3_desc_1$[[AZ]]
 Tapılmış təhlükəsizlik qüsurunu kök səbəbdən düzəlt və regression test ilə bağlandığını təsdiqlə.
 
 [[EN]]
@@ -3317,7 +3138,7 @@ Submit the repository, redacted test output, and finding-closure note.
 
 ## Estimated time
 4-6 hours.$cybersecurity_3_inst_1$),
-  ('cybersecurity', 8, 10, 8, $cybersecurity_3_desc_2$[[AZ]]
+  ("cybersecurity", 10, 8, $cybersecurity_3_desc_2$[[AZ]]
 Təhlükəsizlik laboratoriyasının nəticələrini sübutlu, risk üzrə sıralanmış yekun hesabatda birləşdir.
 
 [[EN]]
@@ -3395,25 +3216,8 @@ Evidence quality 30, risk ranking 25, remediation 25, clarity/scope 20 points.
 Submit a PDF report and redacted appendix files.
 
 ## Estimated time
-6-8 hours.$cybersecurity_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_cybersecurity_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'cybersecurity batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_cybersecurity_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'cybersecurity batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_cybersecurity_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'cybersecurity batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_cybersecurity_3;
-END
-$curriculum_cybersecurity_3$;
-
-DO $curriculum_data_analytics_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_data_analytics_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_data_analytics_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('data-analytics', 1, 1, 1, $data_analytics_1_desc_1$[[AZ]]
+6-8 hours.$cybersecurity_3_inst_2$),
+  ("data-analytics", 1, 1, $data_analytics_1_desc_1$[[AZ]]
 Analiz üçün verilənlər dəstini təmizlə, çevrilmələri sənədləşdir və əvvəl/sonra keyfiyyəti ölç.
 
 [[EN]]
@@ -3492,7 +3296,7 @@ Submit the repository, notebook/script, CSV files, and short findings report.
 
 ## Estimated time
 4-6 hours.$data_analytics_1_inst_1$),
-  ('data-analytics', 2, 2, 2, $data_analytics_1_desc_2$[[AZ]]
+  ("data-analytics", 2, 2, $data_analytics_1_desc_2$[[AZ]]
 SQL ilə təcrübə müraciətlərinin həftəlik funnel və əsas performans göstəricilərini hesabla.
 
 [[EN]]
@@ -3571,7 +3375,7 @@ Submit SQL files, test data, and result tables in a repository.
 
 ## Estimated time
 4-6 hours.$data_analytics_1_inst_2$),
-  ('data-analytics', 4, 3, 4, $data_analytics_1_desc_3$[[AZ]]
+  ("data-analytics", 3, 4, $data_analytics_1_desc_3$[[AZ]]
 Qərar verən üçün müraciət funnel-ını göstərən interaktiv dashboard prototipi hazırla.
 
 [[EN]]
@@ -3650,7 +3454,7 @@ Submit the dashboard link/file, source, and three insights.
 
 ## Estimated time
 6-8 hours.$data_analytics_1_inst_3$),
-  ('data-analytics', 4, 5, 4, $data_analytics_1_desc_4$[[AZ]]
+  ("data-analytics", 5, 4, $data_analytics_1_desc_4$[[AZ]]
 Mənbə datasetləri üçün schema və biznes qaydalarına əsaslanan data validation qur.
 
 [[EN]]
@@ -3728,25 +3532,8 @@ Rule coverage 30, violation report 25, test quality 25, data preservation 20 poi
 Submit the repository, test output, and validation results file.
 
 ## Estimated time
-4-6 hours.$data_analytics_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_data_analytics_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'data-analytics batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_data_analytics_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'data-analytics batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_data_analytics_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'data-analytics batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_data_analytics_1;
-END
-$curriculum_data_analytics_1$;
-
-DO $curriculum_data_analytics_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_data_analytics_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_data_analytics_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('data-analytics', 4, 6, 3, $data_analytics_2_desc_1$[[AZ]]
+4-6 hours.$data_analytics_1_inst_4$),
+  ("data-analytics", 6, 3, $data_analytics_2_desc_1$[[AZ]]
 Müraciət datasetində paylanma, kənar dəyər və istiqamətlərarası fərqləri araşdır.
 
 [[EN]]
@@ -3825,7 +3612,7 @@ Submit the notebook, data used, and short EDA report.
 
 ## Estimated time
 5-7 hours.$data_analytics_2_inst_1$),
-  ('data-analytics', 5, 7, 5, $data_analytics_2_desc_2$[[AZ]]
+  ("data-analytics", 7, 5, $data_analytics_2_desc_2$[[AZ]]
 Qəbul cohort-larının zamanla aktiv qalma və tapşırıq tamamlama fərqini hesabla.
 
 [[EN]]
@@ -3904,7 +3691,7 @@ Submit the query/notebook, heatmap, and explanation in a repository.
 
 ## Estimated time
 5-7 hours.$data_analytics_2_inst_2$),
-  ('data-analytics', 5, 8, 5, $data_analytics_2_desc_3$[[AZ]]
+  ("data-analytics", 8, 5, $data_analytics_2_desc_3$[[AZ]]
 Mövcud dashboard-u metrik, filtr, əlçatanlıq və səhv yozulma baxımından audit et.
 
 [[EN]]
@@ -3983,7 +3770,7 @@ Submit the audit report and redesign prototype.
 
 ## Estimated time
 4-6 hours.$data_analytics_2_inst_3$),
-  ('data-analytics', 6, 4, 6, $data_analytics_2_desc_4$[[AZ]]
+  ("data-analytics", 4, 6, $data_analytics_2_desc_4$[[AZ]]
 Müraciət məlumatından koordinator üçün tövsiyə və məhdudiyyətləri olan tam data case study hazırla.
 
 [[EN]]
@@ -4061,25 +3848,8 @@ Method 20, technical correctness 30, insight/recommendation 30, transparency/pre
 Submit the repository, report, and a five-minute demo or slide presentation.
 
 ## Estimated time
-8-10 hours.$data_analytics_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_data_analytics_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'data-analytics batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_data_analytics_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'data-analytics batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_data_analytics_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'data-analytics batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_data_analytics_2;
-END
-$curriculum_data_analytics_2$;
-
-DO $curriculum_data_analytics_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_data_analytics_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_data_analytics_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('data-analytics', 6, 9, 6, $data_analytics_3_desc_1$[[AZ]]
+8-10 hours.$data_analytics_2_inst_4$),
+  ("data-analytics", 9, 6, $data_analytics_3_desc_1$[[AZ]]
 Analiz nəticəsini qeyri-texniki auditoriyaya problem–sübut–tövsiyə hekayəsi ilə çatdır.
 
 [[EN]]
@@ -4158,7 +3928,7 @@ Submit PDF/PPT and source chart/data files.
 
 ## Estimated time
 3-5 hours.$data_analytics_3_inst_1$),
-  ('data-analytics', 6, 10, 6, $data_analytics_3_desc_2$[[AZ]]
+  ("data-analytics", 10, 6, $data_analytics_3_desc_2$[[AZ]]
 Analiz layihəsini başqa analitikin yenidən icra edə biləcəyi şəkildə paketlə və məhdudiyyətləri sənədləşdir.
 
 [[EN]]
@@ -4236,25 +4006,8 @@ Reproducibility 35, project structure 20, sanity checks 25, handoff 20 points.
 Submit the repository link and a fresh-environment reproduction result.
 
 ## Estimated time
-4-6 hours.$data_analytics_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_data_analytics_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'data-analytics batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_data_analytics_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'data-analytics batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_data_analytics_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'data-analytics batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_data_analytics_3;
-END
-$curriculum_data_analytics_3$;
-
-DO $curriculum_frontend_engineering_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_frontend_engineering_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_frontend_engineering_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('frontend-engineering', 1, 1, 1, $frontend_engineering_1_desc_1$[[AZ]]
+4-6 hours.$data_analytics_3_inst_2$),
+  ("frontend-engineering", 1, 1, $frontend_engineering_1_desc_1$[[AZ]]
 Mobil və desktop-da oxunaqlı, əlçatan və responsive məhsul landing page-i hazırla.
 
 [[EN]]
@@ -4333,7 +4086,7 @@ Submit a GitHub repository and working preview link.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_1$),
-  ('frontend-engineering', 2, 2, 2, $frontend_engineering_1_desc_2$[[AZ]]
+  ("frontend-engineering", 2, 2, $frontend_engineering_1_desc_2$[[AZ]]
 Təkrar istifadə edilən form, badge və empty-state komponentləri ilə kiçik UI sistem qur.
 
 [[EN]]
@@ -4412,7 +4165,7 @@ Submit the repository, demo screenshot, and test results.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_2$),
-  ('frontend-engineering', 4, 3, 3, $frontend_engineering_1_desc_3$[[AZ]]
+  ("frontend-engineering", 3, 3, $frontend_engineering_1_desc_3$[[AZ]]
 API məlumatı ilə yüklənmə, uğur, boş və xəta vəziyyətləri olan idarəetmə paneli qur.
 
 [[EN]]
@@ -4491,7 +4244,7 @@ Submit the repository and a public preview or local-demo instructions.
 
 ## Estimated time
 5-7 hours.$frontend_engineering_1_inst_3$),
-  ('frontend-engineering', 4, 5, 4, $frontend_engineering_1_desc_4$[[AZ]]
+  ("frontend-engineering", 5, 4, $frontend_engineering_1_desc_4$[[AZ]]
 Müraciət formunu label, inline validation və aydın uğur/xəta axını ilə tamamla.
 
 [[EN]]
@@ -4569,25 +4322,8 @@ Form UX 25, validation 25, error recovery 25, accessibility/tests 25 points.
 Submit the repository, demo, and test results.
 
 ## Estimated time
-4-6 hours.$frontend_engineering_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_frontend_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'frontend-engineering batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_frontend_engineering_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'frontend-engineering batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_frontend_engineering_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'frontend-engineering batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_frontend_engineering_1;
-END
-$curriculum_frontend_engineering_1$;
-
-DO $curriculum_frontend_engineering_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_frontend_engineering_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_frontend_engineering_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('frontend-engineering', 4, 6, 4, $frontend_engineering_2_desc_1$[[AZ]]
+4-6 hours.$frontend_engineering_1_inst_4$),
+  ("frontend-engineering", 6, 4, $frontend_engineering_2_desc_1$[[AZ]]
 Dashboard filter və müraciət formu state-ini proqnozlaşdırılan, test edilən qaydada idarə et.
 
 [[EN]]
@@ -4666,7 +4402,7 @@ Submit the repository, state diagram, and test output.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_1$),
-  ('frontend-engineering', 5, 7, 5, $frontend_engineering_2_desc_2$[[AZ]]
+  ("frontend-engineering", 7, 5, $frontend_engineering_2_desc_2$[[AZ]]
 Frontend yüklənməsini ölç, ən bahalı bottleneck-i müəyyən et və sübutla optimallaşdır.
 
 [[EN]]
@@ -4745,7 +4481,7 @@ Submit the repository and redacted performance report.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_2$),
-  ('frontend-engineering', 5, 8, 5, $frontend_engineering_2_desc_3$[[AZ]]
+  ("frontend-engineering", 8, 5, $frontend_engineering_2_desc_3$[[AZ]]
 Component, user interaction və əsas error state-lər üçün etibarlı frontend testləri yaz.
 
 [[EN]]
@@ -4824,7 +4560,7 @@ Submit the repository and test output.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_2_inst_3$),
-  ('frontend-engineering', 6, 9, 6, $frontend_engineering_2_desc_4$[[AZ]]
+  ("frontend-engineering", 9, 6, $frontend_engineering_2_desc_4$[[AZ]]
 Code review tapıntılarını istifadəçi təsiri üzrə prioritetləşdir və təhlükəsiz düzəlişlə bağla.
 
 [[EN]]
@@ -4902,25 +4638,8 @@ Finding accuracy 30, prioritization 20, remediation 30, regression evidence 20 p
 Submit the GitHub repository and review notes.
 
 ## Estimated time
-4-6 hours.$frontend_engineering_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_frontend_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'frontend-engineering batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_frontend_engineering_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'frontend-engineering batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_frontend_engineering_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'frontend-engineering batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_frontend_engineering_2;
-END
-$curriculum_frontend_engineering_2$;
-
-DO $curriculum_frontend_engineering_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_frontend_engineering_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_frontend_engineering_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('frontend-engineering', 6, 10, 7, $frontend_engineering_3_desc_1$[[AZ]]
+4-6 hours.$frontend_engineering_2_inst_4$),
+  ("frontend-engineering", 10, 7, $frontend_engineering_3_desc_1$[[AZ]]
 Frontend xüsusiyyətini developer və dizaynerə təhvil ver: setup, component, test və məhdudiyyətləri yaz.
 
 [[EN]]
@@ -4999,7 +4718,7 @@ Submit the repository link, preview, and short handoff note.
 
 ## Estimated time
 4-6 hours.$frontend_engineering_3_inst_1$),
-  ('frontend-engineering', 8, 4, 8, $frontend_engineering_3_desc_2$[[AZ]]
+  ("frontend-engineering", 4, 8, $frontend_engineering_3_desc_2$[[AZ]]
 Müraciət idarəetməsi üçün polished frontend-i API, responsive design və testlərlə tamamla.
 
 [[EN]]
@@ -5079,25 +4798,8 @@ Feature completeness 25, UX/responsiveness 25, tests/accessibility 25, code/hand
 Submit the GitHub repository, preview link, and a five-minute demo or report.
 
 ## Estimated time
-8-12 hours.$frontend_engineering_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_frontend_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'frontend-engineering batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_frontend_engineering_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'frontend-engineering batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_frontend_engineering_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'frontend-engineering batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_frontend_engineering_3;
-END
-$curriculum_frontend_engineering_3$;
-
-DO $curriculum_mobile_development_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_mobile_development_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_mobile_development_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('mobile-development', 1, 1, 1, $mobile_development_1_desc_1$[[AZ]]
+8-12 hours.$frontend_engineering_3_inst_2$),
+  ("mobile-development", 1, 1, $mobile_development_1_desc_1$[[AZ]]
 Expo əsaslı mobil layihəni qur, cihazda işə sal və başlanğıc quraşdırmanı təkrarlana bilən et.
 
 [[EN]]
@@ -5176,7 +4878,7 @@ Submit a GitHub repository link and Android/iOS preview screenshot.
 
 ## Estimated time
 3-5 hours.$mobile_development_1_inst_1$),
-  ('mobile-development', 2, 2, 2, $mobile_development_1_desc_2$[[AZ]]
+  ("mobile-development", 2, 2, $mobile_development_1_desc_2$[[AZ]]
 Təcrübə dashboard-unda əsas ekranlar arasında geri düyməsi və deep-link-i nəzərə alan navigation qur.
 
 [[EN]]
@@ -5255,7 +4957,7 @@ Submit the repository and a screen-flow demo video or screenshot sequence.
 
 ## Estimated time
 4-6 hours.$mobile_development_1_inst_2$),
-  ('mobile-development', 3, 3, 3, $mobile_development_1_desc_3$[[AZ]]
+  ("mobile-development", 3, 3, $mobile_development_1_desc_3$[[AZ]]
 Task card, status badge və form sahələrini mobil ekranda təkrar istifadə edilən komponentlərə ayır.
 
 [[EN]]
@@ -5334,7 +5036,7 @@ Submit the GitHub repository, demo screenshot, and test result.
 
 ## Estimated time
 4-6 hours.$mobile_development_1_inst_3$),
-  ('mobile-development', 4, 4, 4, $mobile_development_1_desc_4$[[AZ]]
+  ("mobile-development", 4, 4, $mobile_development_1_desc_4$[[AZ]]
 API-dən tapşırıqları çəkən mobil siyahıda loading, refresh, empty və network error vəziyyətlərini qur.
 
 [[EN]]
@@ -5412,25 +5114,8 @@ Data contract 20, screen states 30, refresh/retry 25, tests/accessibility 25 poi
 Submit the repository link, short screen video, and test output.
 
 ## Estimated time
-5-7 hours.$mobile_development_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_mobile_development_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'mobile-development batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_mobile_development_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'mobile-development batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_mobile_development_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'mobile-development batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_mobile_development_1;
-END
-$curriculum_mobile_development_1$;
-
-DO $curriculum_mobile_development_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_mobile_development_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_mobile_development_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('mobile-development', 5, 5, 5, $mobile_development_2_desc_1$[[AZ]]
+5-7 hours.$mobile_development_1_inst_4$),
+  ("mobile-development", 5, 5, $mobile_development_2_desc_1$[[AZ]]
 Tapşırıq siyahısına status filter-i və yerli axtarış əlavə et, filter dəyişməsini aydın göstər.
 
 [[EN]]
@@ -5509,7 +5194,7 @@ Submit the repository, demo screenshot, and test output.
 
 ## Estimated time
 3-5 hours.$mobile_development_2_inst_1$),
-  ('mobile-development', 6, 6, 6, $mobile_development_2_desc_2$[[AZ]]
+  ("mobile-development", 6, 6, $mobile_development_2_desc_2$[[AZ]]
 İstifadəçi seçimini yalnız həssas olmayan məlumatlar üçün lokal storage-da saxla və migration qərarını yaz.
 
 [[EN]]
@@ -5588,7 +5273,7 @@ Submit the repository and a short screen video of storage behavior.
 
 ## Estimated time
 4-6 hours.$mobile_development_2_inst_2$),
-  ('mobile-development', 7, 7, 7, $mobile_development_2_desc_3$[[AZ]]
+  ("mobile-development", 7, 7, $mobile_development_2_desc_3$[[AZ]]
 Müraciət formunda mobil klaviatura, field validation və submit zamanı səhv bərpasını həll et.
 
 [[EN]]
@@ -5667,7 +5352,7 @@ Submit the repository, screen evidence, and test output.
 
 ## Estimated time
 4-6 hours.$mobile_development_2_inst_3$),
-  ('mobile-development', 8, 8, 8, $mobile_development_2_desc_4$[[AZ]]
+  ("mobile-development", 8, 8, $mobile_development_2_desc_4$[[AZ]]
 Şəbəkə itəndə cache edilmiş tapşırıqları oxunaqlı saxla və sync vəziyyətini dürüst göstər.
 
 [[EN]]
@@ -5745,25 +5430,8 @@ Offline states 25, data consistency 30, privacy/retry 20, tests/documentation 25
 Submit the GitHub repository, test output, and screen notes.
 
 ## Estimated time
-5-7 hours.$mobile_development_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_mobile_development_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'mobile-development batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_mobile_development_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'mobile-development batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_mobile_development_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'mobile-development batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_mobile_development_2;
-END
-$curriculum_mobile_development_2$;
-
-DO $curriculum_mobile_development_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_mobile_development_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_mobile_development_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('mobile-development', 8, 9, 8, $mobile_development_3_desc_1$[[AZ]]
+5-7 hours.$mobile_development_2_inst_4$),
+  ("mobile-development", 9, 8, $mobile_development_3_desc_1$[[AZ]]
 Əsas mobil istifadə axınını real cihaz ölçüləri, əlçatanlıq və performans baxımından yoxla.
 
 [[EN]]
@@ -5842,7 +5510,7 @@ Submit the repository and test report.
 
 ## Estimated time
 4-6 hours.$mobile_development_3_inst_1$),
-  ('mobile-development', 8, 10, 8, $mobile_development_3_desc_2$[[AZ]]
+  ("mobile-development", 10, 8, $mobile_development_3_desc_2$[[AZ]]
 Tapşırıqları idarə edən tamamlanmış mobil app-i API, offline davranış, test və handoff sənədi ilə təqdim et.
 
 [[EN]]
@@ -5922,25 +5590,8 @@ Feature completeness 25, UX/accessibility 25, data/error behavior 25, tests/hand
 Submit the GitHub repository, emulator/device demo, and short handoff note.
 
 ## Estimated time
-8-12 hours.$mobile_development_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_mobile_development_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'mobile-development batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_mobile_development_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'mobile-development batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_mobile_development_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'mobile-development batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_mobile_development_3;
-END
-$curriculum_mobile_development_3$;
-
-DO $curriculum_ui_ux_design_1$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_ui_ux_design_1 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_ui_ux_design_1 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('ui-ux-design', 1, 1, 1, $ui_ux_design_1_desc_1$[[AZ]]
+8-12 hours.$mobile_development_3_inst_2$),
+  ("ui-ux-design", 1, 1, $ui_ux_design_1_desc_1$[[AZ]]
 İntern portalında tələbələrin tapşırıq axtarışı və təhvil vermə ehtiyacını öyrənmək üçün müsahibə planı hazırla.
 
 [[EN]]
@@ -6017,7 +5668,7 @@ Submit the guide and pilot summary as PDF or in a repository.
 
 ## Estimated time
 3-4 hours.$ui_ux_design_1_inst_1$),
-  ('ui-ux-design', 2, 2, 2, $ui_ux_design_1_desc_2$[[AZ]]
+  ("ui-ux-design", 2, 2, $ui_ux_design_1_desc_2$[[AZ]]
 Müsahibə tapıntılarından tapşırıq tapma və təqdim etmə üçün əsas user flow və edge case-lər qur.
 
 [[EN]]
@@ -6094,7 +5745,7 @@ Submit the diagram link and short design rationale.
 
 ## Estimated time
 3-5 hours.$ui_ux_design_1_inst_2$),
-  ('ui-ux-design', 3, 3, 3, $ui_ux_design_1_desc_3$[[AZ]]
+  ("ui-ux-design", 3, 3, $ui_ux_design_1_desc_3$[[AZ]]
 Dashboard, tapşırıq detalı və submit axını üçün low-fidelity wireframe və layout qərarları hazırla.
 
 [[EN]]
@@ -6171,7 +5822,7 @@ Submit a Figma/Penpot link or PDF export.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_1_inst_3$),
-  ('ui-ux-design', 4, 4, 4, $ui_ux_design_1_desc_4$[[AZ]]
+  ("ui-ux-design", 4, 4, $ui_ux_design_1_desc_4$[[AZ]]
 Wireframe-i real məzmun, visual hierarchy və responsive variantları olan high-fidelity ekranlara çevir.
 
 [[EN]]
@@ -6247,25 +5898,8 @@ Visual hierarchy 25, content clarity 25, responsive states 25, consistency/acces
 Submit the design-file link and screenshots.
 
 ## Estimated time
-5-7 hours.$ui_ux_design_1_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_ui_ux_design_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'ui-ux-design batch 1: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_ui_ux_design_1 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'ui-ux-design batch 1: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_ui_ux_design_1 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'ui-ux-design batch 1: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_ui_ux_design_1;
-END
-$curriculum_ui_ux_design_1$;
-
-DO $curriculum_ui_ux_design_2$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_ui_ux_design_2 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_ui_ux_design_2 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('ui-ux-design', 5, 5, 5, $ui_ux_design_2_desc_1$[[AZ]]
+5-7 hours.$ui_ux_design_1_inst_4$),
+  ("ui-ux-design", 5, 5, $ui_ux_design_2_desc_1$[[AZ]]
 Rəng, type, spacing və əsas component variantlarını token-larla ifadə edən kiçik design system qur.
 
 [[EN]]
@@ -6342,7 +5976,7 @@ Submit the Figma/Penpot library link and short design-system guide.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_1$),
-  ('ui-ux-design', 6, 6, 6, $ui_ux_design_2_desc_2$[[AZ]]
+  ("ui-ux-design", 6, 6, $ui_ux_design_2_desc_2$[[AZ]]
 Tapşırıq oxuma, status dəyişməsi və submit interaction-larını clickable prototype-da sına.
 
 [[EN]]
@@ -6419,7 +6053,7 @@ Submit a shareable prototype link and test notes.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_2$),
-  ('ui-ux-design', 7, 7, 7, $ui_ux_design_2_desc_3$[[AZ]]
+  ("ui-ux-design", 7, 7, $ui_ux_design_2_desc_3$[[AZ]]
 Task detail prototipində keyboard, screen reader, kontrast və mətn böyütmə baryerlərini audit et.
 
 [[EN]]
@@ -6496,7 +6130,7 @@ Submit the audit report and prototype link.
 
 ## Estimated time
 4-6 hours.$ui_ux_design_2_inst_3$),
-  ('ui-ux-design', 8, 8, 8, $ui_ux_design_2_desc_4$[[AZ]]
+  ("ui-ux-design", 8, 8, $ui_ux_design_2_desc_4$[[AZ]]
 Eyni task axınını dar mobil, tablet və desktop enlərində yenidən yerləşdir və content prioritetini saxla.
 
 [[EN]]
@@ -6572,25 +6206,8 @@ Responsive strategy 25, content readability 25, navigation 25, tests/evidence 25
 Submit the design-file link and screenshots for all three viewports.
 
 ## Estimated time
-4-6 hours.$ui_ux_design_2_inst_4$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_ui_ux_design_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 4 THEN RAISE EXCEPTION 'ui-ux-design batch 2: expected 4 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_ui_ux_design_2 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'ui-ux-design batch 2: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_ui_ux_design_2 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 4 THEN RAISE EXCEPTION 'ui-ux-design batch 2: expected 4 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_ui_ux_design_2;
-END
-$curriculum_ui_ux_design_2$;
-
-DO $curriculum_ui_ux_design_3$
-DECLARE matched_count INTEGER; updated_count INTEGER; conflict_count INTEGER;
-BEGIN
-  LOCK TABLE public.internship_tasks IN SHARE ROW EXCLUSIVE MODE;
-  CREATE TEMP TABLE curriculum_patch_ui_ux_design_3 (slug TEXT NOT NULL, old_week INTEGER NOT NULL, task_number INTEGER NOT NULL, new_week INTEGER NOT NULL, description TEXT NOT NULL, instructions TEXT NOT NULL, PRIMARY KEY (slug, old_week, task_number)) ON COMMIT DROP;
-  INSERT INTO pg_temp.curriculum_patch_ui_ux_design_3 (slug, old_week, task_number, new_week, description, instructions) VALUES
-  ('ui-ux-design', 8, 9, 8, $ui_ux_design_3_desc_1$[[AZ]]
+4-6 hours.$ui_ux_design_2_inst_4$),
+  ("ui-ux-design", 9, 8, $ui_ux_design_3_desc_1$[[AZ]]
 Prototipdə tapşırığı tapma və təqdim etmə usability testini apar, tapıntıları prioritetləşdir.
 
 [[EN]]
@@ -6667,7 +6284,7 @@ Submit a redacted test report and updated prototype link.
 
 ## Estimated time
 5-7 hours.$ui_ux_design_3_inst_1$),
-  ('ui-ux-design', 8, 10, 8, $ui_ux_design_3_desc_2$[[AZ]]
+  ("ui-ux-design", 10, 8, $ui_ux_design_3_desc_2$[[AZ]]
 Araşdırma, axın, ekran və test nəticələrini qərara yönəlmiş UX case study-də birləşdir.
 
 [[EN]]
@@ -6744,15 +6361,61 @@ Submit a case-study PDF/web link, source design file, and five-minute presentati
 
 ## Estimated time
 8-10 hours.$ui_ux_design_3_inst_2$);
-  SELECT COUNT(*) INTO matched_count FROM pg_temp.curriculum_patch_ui_ux_design_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
-  IF matched_count <> 2 THEN RAISE EXCEPTION 'ui-ux-design batch 3: expected 2 source rows, matched %', matched_count; END IF;
-  SELECT COUNT(*) INTO conflict_count FROM pg_temp.curriculum_patch_ui_ux_design_3 p JOIN public.internships i ON i.slug=p.slug JOIN public.internship_tasks t ON t.internship_id=i.id AND t.week_number=p.new_week AND t.task_number=p.task_number WHERE NOT (t.week_number=p.old_week AND t.task_number=p.task_number);
-  IF conflict_count <> 0 THEN RAISE EXCEPTION 'ui-ux-design batch 3: target key conflict count %', conflict_count; END IF;
-  UPDATE public.internship_tasks t SET week_number=p.new_week, description=p.description, instructions=p.instructions FROM pg_temp.curriculum_patch_ui_ux_design_3 p JOIN public.internships i ON i.slug=p.slug WHERE t.internship_id=i.id AND t.week_number=p.old_week AND t.task_number=p.task_number AND t.status='published';
+
+DO $curriculum_refresh$
+DECLARE
+  matched_count INTEGER;
+  updated_count INTEGER;
+  conflict_count INTEGER;
+BEGIN
+  SELECT COUNT(*)
+    INTO matched_count
+  FROM pg_temp.curriculum_refresh_patch p
+  JOIN public.internships i ON i.slug = p.slug
+  JOIN public.internship_tasks t
+    ON t.internship_id = i.id
+   AND t.task_number = p.task_number
+   AND t.status = 'published';
+
+  IF matched_count <> 80 THEN
+    RAISE EXCEPTION 'curriculum refresh: expected 80 published tasks, matched %', matched_count;
+  END IF;
+
+  SELECT COUNT(*)
+    INTO conflict_count
+  FROM pg_temp.curriculum_refresh_patch p
+  JOIN public.internships i ON i.slug = p.slug
+  JOIN public.internship_tasks source
+    ON source.internship_id = i.id
+   AND source.task_number = p.task_number
+   AND source.status = 'published'
+  JOIN public.internship_tasks target
+    ON target.internship_id = i.id
+   AND target.week_number = p.week_number
+   AND target.task_number = p.task_number
+   AND target.status = 'published'
+  WHERE target.id <> source.id;
+
+  IF conflict_count <> 0 THEN
+    RAISE EXCEPTION 'curriculum refresh: target key conflict count %', conflict_count;
+  END IF;
+
+  UPDATE public.internship_tasks t
+     SET week_number = p.week_number,
+         description = p.description,
+         instructions = p.instructions,
+         updated_at = now()
+    FROM pg_temp.curriculum_refresh_patch p
+    JOIN public.internships i ON i.slug = p.slug
+   WHERE t.internship_id = i.id
+     AND t.task_number = p.task_number
+     AND t.status = 'published';
+
   GET DIAGNOSTICS updated_count = ROW_COUNT;
-  IF updated_count <> 2 THEN RAISE EXCEPTION 'ui-ux-design batch 3: expected 2 updated rows, got %', updated_count; END IF;
-  DROP TABLE pg_temp.curriculum_patch_ui_ux_design_3;
+  IF updated_count <> 80 THEN
+    RAISE EXCEPTION 'curriculum refresh: expected 80 updated tasks, got %', updated_count;
+  END IF;
 END
-$curriculum_ui_ux_design_3$;
+$curriculum_refresh$;
 
 COMMIT;
