@@ -156,11 +156,17 @@ export default function StudentCertificatePage() {
     // Validate type
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
     if (!validTypes.includes(selected.type)) {
+      setFile(null);
+      setFilePreview(null);
+      e.currentTarget.value = '';
       setSubmitError(language === 'az' ? 'Yalnız JPG, PNG, WEBP və PDF faylları dəstəklənir.' : 'Only JPG, PNG, WEBP and PDF files are supported.');
       return;
     }
 
     if (selected.size > 10 * 1024 * 1024) {
+      setFile(null);
+      setFilePreview(null);
+      e.currentTarget.value = '';
       setSubmitError(language === 'az' ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
       return;
     }
@@ -183,10 +189,14 @@ export default function StudentCertificatePage() {
       const dropped = e.dataTransfer.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
       if (!validTypes.includes(dropped.type)) {
+        setFile(null);
+        setFilePreview(null);
         setSubmitError(language === 'az' ? 'Yalnız JPG, PNG, WEBP və PDF faylları dəstəklənir.' : 'Only JPG, PNG, WEBP and PDF files are supported.');
         return;
       }
       if (dropped.size > 10 * 1024 * 1024) {
+        setFile(null);
+        setFilePreview(null);
         setSubmitError(language === 'az' ? 'Faylın həcmi 10MB-dan çox ola bilməz.' : 'File size cannot exceed 10MB.');
         return;
       }
